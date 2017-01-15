@@ -29,6 +29,10 @@ public class Robot extends SampleRobot {
 	double currentContourHeight = 0.0;
 	double leftContour = 0.0;
 	double rightContour = 0.0;
+	double rangeInches = 2.5;
+
+	int phase = 0;
+	int clockTime = 15;
 
 	ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 	Shooter2017 shooter = new Shooter2017(ports);
@@ -85,27 +89,151 @@ public class Robot extends SampleRobot {
 				drive.rampedDriveListener();
 				break;
 			case GEARALIGNMENT:
+				// Checks if we are in the gear Deadzone
+				if (Math.abs(vision.GetContour1Height() - vision.GetContour2Height()) > gearDeadzone) {
 
-				while (Math.abs(vision.GetContour1Height() - vision.GetContour2Height()) > gearDeadzone) {
-					if (vision.GetContour1Height() == vision.GetContour2Height()) {
-
-					} else if (vision.GetContour1Height() < vision.GetContour2Height()) {
-						leftContour = vision.GetContour1Height();
-						rightContour = vision.GetContour2Height();
-					} else {
-						leftContour = vision.GetContour2Height();
-						rightContour = vision.GetContour1Height();
-					}
-
-					if (leftContour < rightContour) {
-						drive.manualDrive(0, .5);
-					} else if (leftContour > rightContour) {
-						drive.manualDrive(0, -.5);
-					} else {
+					if (analogSensor.GetRangeInches() > rangeInches) {
 						drive.manualDrive(.5, 0);
-						mode = TeleOpMode.OPERATORCONTROL;
+					}
+				} else if (vision.GetContour1Height() < vision.GetContour2Height()) {
+					leftContour = vision.GetContour1Height();
+					rightContour = vision.GetContour2Height(); // Checks the
+																// first contour
+																// if its
+																// farthest;
+																// makes it the
+																// left contour.
+				} else {
+					leftContour = vision.GetContour2Height(); // This makes the
+																// left contour
+																// the second
+																// one.
+					rightContour = vision.GetContour1Height();
+				}
+
+				if (leftContour < rightContour) { // If the left contour is
+													// shorter than the right
+													// one, turns right.
+					switch (phase) { // aligns from right
+					case 0:
+						clock.start();
+						if (clock.get() > clockTime) {
+							drive.manualDrive(0, .5);// turns right
+						}
+						clock.reset();
+						phase++;
+						break;
+					case 1:
+						clock.start();
+						if (clock.get() > clockTime) {
+							drive.manualDrive(-.5, 0);// moves backwards
+						}
+						clock.reset();
+						phase++;
+						break;
+					case 2:
+						clock.start();
+						if (clock.get() > clockTime) {
+							drive.manualDrive(0, -.5);// turns left
+						}
+						clock.reset();
+						phase++;
+						break;
+					case 3:
+						clock.start();
+						if (clock.get() > clockTime) {
+							drive.manualDrive(.5, 0);// moves forward
+						}
+						clock.reset();
+						phase++;
+						break;
+					case 4:
+						clock.start();
+						if (clock.get() > clockTime) {
+							drive.manualDrive(0, .5);// turns right
+						}
+						clock.reset();
+						phase++;
+						break;
+					case 5:
+						clock.start();
+						if (clock.get() > clockTime) {
+							drive.manualDrive(.5, 0);// moves forward
+						}
+						clock.reset();
+						phase++;
+						break;
+					case 40:
+						break;
+					}
+				} else if (leftContour > rightContour) {
+					switch (phase) { // aligns from left
+					case 0:
+						clock.start();
+						if (clock.get() > clockTime) {
+							drive.manualDrive(0, -.5);// turns left
+						}
+						clock.reset();
+						phase++;
+						break;
+					case 1:
+						clock.start();
+						if (clock.get() > clockTime) {
+							drive.manualDrive(-.5, 0);// moves backwards
+						}
+						clock.reset();
+						phase++;
+						break;
+					case 2:
+						clock.start();
+						if (clock.get() > clockTime) {
+							drive.manualDrive(0, .5);// turns right
+						}
+						clock.reset();
+						phase++;
+						break;
+					case 3:
+						clock.start();
+						if (clock.get() > clockTime) {
+							drive.manualDrive(.5, 0);// moves forward
+						}
+						clock.reset();
+						phase++;
+						break;
+					case 4:
+						clock.start();
+						if (clock.get() > clockTime) {
+							drive.manualDrive(0, -.5);// turns left
+						}
+						clock.reset();
+						phase++;
+						break;
+					case 5:
+						clock.start();
+						if (clock.get() > clockTime) {
+							drive.manualDrive(.5, 0);// moves forward
+						}
+						clock.reset();
+						phase++;
+						break;
+					case 40:
+						break;
+					}
+				} else {
+					switch (phase) {
+					case 0:
+						clock.start();
+						if (clock.get() > clockTime) {
+							drive.manualDrive(.5, 0);// moves forward
+						}
+						clock.reset();
+						phase++;
+						break;
+					case 40:
+						break;
 					}
 				}
+
 				break;
 			case HIGHGOALALIGNMENT:
 				// Checks if we are within horizontal Deadzone
@@ -135,9 +263,9 @@ public class Robot extends SampleRobot {
 				}
 				break;
 			}
+
 			// Send stats to the driver
 			print();
-
 		}
 
 	}

@@ -23,6 +23,8 @@ public class Vision2017 {
 	private double contour2CenterX = 0.0;
 	private double contour2CenterY = 0.0;
 	private double contour2Height = 0.0;
+	
+	public boolean flag = false; 
 
 	private final Object imgLock = new Object();
 
@@ -42,11 +44,12 @@ public class Vision2017 {
 					contour2CenterX = contour2.x + (contour2.width / 2);
 					contour2CenterY = contour2.y + (contour2.height / 2);
 					contour2Height = contour2.height;
+					flag = true;
 				}
 
 			}
 		});
-		visionThread.start();
+		visionThread.start(); 
 	}
 
 	// methods for getting contour values

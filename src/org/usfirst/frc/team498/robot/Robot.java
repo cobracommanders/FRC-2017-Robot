@@ -1,13 +1,16 @@
 package org.usfirst.frc.team498.robot;
 
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DigitalOutput;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
+
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /*
@@ -19,7 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * 
  */
 public class Robot extends SampleRobot {
-	
+
 	// Drive
 	Ports ports = new Ports();
 	private Timer clock;
@@ -27,22 +30,34 @@ public class Robot extends SampleRobot {
 	Shooter2017 shooter = new Shooter2017(ports);
 	Drive2016 drive = new Drive2016(thisStick, ports);
 	AutonmousController auto = new AutonmousController(drive, shooter, ports);
-	
 
-	
-	
 	Ultrasonic ultrasonic = new Ultrasonic(0, 1);
-	
-
-
 
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 
-;
+	;
 
 	@Override
 	public void robotInit() {
-		
+		 //CameraServer.getInstance().startAutomaticCapture();
+		 
+		/* new Thread(() -> {
+             UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+             camera.setResolution(640, 480);
+             
+             CvSink cvSink = CameraServer.getInstance().getVideo();
+             CvSource outputStream = CameraServer.getInstance().putVideo("Blur", 640, 480);
+             
+             Mat source = new Mat();
+             Mat output = new Mat();
+                          
+             while(true) {
+                 cvSink.grabFrame(source);
+                 Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+                 outputStream.putFrame(output);
+             }
+         }).start();
+ } */
 	}
 
 	// Select which autonomous to run
@@ -73,6 +88,8 @@ public class Robot extends SampleRobot {
 				mode = TeleOpMode.GEARALIGNMENT;
 			} else if (thisStick.getButton(Button.START)) {
 				mode = TeleOpMode.OPERATORCONTROL;
+			} else if (thisStick.getButton(Button.X)) {
+				mode = TeleOpMode.TEST;
 			}
 
 			switch (mode) {
@@ -85,6 +102,11 @@ public class Robot extends SampleRobot {
 				break;
 			case HIGHGOALALIGNMENT:
 				mode = auto.AlignHighGoal();
+				break;
+			case TEST:
+				auto.testDrive();
+				drive.moveValue = 0;
+				drive.turnValue = 0;
 				break;
 			}
 
@@ -109,6 +131,17 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("Range millimeters (Analog)", auto.analogSensor.GetRangeMM());
 		SmartDashboard.putNumber("Range Inches (Analog)", auto.analogSensor.GetRangeInches());
 		SmartDashboard.putNumber("Voltage (Analog)", auto.analogSensor.GetVoltage());
+		
+		SmartDashboard.putNumber("Contour1 CenterX", auto.vision.GetContour1CenterX());
+		SmartDashboard.putNumber("Contour1 CenterY", auto.vision.GetContour1CenterY());
+		SmartDashboard.putNumber("Contour1 Height", auto.vision.GetContour1Height());
+		SmartDashboard.putNumber("Contour2 CenterX", auto.vision.GetContour2CenterX());
+		SmartDashboard.putNumber("Contour2 CenterY", auto.vision.GetContour2CenterY());
+		SmartDashboard.putNumber("Contour2 Height", auto.vision.GetContour2Height());
+		
+		SmartDashboard.putBoolean("flag", auto.vision.flag);
+
+		//SmartDashboard.putNumber("Ramp Clock", drive.forwardDriveRamp.clock.get());
 
 	}
 

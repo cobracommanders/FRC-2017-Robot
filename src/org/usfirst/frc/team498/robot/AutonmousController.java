@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class AutonmousController {
 	// Vision
-	Vision2017 vision = new Vision2017();
+	public Vision2017 vision = new Vision2017();
 
 	private Timer clock;
 	private Drive2016 drive;
@@ -19,13 +19,17 @@ public class AutonmousController {
 	double rightContour = 0.0;
 	double rangeInches = 2.5;
 
+	double driveAngle;
+
+	final double GEARADJUSTANGLE = 30;
+
 	final int highGoalheight = 200; // Measured in pixels
 	final int horizontalDeadzone = 20; // Measured in pixels
 	final int verticalDeadzone = 20; // Measured in pixels
 	final int gearDeadzone = 20; // Measured in pixels
 
 	int phase = 0;
-	int clockTime = 15;
+	int clockTime = 2;
 
 	AutonmousController(Drive2016 drive_a, Shooter2017 shoot_a, Ports ports) {
 		drive = drive_a;
@@ -46,8 +50,7 @@ public class AutonmousController {
 	public void autoInit(int startPhase) {
 
 		phase = startPhase;
-		clock.stop();
-		clock.reset();
+		clock.start();
 	}
 
 	public void autoLowBar() {
@@ -55,7 +58,7 @@ public class AutonmousController {
 		switch (phase) {
 		case 0:
 
-			clock.start();
+			clock.reset();
 			phase++;
 
 			break;
@@ -98,7 +101,7 @@ public class AutonmousController {
 		} else if (vision.GetContour1CenterX() < (vision.GetCameraWidth() / 2)) {
 			drive.manualDrive(0, .5); // turns right, TODO: gyro
 		} else {
-			// TODO Shit is done yo
+			// TODO Shit is done yo!
 
 			return TeleOpMode.OPERATORCONTROL;
 		}
@@ -115,145 +118,95 @@ public class AutonmousController {
 			}
 		} else if (vision.GetContour1Height() < vision.GetContour2Height()) {
 			leftContour = vision.GetContour1Height();
-			rightContour = vision.GetContour2Height(); // Checks the
-														// first contour
-														// if its
-														// farthest;
-														// makes it the
-														// left contour.
+			rightContour = vision.GetContour2Height();
+			// Checks the first contour if its farthest makes it the left
+			// contour.
 		} else {
-			leftContour = vision.GetContour2Height(); // This makes the
-														// left contour
-														// the second
-														// one.
+			leftContour = vision.GetContour2Height();
+			// This makes the left contour the second one.
 			rightContour = vision.GetContour1Height();
 		}
 
-		if (leftContour < rightContour) { // If the left contour is
-											// shorter than the right
-											// one, turns right.
-			switch (phase) { // aligns from right
-			case -1:
-				clock.reset();
-				phase++;
-				break;
-			case 0:
-				drive.manualDrive(0, .5);// turns right
-				if (clock.get() > clockTime) {
-					clock.reset();
-					phase++;
-				}
-
-				break;
-			case 1:
-				drive.manualDrive(-.5, 0);// moves backwards
-				if (clock.get() > clockTime) {
-					clock.reset();
-					phase++;
-				}
-
-				break;
-			case 2:
-				if (clock.get() > clockTime) {
-					drive.manualDrive(0, -.5);// turns left
-				}
-				clock.reset();
-				phase++;
-				break;
-			case 3:
-				clock.start();
-				if (clock.get() > clockTime) {
-					drive.manualDrive(.5, 0);// moves forward
-				}
-				clock.reset();
-				phase++;
-				break;
-			case 4:
-				clock.start();
-				if (clock.get() > clockTime) {
-					drive.manualDrive(0, .5);// turns right
-				}
-				clock.reset();
-				phase++;
-				break;
-			case 5:
-				clock.start();
-				if (clock.get() > clockTime) {
-					drive.manualDrive(.5, 0);// moves forward
-				}
-				clock.reset();
-				phase++;
-				break;
-			case 40:
-				break;
-			}
-		} else if (leftContour > rightContour) {
-			switch (phase) { // aligns from left
-			case 0:
-				clock.start();
-				if (clock.get() > clockTime) {
-					drive.manualDrive(0, -.5);// turns left
-				}
-				clock.reset();
-				phase++;
-				break;
-			case 1:
-				clock.start();
-				if (clock.get() > clockTime) {
-					drive.manualDrive(-.5, 0);// moves backwards
-				}
-				clock.reset();
-				phase++;
-				break;
-			case 2:
-				clock.start();
-				if (clock.get() > clockTime) {
-					drive.manualDrive(0, .5);// turns right
-				}
-				clock.reset();
-				phase++;
-				break;
-			case 3:
-				clock.start();
-				if (clock.get() > clockTime) {
-					drive.manualDrive(.5, 0);// moves forward
-				}
-				clock.reset();
-				phase++;
-				break;
-			case 4:
-				clock.start();
-				if (clock.get() > clockTime) {
-					drive.manualDrive(0, -.5);// turns left
-				}
-				clock.reset();
-				phase++;
-				break;
-			case 5:
-				clock.start();
-				if (clock.get() > clockTime) {
-					drive.manualDrive(.5, 0);// moves forward
-				}
-				clock.reset();
-				phase++;
-				break;
-			case 40:
-				break;
-			}
+		if (leftContour < rightContour) {
+			driveAngle = .5;
 		} else {
-			switch (phase) {
-			case 0:
-				clock.start();
-				if (clock.get() > clockTime) {
-					drive.manualDrive(.5, 0);// moves forward
-				}
+			driveAngle = -.5;
+		}
+
+		// If the left contour is shorter than the right one, turns right.
+		switch (phase) { // aligns from right
+		case -1:
+			clock.reset();
+			gyro.reset();
+			phase++;
+			break;
+		case 0:
+			drive.manualDrive(0, driveAngle);// turns in a way (left)
+			if (Math.abs(gyro.getAngle()) > GEARADJUSTANGLE) {
+				clock.reset();
+				gyro.reset();
+				phase++;
+			}
+
+			break;
+		case 1:
+			drive.manualDrive(-.65, gyro.getAngle() * 0.03);// moves
+															// backwards
+			if (clock.get() > clockTime) {
+				clock.reset();
+				gyro.reset();
+				phase++;
+			}
+
+			break;
+		case 2:
+			drive.manualDrive(0, -driveAngle);// turns in a way(right)
+			if (Math.abs(gyro.getAngle()) > GEARADJUSTANGLE) {
+				clock.reset();
+				gyro.reset();
+				phase++;
+			}
+
+			break;
+		case 3:
+			drive.manualDrive(.65, -gyro.getAngle() * 0.03);// moves forward
+			if (clock.get() > clockTime) {
+				clock.reset();
+				gyro.reset();
+				phase++;
+			}
+
+			break;
+		case 4:
+			drive.manualDrive(0, driveAngle);// turns in a way (left)
+			if (Math.abs(gyro.getAngle()) > GEARADJUSTANGLE) {
+				clock.reset();
+				gyro.reset();
+				phase++;
+			}
+			break;
+		case 5:
+			drive.manualDrive(.65, -gyro.getAngle() * 0.03);// moves forward
+			if (clock.get() > clockTime) {
 				clock.reset();
 				phase++;
-				break;
-			case 40:
-				break;
 			}
+			break;
+		case 40:
+			break;
 		}
+
 		return TeleOpMode.GEARALIGNMENT;
+	}
+
+	public void testDrive() {
+
+		drive.manualDrive(-.65, gyro.getAngle() * 0.03);
+
+		/*
+		 * if (gyro.getAngle() > .5) { drive.manualDrive(-.65, .3); } else if
+		 * (gyro.getAngle() < -.5) { //yancy's line drive.manualDrive(-.65,
+		 * -.3); } else{ drive.manualDrive(-.65, 0); }
+		 */
 	}
 }

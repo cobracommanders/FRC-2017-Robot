@@ -31,6 +31,9 @@ public class RampManager {
 		if (clock.get() <= 0){	//Start the clock if it hasn't started.
 			clock.start();
 		}
+		if(clock.get() > 0.1) {
+			clock.reset();
+		}
 		if(currentValue < desiredValue) {
 			
 			currentValue = clock.get() * rampSpeed + currentValue;

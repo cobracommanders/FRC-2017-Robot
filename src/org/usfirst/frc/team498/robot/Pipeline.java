@@ -27,12 +27,14 @@ import edu.wpi.first.wpilibj.vision.VisionPipeline;
 public class Pipeline implements VisionPipeline {
 
 	//Outputs
+	private Mat rgbThresholdOutput = new Mat();
 	private Mat hsvThresholdOutput = new Mat();
 	private ArrayList<MatOfPoint> findContoursOutput = new ArrayList<MatOfPoint>();
 	private ArrayList<MatOfPoint> filterContoursOutput = new ArrayList<MatOfPoint>();
 
 	//Sources
 	private Mat source0;
+	private Mat source1;
 	static{
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
@@ -47,27 +49,34 @@ public class Pipeline implements VisionPipeline {
 	 * This is the primary method that runs the entire pipeline and updates the outputs.
 	 */
 	public void process() {
+		//Step  RGB_Threshold0:
+		Mat rgbThresholdInput = source0;
+		double[] rgbThresholdRed = {104.30693302818523, 201.99578194904868};
+		double[] rgbThresholdGreen = {0.0, 255.0};
+		double[] rgbThresholdBlue = {233.90287769784172, 255.0};
+		rgbThreshold(rgbThresholdInput, rgbThresholdRed, rgbThresholdGreen, rgbThresholdBlue, rgbThresholdOutput);
+
 		//Step  HSV_Threshold0:
-		Mat hsvThresholdInput = source0;
+		Mat hsvThresholdInput = source1;
 		double[] hsvThresholdHue = {79.31654676258992, 180.0};
-		double[] hsvThresholdSaturation = {41.54120056488281, 150.76475005293742};
-		double[] hsvThresholdValue = {194.91906474820144, 255.0};
+		double[] hsvThresholdSaturation = {89.96163965204515, 199.1851891400998};
+		double[] hsvThresholdValue = {177.5710459939554, 253.7041395191352};
 		hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, hsvThresholdOutput);
 
 		//Step  Find_Contours0:
-		Mat findContoursInput = hsvThresholdOutput;
+		Mat findContoursInput = rgbThresholdOutput;
 		boolean findContoursExternalOnly = false;
 		findContours(findContoursInput, findContoursExternalOnly, findContoursOutput);
 
 		//Step  Filter_Contours0:
 		ArrayList<MatOfPoint> filterContoursContours = findContoursOutput;
-		double filterContoursMinArea = 0.0;
+		double filterContoursMinArea = 46.0;
 		double filterContoursMinPerimeter = 0.0;
 		double filterContoursMinWidth = 10.0;
 		double filterContoursMaxWidth = 1000.0;
 		double filterContoursMinHeight = 0.0;
 		double filterContoursMaxHeight = 1000.0;
-		double[] filterContoursSolidity = {0, 100};
+		double[] filterContoursSolidity = {0.0, 100};
 		double filterContoursMaxVertices = 1000000.0;
 		double filterContoursMinVertices = 0.0;
 		double filterContoursMinRatio = 0.0;
@@ -82,6 +91,22 @@ public class Pipeline implements VisionPipeline {
 	 */
 	public void setsource0(Mat source0) {
 		this.source0 = source0;
+	}
+
+	/**
+	 * This method is a generated setter for source1.
+	 * @param source the Mat to set
+	 */
+	public void setsource1(Mat source1) {
+		this.source1 = source1;
+	}
+
+	/**
+	 * This method is a generated getter for the output of a RGB_Threshold.
+	 * @return Mat output from RGB_Threshold.
+	 */
+	public Mat rgbThresholdOutput() {
+		return rgbThresholdOutput;
 	}
 
 	/**
@@ -108,6 +133,21 @@ public class Pipeline implements VisionPipeline {
 		return filterContoursOutput;
 	}
 
+
+	/**
+	 * Segment an image based on color ranges.
+	 * @param input The image on which to perform the RGB threshold.
+	 * @param red The min and max red.
+	 * @param green The min and max green.
+	 * @param blue The min and max blue.
+	 * @param output The image in which to store the output.
+	 */
+	private void rgbThreshold(Mat input, double[] red, double[] green, double[] blue,
+		Mat out) {
+		Imgproc.cvtColor(input, out, Imgproc.COLOR_BGR2RGB);
+		Core.inRange(out, new Scalar(red[0], green[0], blue[0]),
+			new Scalar(red[1], green[1], blue[1]), out);
+	}
 
 	/**
 	 * Segment an image based on hue, saturation, and value ranges.

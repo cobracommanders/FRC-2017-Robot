@@ -106,14 +106,6 @@ public class Robot extends SampleRobot {
 						mode = TeleOpMode.OPERATORCONTROL;
 					}
 				}
-				/*
-				 * if (Math.abs(vision.GetContour1CenterX() -
-				 * (vision.GetCameraWidth() / 2)) < horizontalDeadzone) {
-				 * drive.manualDrive(.5, 0); } else if
-				 * (vision.GetContour1CenterX() > (vision.GetCameraWidth() / 2))
-				 * { drive.manualDrive(0, -.5); } else { drive.manualDrive(0,
-				 * .5); }
-				 */
 				break;
 			case HIGHGOALALIGNMENT:
 				// Checks if we are within horizontal Deadzone

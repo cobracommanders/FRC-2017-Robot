@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+//import edu.wpi.first.wpilibj.networktables.NetworkTable; *garbage*
+
 /*
  * 
  * 
@@ -22,7 +24,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * 
  */
 public class Robot extends SampleRobot {
-
+	/*
+	 * //Network tables NetworkTable table; *garbage*
+	 */
 	// Drive
 	Ports ports = new Ports();
 	private Timer clock;
@@ -39,25 +43,23 @@ public class Robot extends SampleRobot {
 
 	@Override
 	public void robotInit() {
-		 //CameraServer.getInstance().startAutomaticCapture();
-		 
-		/* new Thread(() -> {
-             UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-             camera.setResolution(640, 480);
-             
-             CvSink cvSink = CameraServer.getInstance().getVideo();
-             CvSource outputStream = CameraServer.getInstance().putVideo("Blur", 640, 480);
-             
-             Mat source = new Mat();
-             Mat output = new Mat();
-                          
-             while(true) {
-                 cvSink.grabFrame(source);
-                 Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
-                 outputStream.putFrame(output);
-             }
-         }).start();
- } */
+		// table = NetworkTable.getTable("datatable"); *garbage*
+		// CameraServer.getInstance().startAutomaticCapture();
+
+		/*
+		 * new Thread(() -> { UsbCamera camera =
+		 * CameraServer.getInstance().startAutomaticCapture();
+		 * camera.setResolution(640, 480);
+		 * 
+		 * CvSink cvSink = CameraServer.getInstance().getVideo(); CvSource
+		 * outputStream = CameraServer.getInstance().putVideo("Blur", 640, 480);
+		 * 
+		 * Mat source = new Mat(); Mat output = new Mat();
+		 * 
+		 * while(true) { cvSink.grabFrame(source); Imgproc.cvtColor(source,
+		 * output, Imgproc.COLOR_BGR2GRAY); outputStream.putFrame(output); }
+		 * }).start(); }
+		 */
 	}
 
 	// Select which autonomous to run
@@ -70,6 +72,9 @@ public class Robot extends SampleRobot {
 	}
 
 	public void operatorControl() {
+		/*
+		 * //For Network table double x = 0; *garbage* double y = 0;
+		 */
 
 		drive.moveValue = 0;
 		drive.turnValue = 0;
@@ -78,6 +83,11 @@ public class Robot extends SampleRobot {
 		TeleOpMode mode = TeleOpMode.OPERATORCONTROL;
 
 		while (isOperatorControl() && isEnabled()) {
+			// network table
+			/*
+			 * Timer.delay(0.25); table.putNumber("X", x); *garbage*
+			 * table.putNumber("Y", y); x += 0.05; y +=1.0;
+			 */
 			// Checks button
 			if (thisStick.getButton(Button.Y)) {
 				auto.gyro.reset();
@@ -131,17 +141,18 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("Range millimeters (Analog)", auto.analogSensor.GetRangeMM());
 		SmartDashboard.putNumber("Range Inches (Analog)", auto.analogSensor.GetRangeInches());
 		SmartDashboard.putNumber("Voltage (Analog)", auto.analogSensor.GetVoltage());
-		
+
 		SmartDashboard.putNumber("Contour1 CenterX", auto.vision.GetContour1CenterX());
 		SmartDashboard.putNumber("Contour1 CenterY", auto.vision.GetContour1CenterY());
 		SmartDashboard.putNumber("Contour1 Height", auto.vision.GetContour1Height());
 		SmartDashboard.putNumber("Contour2 CenterX", auto.vision.GetContour2CenterX());
 		SmartDashboard.putNumber("Contour2 CenterY", auto.vision.GetContour2CenterY());
 		SmartDashboard.putNumber("Contour2 Height", auto.vision.GetContour2Height());
-		
+
 		SmartDashboard.putBoolean("flag", auto.vision.flag);
 
-		//SmartDashboard.putNumber("Ramp Clock", drive.forwardDriveRamp.clock.get());
+		// SmartDashboard.putNumber("Ramp Clock",
+		// drive.forwardDriveRamp.clock.get());
 
 	}
 

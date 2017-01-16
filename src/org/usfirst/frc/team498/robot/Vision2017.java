@@ -31,8 +31,31 @@ public class Vision2017 {
 	public Vision2017() {
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 		camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
-
+		
+		// Good, you create a VisionThread
 		visionThread = new VisionThread(camera, new Pipeline(), pipeline -> {
+		// I would modify this if statement to check if you have 2 contours:
+		// pipeline.filterContoursOutput().size() >= 2
+		if (pipeline.filterContoursOutput().size() >= 2) {
+				Rect contour1 = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
+				Rect contour2 = Imgproc.boundingRect(pipeline.filterContoursOutput().get(1));
+
+				// We take the lock here but we never use it anywhere else?  This seems weird.
+				// I can't help much more unless I can see your entire program.
+				synchronized (imgLock) {
+					contour1CenterX = contour1.x + (contour1.width / 2);
+					contour1CenterY = contour1.y + (contour1.height / 2);
+					contour1Height = contour1.height;
+
+					contour2CenterX = contour2.x + (contour2.width / 2);
+					contour2CenterY = contour2.y + (contour2.height / 2);
+					contour2Height = contour2.height;
+					flag = true;
+				}
+		}
+		});
+
+		/*visionThread = new VisionThread(camera, new Pipeline(), pipeline -> {
 			if (!pipeline.filterContoursOutput().isEmpty()) {
 				Rect contour1 = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
 				Rect contour2 = Imgproc.boundingRect(pipeline.filterContoursOutput().get(1));
@@ -48,7 +71,7 @@ public class Vision2017 {
 				}
 
 			}
-		});
+		}); */
 		visionThread.start(); 
 	}
 

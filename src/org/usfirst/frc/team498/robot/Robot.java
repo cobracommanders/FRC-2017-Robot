@@ -16,14 +16,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //import edu.wpi.first.wpilibj.networktables.NetworkTable; *garbage*
 
-/*
- * 
- * 
- *  The revised version of Unnamed Mark 2
- * 
- * 
- * 
- */
 public class Robot extends SampleRobot {
 	/*
 	 * //Network tables NetworkTable table; *garbage*

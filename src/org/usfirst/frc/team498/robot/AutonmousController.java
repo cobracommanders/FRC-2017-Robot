@@ -40,7 +40,9 @@ public class AutonmousController {
 		clock = new Timer();
 	}
 
-	public void run(AutoSelector key) {
+	public void run(AutoSelector key) { // In theory, this should be able to
+										// choose between different types of
+										// autonomous modes
 		switch (key) {
 		case DRIVEFORWARD:
 			break;
@@ -60,7 +62,7 @@ public class AutonmousController {
 		clock.start();
 	}
 
-	public void autoDriveForward() {
+	public void autoDriveForward() { // This is our test auto
 		switch (phase) {
 		case 0:
 			clock.reset();
@@ -77,14 +79,17 @@ public class AutonmousController {
 			 * gyro.getAngle() works
 			 */
 
-			// goal is to get (1, *and some number that will get the robot drive
-			// STRAIGHT!!!* (internal screaming, please KMS)
+			/*
+			 * goal is to get (1, *and some number that will get the robot to
+			 * drive STRAIGHT!!!* (internal screaming, KMP)
+			 */
 
 			drive.manualDrive(.6, .217); // moves forward for two seconds.
+
 			/*
-			 * I want to use the gyro.getAngle method, but all it does make the
-			 * robot turn really fast. Previously, it was -gyro.getAngle() *
-			 * 0.03.
+			 * I want to use the gyro.getAngle() method, but all it does make
+			 * the robot turn really fast. Previously, it was -gyro.getAngle() *
+			 * 0.03. Curt help me pls
 			 */
 
 			// Cody, why you cucking Aaron? (See classmate secret message)
@@ -95,43 +100,45 @@ public class AutonmousController {
 		}
 	}
 
-	public void autoTopPeg() {
+	public void autoTopPeg() { // auto for the top peg (Top as in farthest from
+								// BOILER)
 		switch (phase) {
 		case 0:
 			clock.start();
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(0, -.5);
+			drive.manualDrive(0, -.5); // turns left
 			if (clock.get() > 2) {
 				clock.reset();
 				phase++;
 			}
 			break;
 		case 2:
-			drive.manualDrive(.5, 0);
+			drive.manualDrive(.5, 0); // moves forward
 			if (clock.get() > 3) {
 				clock.reset();
 				phase++;
 			}
 			break;
 		case 3:
-			drive.manualDrive(0, .5);
+			drive.manualDrive(0, .5); // turns right
 			if (clock.get() > 2) {
 				clock.reset();
 				phase++;
 			}
 			break;
 		case 4:
-			AlignGearPeg();
+			AlignGearPeg(); // aligns gear peg
 			phase++;
 			break;
 		case 40:
 			break;
 		}
 	}
+
 	public void autoMidpeg() {
-		
+		// TODO: complete auto code
 	}
 
 	/*

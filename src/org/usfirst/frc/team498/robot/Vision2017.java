@@ -55,6 +55,8 @@ public class Vision2017 {
 				}
 		}
 		});
+		
+		// old vision thread code
 
 		/*visionThread = new VisionThread(camera, new Pipeline(), pipeline -> {
 			if (!pipeline.filterContoursOutput().isEmpty()) {
@@ -73,7 +75,7 @@ public class Vision2017 {
 
 			}
 		}); */
-		visionThread.start(); 
+		visionThread.start();
 	}
 
 	// methods for getting contour values

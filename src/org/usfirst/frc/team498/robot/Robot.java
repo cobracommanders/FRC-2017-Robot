@@ -35,15 +35,15 @@ public class Robot extends SampleRobot {
 	Shooter2017 shooter = new Shooter2017(ports);
 	Drive2016 drive = new Drive2016(thisStick, ports);
 	AutonmousController auto = new AutonmousController(drive, shooter, ports);
-	
-	//rest in peace doggo, may it die safely
+
+	// rest in peace doggo, may it die safely
 
 	Ultrasonic ultrasonic = new Ultrasonic(0, 1);
 
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 
 	@Override
-	public void robotInit() {		
+	public void robotInit() {
 		// table = NetworkTable.getTable("datatable"); *garbage*
 		// CameraServer.getInstance().startAutomaticCapture();
 
@@ -68,11 +68,11 @@ public class Robot extends SampleRobot {
 		SendableChooser<AutoSelector> sc = new SendableChooser<AutoSelector>();
 		sc.addDefault("The default", AutoSelector.TOPPEG);
 		sc.addObject("Better", AutoSelector.TOPPEG);
-		
+
 		auto.autoInit(-1); // Autonomous method is copied from Unnamed Mark 4
-		
+
 		while (isAutonomous() && isEnabled()) {
-			if((AutoSelector)sc.getSelected() == AutoSelector.TOPPEG) {
+			if ((AutoSelector) sc.getSelected() == AutoSelector.TOPPEG) {
 				auto.autoTopPeg();
 			} else {
 				System.out.println("Selector did not match any known pattern");
@@ -152,8 +152,8 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("Range millimeters (Analog)", auto.analogSensor.GetRangeMM());
 		SmartDashboard.putNumber("Range Inches (Analog)", auto.analogSensor.GetRangeInches());
 		SmartDashboard.putNumber("Voltage (Analog)", auto.analogSensor.GetVoltage());
-		
-		//These should print out GRIP's contour info into Dashboard
+
+		// These should print out GRIP's contour info into Dashboard
 		SmartDashboard.putNumber("Contour1 CenterX", auto.vision.GetContour1CenterX());
 		SmartDashboard.putNumber("Contour1 CenterY", auto.vision.GetContour1CenterY());
 		SmartDashboard.putNumber("Contour1 Height", auto.vision.GetContour1Height());

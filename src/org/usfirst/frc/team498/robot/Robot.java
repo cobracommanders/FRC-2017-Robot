@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //import edu.wpi.first.wpilibj.networktables.NetworkTable; *garbage*
@@ -34,15 +35,15 @@ public class Robot extends SampleRobot {
 	Shooter2017 shooter = new Shooter2017(ports);
 	Drive2016 drive = new Drive2016(thisStick, ports);
 	AutonmousController auto = new AutonmousController(drive, shooter, ports);
+	
+	//rest in peace doggo, may it die safely
 
 	Ultrasonic ultrasonic = new Ultrasonic(0, 1);
 
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 
-	;
-
 	@Override
-	public void robotInit() {
+	public void robotInit() {		
 		// table = NetworkTable.getTable("datatable"); *garbage*
 		// CameraServer.getInstance().startAutomaticCapture();
 
@@ -64,9 +65,18 @@ public class Robot extends SampleRobot {
 
 	// Select which autonomous to run
 	public void autonomous() {
-
+		SendableChooser<AutoSelector> sc = new SendableChooser<AutoSelector>();
+		sc.addDefault("The default", AutoSelector.TOPPEG);
+		sc.addObject("Better", AutoSelector.TOPPEG);
+		
+		auto.autoInit(-1); // Autonomous method is copied from Unnamed Mark 4
+		
 		while (isAutonomous() && isEnabled()) {
-
+			if((AutoSelector)sc.getSelected() == AutoSelector.TOPPEG) {
+				auto.autoTopPeg();
+			} else {
+				System.out.println("Selector did not match any known pattern");
+			}
 		}
 
 	}
@@ -80,7 +90,7 @@ public class Robot extends SampleRobot {
 		drive.turnValue = 0;
 		auto.gyro.reset();
 
-		TeleOpMode mode = TeleOpMode.OPERATORCONTROL;
+		TeleOpMode teleMode = TeleOpMode.OPERATORCONTROL;
 
 		while (isOperatorControl() && isEnabled()) {
 			// network table
@@ -92,26 +102,27 @@ public class Robot extends SampleRobot {
 			if (thisStick.getButton(Button.Y)) {
 				auto.gyro.reset();
 			}
+			// robot is cancer
 			if (thisStick.getButton(Button.A)) {
-				mode = TeleOpMode.HIGHGOALALIGNMENT;
+				teleMode = TeleOpMode.HIGHGOALALIGNMENT;
 			} else if (thisStick.getButton(Button.B)) {
-				mode = TeleOpMode.GEARALIGNMENT;
+				teleMode = TeleOpMode.GEARALIGNMENT;
 			} else if (thisStick.getButton(Button.START)) {
-				mode = TeleOpMode.OPERATORCONTROL;
+				teleMode = TeleOpMode.OPERATORCONTROL;
 			} else if (thisStick.getButton(Button.X)) {
-				mode = TeleOpMode.TEST;
+				teleMode = TeleOpMode.TEST;
 			}
 
-			switch (mode) {
+			switch (teleMode) {
 			case OPERATORCONTROL:
 				// Drive the robot via controller
 				drive.rampedDriveListener();
 				break;
 			case GEARALIGNMENT:
-				mode = auto.AlignGearPeg();
+				teleMode = auto.AlignGearPeg();
 				break;
 			case HIGHGOALALIGNMENT:
-				mode = auto.AlignHighGoal();
+				teleMode = auto.AlignHighGoal();
 				break;
 			case TEST:
 				auto.testDrive();

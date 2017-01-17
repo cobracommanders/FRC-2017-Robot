@@ -1,3 +1,5 @@
+//Hmm... what would Curt do... :)
+
 package org.usfirst.frc.team498.robot;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -40,43 +42,114 @@ public class AutonmousController {
 
 	public void run(AutoSelector key) {
 		switch (key) {
-		case LowBar:
+		case DRIVEFORWARD:
+			break;
+		case TOPPEG:
+			break;
+		case MIDPEG:
+			break;
+		case BOTPEG:
 			break;
 		}
 	}
 
-	// The Autonomous for starting at the low bar, driving through, turning, and
-	// shooting into the high goal
+	// The autonomous for driving forward
 	public void autoInit(int startPhase) {
 
 		phase = startPhase;
 		clock.start();
 	}
 
-	public void autoLowBar() {
-
+	public void autoDriveForward() {
 		switch (phase) {
 		case 0:
-
 			clock.reset();
 			phase++;
 
 			break;
-		case 1:
-			// Drive through low bar
 
-			drive.manualDrive(-.8, 0);
-			if (clock.get() > 6) {
-				phase = 40;
-				drive.manualDrive(0, 0);
+		case 1: // 153 far, 13 1/4 off, wasn't for 2 seconds however(.4, .2)
+			// 116 1/2 far, for 2 seconds (.6, .217)
+
+			/*
+			 * conclusion (January 16): .217 is really close to the ideal turn
+			 * value, however there is a better alternative, especially if
+			 * gyro.getAngle() works
+			 */
+
+			// goal is to get (1, *and some number that will get the robot drive
+			// STRAIGHT!!!* (internal screaming, please KMS)
+
+			drive.manualDrive(.6, .217); // moves forward for two seconds.
+			/*
+			 * I want to use the gyro.getAngle method, but all it does make the
+			 * robot turn really fast. Previously, it was -gyro.getAngle() *
+			 * 0.03.
+			 */
+
+			// Cody, why you cucking Aaron? (See classmate secret message)
+			if (clock.get() > clockTime) {
+				clock.reset();
 			}
 			break;
-
-		case 40:
-			break;
-
 		}
 	}
+
+	public void autoTopPeg() {
+		switch (phase) {
+		case 0:
+			clock.start();
+			phase++;
+			break;
+		case 1:
+			drive.manualDrive(0, -.5);
+			if (clock.get() > 2) {
+				clock.reset();
+				phase++;
+			}
+			break;
+		case 2:
+			drive.manualDrive(.5, 0);
+			if (clock.get() > 3) {
+				clock.reset();
+				phase++;
+			}
+			break;
+		case 3:
+			drive.manualDrive(0, .5);
+			if (clock.get() > 2) {
+				clock.reset();
+				phase++;
+			}
+			break;
+		case 4:
+			AlignGearPeg();
+			phase++;
+			break;
+		case 40:
+			break;
+		}
+	}
+	public void autoMidpeg() {
+		
+	}
+
+	/*
+	 * public void autoLowBar() {
+	 * 
+	 * switch (phase) { case 0:
+	 * 
+	 * clock.reset(); phase++;
+	 * 
+	 * break; case 1: // Drive through low bar
+	 * 
+	 * drive.manualDrive(-.8, 0); if (clock.get() > 6) { phase = 40;
+	 * drive.manualDrive(0, 0); } break;
+	 * 
+	 * case 40: break;
+	 * 
+	 * } }
+	 */
 
 	public TeleOpMode AlignHighGoal() {
 		// Checks if we are within horizontal Deadzone

@@ -2,7 +2,7 @@ package org.usfirst.frc.team498.robot;
 
 
 public enum AutoSelector {
-	LowBar
+	DRIVEFORWARD, MIDPEG, TOPPEG, BOTPEG
 	}
 /*
 public class Shoes{

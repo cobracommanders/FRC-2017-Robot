@@ -152,7 +152,8 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("Range millimeters (Analog)", auto.analogSensor.GetRangeMM());
 		SmartDashboard.putNumber("Range Inches (Analog)", auto.analogSensor.GetRangeInches());
 		SmartDashboard.putNumber("Voltage (Analog)", auto.analogSensor.GetVoltage());
-
+		
+		//These should print out GRIP's contour info into Dashboard
 		SmartDashboard.putNumber("Contour1 CenterX", auto.vision.GetContour1CenterX());
 		SmartDashboard.putNumber("Contour1 CenterY", auto.vision.GetContour1CenterY());
 		SmartDashboard.putNumber("Contour1 Height", auto.vision.GetContour1Height());

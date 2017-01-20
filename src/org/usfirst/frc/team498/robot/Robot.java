@@ -1,3 +1,5 @@
+//made in china
+
 package org.usfirst.frc.team498.robot;
 
 import org.opencv.core.Mat;
@@ -24,7 +26,7 @@ public class Robot extends SampleRobot {
 	Ports ports = new Ports();
 	private Timer clock;
 	FancyJoystick thisStick = new FancyJoystick(0);
-	Shooter2017 shooter = new Shooter2017(ports);
+	IntakeAndShooter2017 shooter = new IntakeAndShooter2017(thisStick, ports);
 	Drive2016 drive = new Drive2016(thisStick, ports);
 	AutonmousController auto = new AutonmousController(drive, shooter, ports);
 

@@ -56,8 +56,15 @@ public class Robot extends SampleRobot {
 	// Select which autonomous to run
 	public void autonomous() {
 		SendableChooser<AutoSelector> sc = new SendableChooser<AutoSelector>();
-		sc.addDefault("The default", AutoSelector.TOPPEG);
-		sc.addObject("Better", AutoSelector.TOPPEG);
+		sc.addDefault("Top", AutoSelector.TOPPEG); // When on the opposite
+													// playing side (Blue
+													// station), Top and Bot peg
+													// are switched. (i.e, use
+													// the top peg mode for the
+													// bottom peg if on blue
+													// side)
+		sc.addObject("Middle", AutoSelector.MIDPEG);
+		sc.addObject("Bottom", AutoSelector.BOTPEG);
 
 		auto.autoInit(-1); // Autonomous method is copied from Unnamed Mark 4
 

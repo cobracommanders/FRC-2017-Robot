@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class AutonmousController {
 	// Vision
-	public Vision2017 vision = new Vision2017();
+	public Vision2017 vision = new Vision2017(0);
 
 	private Timer clock;
 	private Drive2016 drive;
@@ -138,7 +138,63 @@ public class AutonmousController {
 	}
 
 	public void autoMidpeg() {
-		// TODO: complete auto code
+		// TODO: TEST
+		switch (phase) {
+		case 0:
+			clock.start();
+			phase++;
+			break;
+		case 1:
+			drive.manualDrive(.5, 0); // moves forward
+			if (clock.get() > 2) {
+				clock.reset();
+				phase++;
+			}
+			break;
+		case 2:
+			AlignGearPeg(); // aligns gear peg
+			phase++;
+			break;
+		case 40:
+			break;
+		}
+	}
+
+	public void autoBotPeg() { // inverse of autoTopPeg
+		// TODO: TEST
+		switch (phase) {
+		case 0:
+			clock.start();
+			phase++;
+			break;
+		case 1:
+			drive.manualDrive(0, .5); // turns right
+			if (clock.get() > 2) {
+				clock.reset();
+				phase++;
+			}
+			break;
+		case 2:
+			drive.manualDrive(.5, 0); // moves forward
+			if (clock.get() > 3) {
+				clock.reset();
+				phase++;
+			}
+			break;
+		case 3:
+			drive.manualDrive(0, -.5); // turns left
+			if (clock.get() > 2) {
+				clock.reset();
+				phase++;
+			}
+			break;
+		case 4:
+			AlignGearPeg(); // aligns gear peg
+			phase++;
+			break;
+		case 40:
+			break;
+		}
 	}
 
 	/*

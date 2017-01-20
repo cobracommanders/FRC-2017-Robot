@@ -28,8 +28,6 @@ public class Robot extends SampleRobot {
 	Drive2016 drive = new Drive2016(thisStick, ports);
 	AutonmousController auto = new AutonmousController(drive, shooter, ports);
 
-	// rest in peace doggo, may it die safely
-
 	Ultrasonic ultrasonic = new Ultrasonic(0, 1);
 
 	PowerDistributionPanel pdp = new PowerDistributionPanel();

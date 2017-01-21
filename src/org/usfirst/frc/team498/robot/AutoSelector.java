@@ -19,7 +19,17 @@ public class Shoes{
 		m[7]=8;
 		m[8]=90;
 		m[9]=10;
-
+				
+		//This is totally the most serious work I could be doing right now.
+		//Mostly because I don't know what I am doing.
+		//Nobody is paying enough attention to me to worry about what I'm doing, though
+		//I could literally be making a program designed to delete all the files on everything ever.
+		//They would never know, because they aren't paying enough attention.
+		//I have no idea what to say now.
+		//Plz help.
+		//Randy, I need a job.
+		//Plz
+		//Right now.
  		
 		ArrayList<Integer> goodItems=QueryEngine.Where(m, new QueryWhere<Integer>() {
 

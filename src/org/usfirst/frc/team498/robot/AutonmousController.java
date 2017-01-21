@@ -136,7 +136,85 @@ public class AutonmousController {
 			break;
 		}
 	}
-
+	
+	//code for high goal below from top peg, just in case
+	
+/* public void autoTopPeg() { // auto for the top peg (Top as in farthest from
+								// BOILER)
+		switch (phase) {
+		case 0:
+			clock.start();
+			phase++;
+			break;
+		case 1:
+			drive.manualDrive(0, -.5); // turns left
+			if (clock.get() > 2) {
+				clock.reset();
+				phase++;
+			}
+			break;
+			case 2:
+		case 2:
+			drive.manualDrive(.5, 0); // moves forward
+			if (clock.get() > 3) {
+				clock.reset();
+				phase++;
+			}
+			break;
+		case 3:
+			drive.manualDrive(0, .5); // turns right
+			if (clock.get() > 2) {
+				clock.reset();
+				phase++;
+			}
+			break;
+		case 4:
+			AlignGearPeg(); // aligns gear peg
+			phase++;
+			break;
+		case 5:
+			drive.manualDrive(0, .5); //turns right
+			if (clock.get() > 2) {
+				clock.reset();
+				phase++;
+			}
+			break;
+		case 6:
+			drive.manualDrive(.5, 0) //moves forward
+			if (clock.get() > 2) {
+				clock.reset();
+				phase++;
+			}
+			break;
+		case 7:
+		drive.manualDrive(0, -.5) //turns left
+		if (clock.get() > 2) {
+				clock.reset();
+				phase++;
+			}
+			break;
+		case 8:
+		drive.manualDrive(.5, 0) //moves forward
+		if (clock.get() > 6) {
+				clock.reset();
+				phase++;
+			}
+			break;
+		case 9:
+		drive.manualDrive(0, .5) //turns right
+		if (clock.get() > 1) {
+				clock.reset();
+				phase++;
+			}
+			break;
+		case 10:
+			AlignHighGoal();
+			phase++;
+			break;
+		case 40:
+			break;
+		}
+	*/
 	public void autoMidpeg() {
 		// TODO: TEST
 		switch (phase) {

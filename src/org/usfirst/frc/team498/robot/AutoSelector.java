@@ -2,7 +2,7 @@ package org.usfirst.frc.team498.robot;
 
 
 public enum AutoSelector {
-	DRIVEFORWARD, MIDPEG, TOPPEG, BOTPEG //In relation to the BOILER, where the BOILER is the bottom.
+	DRIVEFORWARD, MIDPEG, TOPPEG, BOTPEG //In relation to the BOILER, where the BOILER is the bottom. From RED ALLIANCE
 	}
 /*
 public class Shoes{

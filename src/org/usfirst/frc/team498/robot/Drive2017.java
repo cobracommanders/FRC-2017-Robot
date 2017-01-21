@@ -3,7 +3,7 @@ package org.usfirst.frc.team498.robot;
 
 import edu.wpi.first.wpilibj.RobotDrive;
 
-public class Drive2016 {
+public class Drive2017 {
 	private FancyJoystick thisStick;
 	private RobotDrive drive;
 	private RampManager forwardDriveRamp;
@@ -16,7 +16,7 @@ public class Drive2016 {
 	public double moveValue;
 	public double turnValue;
 
-	Drive2016(FancyJoystick joystick, Ports ports) {
+	Drive2017(FancyJoystick joystick, Ports ports) {
 		thisStick = joystick;
 		drive = new RobotDrive(ports.LEFT_FRONT_PWM_PORT, ports.LEFT_BACK_PWM_PORT, ports.RIGHT_FRONT_PWM_PORT, ports.RIGHT_BACK_PWM_PORT);
 		forwardDriveRamp = new RampManager(ports.forwardRampIncreaseValue);

@@ -1,4 +1,4 @@
-//made in china
+//made in vietnam
 
 package org.usfirst.frc.team498.robot;
 
@@ -27,8 +27,9 @@ public class Robot extends SampleRobot {
 	private Timer clock;
 	FancyJoystick thisStick = new FancyJoystick(0);
 	IntakeAndShooter2017 shooter = new IntakeAndShooter2017(thisStick, ports);
-	Drive2016 drive = new Drive2016(thisStick, ports);
+	Drive2017 drive = new Drive2017(thisStick, ports);
 	AutonmousController auto = new AutonmousController(drive, shooter, ports);
+	PnuematicsControlModule2017 pcm2017 = new PnuematicsControlModule2017();
 
 	Ultrasonic ultrasonic = new Ultrasonic(0, 1);
 
@@ -97,6 +98,9 @@ public class Robot extends SampleRobot {
 			 * Timer.delay(0.25); table.putNumber("X", x); *garbage*
 			 * table.putNumber("Y", y); x += 0.05; y +=1.0;
 			 */
+
+			pcm2017.turnOn(); // Turns on all PCM ports
+
 			// Checks button
 			if (thisStick.getButton(Button.Y)) {
 				auto.gyro.reset();

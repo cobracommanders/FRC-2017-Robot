@@ -33,16 +33,24 @@ public class Vision2017 {
 		UsbCamera camera = new UsbCamera("cam0", cam);
 		camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 
+		//2 camera code
+		/*
+		 * int currSession; 
+		 * int sessionfront; 
+		 * int sessionback; 
+		 * Image frame; */
+		
+		
+		  
 		// Good, you create a VisionThread
 		visionThread = new VisionThread(camera, new Pipeline(), pipeline -> {
-			// I would modify this if statement to check if you have 2 contours:
-			// pipeline.filterContoursOutput().size() >= 2
-			if (pipeline.filterContoursOutput().size() >= 2) {
+		// I would modify this if statement to check if you have 2 contours:
+		// pipeline.filterContoursOutput().size() >= 2
+		if (pipeline.filterContoursOutput().size() >= 2) {
 				Rect contour1 = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
 				Rect contour2 = Imgproc.boundingRect(pipeline.filterContoursOutput().get(1));
 
-				// We take the lock here but we never use it anywhere else? This
-				// seems weird.
+				// We take the lock here but we never use it anywhere else?  This seems weird.
 				// I can't help much more unless I can see your entire program.
 				synchronized (imgLock) {
 					contour1CenterX = contour1.x + (contour1.width / 2);
@@ -54,15 +62,14 @@ public class Vision2017 {
 					contour2Height = contour2.height;
 					flag = true;
 				}
-			}
+		}
 		});
-
-		// old vision thread code
-
-		/*
-		 * visionThread = new VisionThread(camera, new Pipeline(), pipeline -> {
-		 * if (!pipeline.filterContoursOutput().isEmpty()) { Rect contour1 =
-		 * Imgproc.boundingRect(pipeline.filterContoursOutput().get(0)); Rect
+		
+		 /* // old vision thread code
+		 * 
+		 * /* visionThread = new VisionThread(camera, new Pipeline(), pipeline
+		 * -> { if (!pipeline.filterContoursOutput().isEmpty()) { Rect contour1
+		 * = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0)); Rect
 		 * contour2 =
 		 * Imgproc.boundingRect(pipeline.filterContoursOutput().get(1));
 		 * synchronized (imgLock) { contour1CenterX = contour1.x +

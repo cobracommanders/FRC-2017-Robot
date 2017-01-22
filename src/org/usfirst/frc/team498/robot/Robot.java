@@ -54,6 +54,16 @@ public class Robot extends SampleRobot {
 		 * output, Imgproc.COLOR_BGR2GRAY); outputStream.putFrame(output); }
 		 * }).start(); }
 		 */
+		
+		/*frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+
+sessionfront = NIVision.IMAQdxOpenCamera("cam1", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+        
+sessionback = NIVision.IMAQdxOpenCamera("cam2", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+
+currSession = sessionfront;
+
+NIVision.IMAQdxConfigureGrab(currSession); */
 	}
 
 	// Select which autonomous to run
@@ -98,6 +108,19 @@ public class Robot extends SampleRobot {
 			 * Timer.delay(0.25); table.putNumber("X", x); *garbage*
 			 * table.putNumber("Y", y); x += 0.05; y +=1.0;
 			 */
+			
+			//2 camera code
+			/*if(button pressing code){
+		        if(currSession == sessionfront){
+		       		  NIVision.IMAQdxStopAcquisition(currSession);
+		 		  currSession = sessionback;
+			          NIVision.IMAQdxConfigureGrab(currSession);
+		 	} else if(currSession == sessionback){
+		      		  NIVision.IMAQdxStopAcquisition(currSession);
+		       		  currSession = sessionfront;
+		       		  NIVision.IMAQdxConfigureGrab(currSession);
+		        }
+		} */
 
 			pcm2017.turnOn(); // Turns on all PCM ports
 
@@ -169,6 +192,9 @@ public class Robot extends SampleRobot {
 		// SmartDashboard.putNumber("Ramp Clock",
 		// drive.forwardDriveRamp.clock.get());
 
+		//2 camera code
+		/* 8NIVision.IMAQdxGrab(currSession, frame, 1);
+		CameraServer.getInstance().setImage(frame); */
 	}
 
 }

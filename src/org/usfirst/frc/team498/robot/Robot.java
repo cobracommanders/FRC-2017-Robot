@@ -1,5 +1,3 @@
-//made in vietnam
-
 package org.usfirst.frc.team498.robot;
 
 import org.opencv.core.Mat;

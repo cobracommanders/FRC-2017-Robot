@@ -46,6 +46,8 @@ public class Vision2017 {
 		visionThread = new VisionThread(camera, new Pipeline(), pipeline -> {
 		// I would modify this if statement to check if you have 2 contours:
 		// pipeline.filterContoursOutput().size() >= 2
+			
+			//modified
 		if (pipeline.filterContoursOutput().size() >= 2) {
 				Rect contour1 = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
 				Rect contour2 = Imgproc.boundingRect(pipeline.filterContoursOutput().get(1));

@@ -137,7 +137,7 @@ public class Robot extends SampleRobot {
 			}
 
 			if (thisStick.getButton(Button.BACK) && thisStick.getButton(Button.B)) {
-				
+				accessories.Climb();
 			}
 			// robot is cancer
 			if (thisStick.getButton(Button.Y)) {

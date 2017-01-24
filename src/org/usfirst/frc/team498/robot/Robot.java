@@ -24,9 +24,9 @@ public class Robot extends SampleRobot {
 	Ports ports = new Ports();
 	private Timer clock;
 	FancyJoystick thisStick = new FancyJoystick(0);
-	IntakeAndShooter2017 shooter = new IntakeAndShooter2017(thisStick, ports);
+	IntakeShooterClimber2017 accessories = new IntakeShooterClimber2017(thisStick, ports);
 	Drive2017 drive = new Drive2017(thisStick, ports);
-	AutonmousController auto = new AutonmousController(drive, shooter, ports);
+	AutonmousController auto = new AutonmousController(drive, accessories, ports);
 	PnuematicsControlModule2017 pcm2017 = new PnuematicsControlModule2017();
 
 	Ultrasonic ultrasonic = new Ultrasonic(0, 1);
@@ -52,16 +52,20 @@ public class Robot extends SampleRobot {
 		 * output, Imgproc.COLOR_BGR2GRAY); outputStream.putFrame(output); }
 		 * }).start(); }
 		 */
-		
-		/*frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 
-sessionfront = NIVision.IMAQdxOpenCamera("cam1", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-        
-sessionback = NIVision.IMAQdxOpenCamera("cam2", NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-
-currSession = sessionfront;
-
-NIVision.IMAQdxConfigureGrab(currSession); */
+		/*
+		 * frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+		 * 
+		 * sessionfront = NIVision.IMAQdxOpenCamera("cam1",
+		 * NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+		 * 
+		 * sessionback = NIVision.IMAQdxOpenCamera("cam2",
+		 * NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+		 * 
+		 * currSession = sessionfront;
+		 * 
+		 * NIVision.IMAQdxConfigureGrab(currSession);
+		 */
 	}
 
 	// Select which autonomous to run
@@ -106,28 +110,37 @@ NIVision.IMAQdxConfigureGrab(currSession); */
 			 * Timer.delay(0.25); table.putNumber("X", x); *garbage*
 			 * table.putNumber("Y", y); x += 0.05; y +=1.0;
 			 */
-			
-			//2 camera code
-			/*if(button pressing code){
-		        if(currSession == sessionfront){
-		       		  NIVision.IMAQdxStopAcquisition(currSession);
-		 		  currSession = sessionback;
-			          NIVision.IMAQdxConfigureGrab(currSession);
-		 	} else if(currSession == sessionback){
-		      		  NIVision.IMAQdxStopAcquisition(currSession);
-		       		  currSession = sessionfront;
-		       		  NIVision.IMAQdxConfigureGrab(currSession);
-		        }
-		} */
+
+			// 2 camera code
+			/*
+			 * if(button pressing code){ if(currSession == sessionfront){
+			 * NIVision.IMAQdxStopAcquisition(currSession); currSession =
+			 * sessionback; NIVision.IMAQdxConfigureGrab(currSession); } else
+			 * if(currSession == sessionback){
+			 * NIVision.IMAQdxStopAcquisition(currSession); currSession =
+			 * sessionfront; NIVision.IMAQdxConfigureGrab(currSession); } }
+			 */
 
 			pcm2017.turnOn(); // Turns on all PCM ports
 
 			// Checks button
-			if (thisStick.getButton(Button.Y)) {
+			if (thisStick.getButton(Button.A)) {
 				auto.gyro.reset();
 			}
-			// robot is cancer
+
 			if (thisStick.getButton(Button.A)) {
+				auto.gyro.reset();
+			}
+
+			if (thisStick.getButton(Button.RightBumper)) {
+				accessories.Shoot();
+			}
+
+			if (thisStick.getButton(Button.BACK) && thisStick.getButton(Button.B)) {
+				
+			}
+			// robot is cancer
+			if (thisStick.getButton(Button.Y)) {
 				teleMode = TeleOpMode.HIGHGOALALIGNMENT;
 			} else if (thisStick.getButton(Button.B)) {
 				teleMode = TeleOpMode.GEARALIGNMENT;
@@ -190,9 +203,11 @@ NIVision.IMAQdxConfigureGrab(currSession); */
 		// SmartDashboard.putNumber("Ramp Clock",
 		// drive.forwardDriveRamp.clock.get());
 
-		//2 camera code
-		/* 8NIVision.IMAQdxGrab(currSession, frame, 1);
-		CameraServer.getInstance().setImage(frame); */
+		// 2 camera code
+		/*
+		 * 8NIVision.IMAQdxGrab(currSession, frame, 1);
+		 * CameraServer.getInstance().setImage(frame);
+		 */
 	}
 
 }

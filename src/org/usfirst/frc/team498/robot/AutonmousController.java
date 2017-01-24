@@ -12,7 +12,7 @@ public class AutonmousController {
 
 	private Timer clock;
 	private Drive2017 drive;
-	private IntakeAndShooter2017 shooter;
+	private IntakeShooterClimber2017 shooter;
 	public AnalogUltrasonicSensor2017 analogSensor;
 	public ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 
@@ -33,7 +33,7 @@ public class AutonmousController {
 	int phase = 0;
 	int clockTime = 2;
 
-	AutonmousController(Drive2017 drive_a, IntakeAndShooter2017 shoot_a, Ports ports) {
+	AutonmousController(Drive2017 drive_a, IntakeShooterClimber2017 shoot_a, Ports ports) {
 		drive = drive_a;
 		shooter = shoot_a;
 		analogSensor = new AnalogUltrasonicSensor2017(ports);

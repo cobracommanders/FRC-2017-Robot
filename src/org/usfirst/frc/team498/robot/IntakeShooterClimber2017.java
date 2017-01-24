@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
-public class IntakeAndShooter2017 {
+public class IntakeShooterClimber2017 {
 	Vision2017 vision = new Vision2017(0);
 	FancyJoystick thisStick;
 	public Timer clock;
@@ -14,7 +14,7 @@ public class IntakeAndShooter2017 {
 	private boolean wasShootPressed = false; // Add in if statement for Shoot()
 												// later
 
-	public IntakeAndShooter2017(FancyJoystick joystick, Ports ports) {
+	public IntakeShooterClimber2017(FancyJoystick joystick, Ports ports) {
 		thisStick = joystick;
 		clock = new Timer();
 	}
@@ -27,5 +27,9 @@ public class IntakeAndShooter2017 {
 
 	public void Intake() {
 		// TODO: Add in methods for intake
+	}
+	
+	public void Climb() {
+		//TODO: Add in methods for climbing
 	}
 }

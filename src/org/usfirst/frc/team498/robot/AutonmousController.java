@@ -61,11 +61,26 @@ public class AutonmousController {
 		phase = startPhase;
 		clock.start();
 	}
-
+	public double ConvertGyroStuff(double currentAngle) {
+		//If negative, return 0
+		if (currentAngle != Math.abs(currentAngle)) return 0.0;
+		//Gets rid of excess angles that we don't want
+		currentAngle = currentAngle % 360.0;
+		//Converts it so that 270 is -90 and 90 is 90 etc.
+		if(currentAngle < 360.0 && currentAngle > 180.0) {
+			//270 = -90
+			return currentAngle - 360.0;
+		} else {
+			//90 = 90
+			return currentAngle;
+		}
+	}
 	public void autoDriveForward() { // This is our test auto
 		switch (phase) {
 		case 0:
 			clock.reset();
+			gyro.reset();
+			gyro.calibrate();
 			phase++;
 
 			break;
@@ -84,13 +99,13 @@ public class AutonmousController {
 			 * drive STRAIGHT!!!* (internal screaming, KMP)
 			 */
 
-			drive.manualDrive(.6, .217); // moves forward for two seconds.
-
-			/*
-			 * I want to use the gyro.getAngle() method, but all it does make
-			 * the robot turn really fast. Previously, it was -gyro.getAngle() *
-			 * 0.03. Curt help me pls
-			 */
+			drive.manualDrive(.6, ConvertGyroStuff(gyro.getAngle()) * -0.03); // moves forward for two seconds.
+			//convertGyroStuff is supposed to work. If it doesn't, ask Micah
+			
+			  /*I want to use the gyro.getAngle() method, but all it does make
+			  the robot turn really fast. Previously, it was -gyro.getAngle() *
+			  0.03. Curt help me pls*/
+			 
 
 			// Cody, why you cucking Aaron? (See classmate secret message)
 			if (clock.get() > clockTime) {

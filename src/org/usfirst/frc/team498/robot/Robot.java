@@ -125,29 +125,28 @@ public class Robot extends SampleRobot {
 
 			// Checks button
 			if (thisStick.getButton(Button.A)) {
-				auto.gyro.reset();
-			}
-
-			if (thisStick.getButton(Button.A)) {
-				auto.gyro.reset();
+				auto.gyro.reset(); //resets gyro
 			}
 
 			if (thisStick.getButton(Button.RightBumper)) {
-				accessories.Shoot();
+				accessories.Shoot(); //shoots
 			}
 
 			if (thisStick.getButton(Button.BACK) && thisStick.getButton(Button.B)) {
-				accessories.Climb();
+				accessories.Climb(); //climbs
 			}
 			// robot is cancer
 			if (thisStick.getButton(Button.Y)) {
-				teleMode = TeleOpMode.HIGHGOALALIGNMENT;
-			} else if (thisStick.getButton(Button.B)) {
-				teleMode = TeleOpMode.GEARALIGNMENT;
-			} else if (thisStick.getButton(Button.START)) {
-				teleMode = TeleOpMode.OPERATORCONTROL;
-			} else if (thisStick.getButton(Button.X)) {
-				teleMode = TeleOpMode.TEST;
+				teleMode = TeleOpMode.HIGHGOALALIGNMENT; //aligns robot to high goal
+			}
+			if (thisStick.getButton(Button.B)) {
+				teleMode = TeleOpMode.GEARALIGNMENT; //aligns robot to peg
+			}
+			if (thisStick.getButton(Button.START)) {
+				teleMode = TeleOpMode.OPERATORCONTROL; //makes robot go back to TeleOp
+			}
+			if (thisStick.getButton(Button.X)) {
+				teleMode = TeleOpMode.TEST; //Testing code
 			}
 
 			switch (teleMode) {
@@ -185,6 +184,7 @@ public class Robot extends SampleRobot {
 	private void print() {
 
 		SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
+		SmartDashboard.putNumber("Gyro getRate()", auto.gyro.getRate());
 		SmartDashboard.putNumber("Range (Inches)", ultrasonic.getRangeInches());
 		SmartDashboard.putNumber("Range millimeters (Analog)", auto.analogSensor.GetRangeMM());
 		SmartDashboard.putNumber("Range Inches (Analog)", auto.analogSensor.GetRangeInches());

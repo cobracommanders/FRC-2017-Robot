@@ -21,7 +21,9 @@ public class IntakeShooterClimber2017 {
 
 	public void Shoot() {
 		if (thisStick.getButton(Button.RightBumper)) {
-			// TODO: Add in methods for shooting
+			/*
+			 * 
+			 */
 		}
 	}
 

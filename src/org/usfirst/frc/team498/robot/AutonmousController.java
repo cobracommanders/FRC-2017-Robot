@@ -67,7 +67,7 @@ public class AutonmousController {
 		//Gets rid of excess angles that we don't want
 		currentAngle = currentAngle % 360.0;
 		//Converts it so that 270 is -90 and 90 is 90 etc.
-		if(currentAngle < 360.0 && currentAngle > 180.0) {
+		if (currentAngle > 180.0) {
 			//270 = -90
 			return currentAngle - 360.0;
 		} else {

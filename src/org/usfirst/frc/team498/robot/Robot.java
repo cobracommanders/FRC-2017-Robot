@@ -37,6 +37,8 @@ public class Robot extends SampleRobot {
 	Ultrasonic ultrasonic = new Ultrasonic(0, 1);
 
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
+	
+	
 
 	@Override
 	public void robotInit() {
@@ -71,16 +73,18 @@ public class Robot extends SampleRobot {
 		 * 
 		 * NIVision.IMAQdxConfigureGrab(currSession);
 		 */
+		
+		autoChooser = new SendableChooser();
+		// autoChooser.addDefault("Mid peg (Red/Blue)", new autoMidPeg());
+		// autoChooser.addObject("Experimental auto", new ElevatorPickup());
+		SmartDashboard.putData("Autonomous mode chooser", autoChooser);
 	}
 
 	// Select which autonomous to run
 	public void autonomous() {
 
-		auto.autoInit(-1); // Autonomous method is copied from Unnamed Mark 4
-		autoChooser = new SendableChooser();
-		// autoChooser.addDefault("Default program", new autoMidPeg());
-		// autoChooser.addObject("Experimental auto", new ElevatorPickup());
-		SmartDashboard.putData("Autonomous mode chooser", autoChooser);
+		auto.autoInit(-1); // This autonomous method is copied from Unnamed Mark 4
+		
 
 	}
 

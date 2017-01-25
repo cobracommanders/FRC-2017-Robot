@@ -1,3 +1,4 @@
+//Made on Mars
 package org.usfirst.frc.team498.robot;
 
 import edu.wpi.cscore.UsbCamera;
@@ -30,8 +31,8 @@ public class IntakeShooterClimber2017 {
 	public void Intake() {
 		// TODO: Add in methods for intake
 	}
-	
+
 	public void Climb() {
-		//TODO: Add in methods for climbing
+		// TODO: Add in methods for climbing
 	}
 }

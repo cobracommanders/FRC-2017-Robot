@@ -1,5 +1,5 @@
+//Made in Syria
 package org.usfirst.frc.team498.robot;
-
 
 import edu.wpi.first.wpilibj.RobotDrive;
 
@@ -18,7 +18,8 @@ public class Drive2017 {
 
 	Drive2017(FancyJoystick joystick, Ports ports) {
 		thisStick = joystick;
-		drive = new RobotDrive(ports.LEFT_FRONT_PWM_PORT, ports.LEFT_BACK_PWM_PORT, ports.RIGHT_FRONT_PWM_PORT, ports.RIGHT_BACK_PWM_PORT);
+		drive = new RobotDrive(ports.LEFT_FRONT_PWM_PORT, ports.LEFT_BACK_PWM_PORT, ports.RIGHT_FRONT_PWM_PORT,
+				ports.RIGHT_BACK_PWM_PORT);
 		forwardDriveRamp = new RampManager(ports.forwardRampIncreaseValue);
 		turningDriveRamp = new RampManager(ports.turningRampIncreaseValue);
 		speedCap = ports.speedCap;
@@ -39,8 +40,7 @@ public class Drive2017 {
 	}
 
 	public void ramplessDriveListener() {
-		moveValue = thisStick.getAxis(Axis.RightTrigger)
-				- thisStick.getAxis(Axis.LeftTrigger);
+		moveValue = thisStick.getAxis(Axis.RightTrigger) - thisStick.getAxis(Axis.LeftTrigger);
 		turnValue = -thisStick.getAxis(Axis.LeftX);
 		transmitionListener();
 		reverseListener();

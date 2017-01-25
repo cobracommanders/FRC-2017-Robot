@@ -1,3 +1,4 @@
+//Made in Japan
 package org.usfirst.frc.team498.robot;
 
 import org.opencv.core.Mat;
@@ -13,10 +14,14 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.Scheduler;
 
 //import edu.wpi.first.wpilibj.networktables.NetworkTable; *garbage*
 
 public class Robot extends SampleRobot {
+	Command autonomousCommand;
+	SendableChooser autoChooser;
 	/*
 	 * //Network tables NetworkTable table; *garbage*
 	 */
@@ -70,26 +75,22 @@ public class Robot extends SampleRobot {
 
 	// Select which autonomous to run
 	public void autonomous() {
-		SendableChooser<AutoSelector> sc = new SendableChooser<AutoSelector>();
-		sc.addDefault("Top", AutoSelector.TOPPEG); // When on the opposite
-													// playing side (Blue
-													// station), Top and Bot peg
-													// are switched. (i.e, use
-													// the top peg mode for the
-													// bottom peg if on blue
-													// side)
-		sc.addObject("Middle", AutoSelector.MIDPEG);
-		sc.addObject("Bottom", AutoSelector.BOTPEG);
 
 		auto.autoInit(-1); // Autonomous method is copied from Unnamed Mark 4
+		autoChooser = new SendableChooser();
+		// autoChooser.addDefault("Default program", new autoMidPeg());
+		// autoChooser.addObject("Experimental auto", new ElevatorPickup());
+		SmartDashboard.putData("Autonomous mode chooser", autoChooser);
 
-		while (isAutonomous() && isEnabled()) {
-			if ((AutoSelector) sc.getSelected() == AutoSelector.TOPPEG) {
-				auto.autoTopPeg();
-			} else {
-				System.out.println("Selector did not match any known pattern");
-			}
-		}
+	}
+
+	public void autonomousInit() {
+		autonomousCommand = (Command) autoChooser.getSelected();
+		autonomousCommand.start();
+	}
+
+	public void autonomousPeriodic() {
+		Scheduler.getInstance().run();
 
 	}
 
@@ -125,28 +126,30 @@ public class Robot extends SampleRobot {
 
 			// Checks button
 			if (thisStick.getButton(Button.A)) {
-				auto.gyro.reset(); //resets gyro
+				auto.gyro.reset(); // resets gyro
 			}
 
 			if (thisStick.getButton(Button.RightBumper)) {
-				accessories.Shoot(); //shoots
+				accessories.Shoot(); // shoots
 			}
 
 			if (thisStick.getButton(Button.BACK) && thisStick.getButton(Button.B)) {
-				accessories.Climb(); //climbs
+				accessories.Climb(); // climbs
 			}
 			// robot is cancer
 			if (thisStick.getButton(Button.Y)) {
-				teleMode = TeleOpMode.HIGHGOALALIGNMENT; //aligns robot to high goal
+				teleMode = TeleOpMode.HIGHGOALALIGNMENT; // aligns robot to high
+															// goal
 			}
 			if (thisStick.getButton(Button.B)) {
-				teleMode = TeleOpMode.GEARALIGNMENT; //aligns robot to peg
+				teleMode = TeleOpMode.GEARALIGNMENT; // aligns robot to peg
 			}
 			if (thisStick.getButton(Button.START)) {
-				teleMode = TeleOpMode.OPERATORCONTROL; //makes robot go back to TeleOp
+				teleMode = TeleOpMode.OPERATORCONTROL; // makes robot go back to
+														// TeleOp
 			}
 			if (thisStick.getButton(Button.X)) {
-				teleMode = TeleOpMode.TEST; //Testing code
+				teleMode = TeleOpMode.TEST; // Testing code
 			}
 
 			switch (teleMode) {

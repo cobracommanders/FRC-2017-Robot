@@ -4,12 +4,14 @@ package org.usfirst.frc.team498.robot;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 
 public class AutonmousController {
 	// Vision
 	public Vision2017 vision = new Vision2017(0);
-
+	public DriverStation driveStation = DriverStation.getInstance();
 	private Timer clock;
 	private Drive2017 drive;
 	private IntakeShooterClimber2017 shooter;
@@ -33,6 +35,15 @@ public class AutonmousController {
 	int phase = 0;
 	int clockTime = 2;
 
+	/*
+	 * public void AutoChoose() { Alliance alliance =
+	 * driveStation.getAlliance(); switch(alliance) { case Blue: //Blue stuff
+	 * break; case Red: //Red stuff break; case Invalid: throw new
+	 * Exception("Something broke. Fix it"); break; }
+	 * 
+	 * }
+	 */
+
 	AutonmousController(Drive2017 drive_a, IntakeShooterClimber2017 shoot_a, Ports ports) {
 		drive = drive_a;
 		shooter = shoot_a;
@@ -55,26 +66,35 @@ public class AutonmousController {
 		}
 	}
 
+	/*
+	 * public void AutoChoice() { int tempChoice = 0; switch (tempChoice) {
+	 * 
+	 * case 0: // LeftRed autoLeftPeg(); break;
+	 * 
+	 * case 1: // MidRed autoMidPeg(); break;
+	 * 
+	 * 
+	 * 
+	 * } }
+	 */
+
 	// The autonomous for driving forward
 	public void autoInit(int startPhase) {
 
 		phase = startPhase;
 		clock.start();
 	}
-	public double ConvertGyroStuff(double currentAngle) {
-		//If negative, return 0
-		if (currentAngle != Math.abs(currentAngle)) return 0.0;
-		//Gets rid of excess angles that we don't want
-		currentAngle = currentAngle % 360.0;
-		//Converts it so that 270 is -90 and 90 is 90 etc.
-		if (currentAngle > 180.0) {
-			//270 = -90
-			return currentAngle - 360.0;
-		} else {
-			//90 = 90
-			return currentAngle;
-		}
+
+	public double ConvertGyroStuff(double theta) {
+		// Gets rid of excess rotations
+		theta %= 360d;
+		// Makes 270 = -90, 350 = -10, etc.
+		if (theta >= 180)
+			theta -= 360d;
+		// Otherwise, no change needed
+		return theta;
 	}
+
 	public void autoDriveForward() { // This is our test auto
 		switch (phase) {
 		case 0:
@@ -99,13 +119,18 @@ public class AutonmousController {
 			 * drive STRAIGHT!!!* (internal screaming, KMP)
 			 */
 
-			drive.manualDrive(.6, ConvertGyroStuff(gyro.getAngle()) * -0.03); // moves forward for two seconds.
-			//convertGyroStuff is supposed to work. If it doesn't, ask Micah
-			
-			  /*I want to use the gyro.getAngle() method, but all it does make
-			  the robot turn really fast. Previously, it was -gyro.getAngle() *
-			  0.03. Curt help me pls*/
-			 
+			drive.manualDrive(.6, ConvertGyroStuff(gyro.getAngle()) * -0.03); // moves
+																				// forward
+																				// for
+																				// two
+																				// seconds.
+			// convertGyroStuff is supposed to work. If it doesn't, ask Micah
+
+			/*
+			 * I want to use the gyro.getAngle() method, but all it does make
+			 * the robot turn really fast. Previously, it was -gyro.getAngle() *
+			 * 0.03. Curt help me pls
+			 */
 
 			// Cody, why you cucking Aaron? (See classmate secret message)
 			if (clock.get() > clockTime) {
@@ -115,7 +140,7 @@ public class AutonmousController {
 		}
 	}
 
-	public void autoTopPeg() { // auto for the top peg (Top as in farthest from
+	public void autoLeftPeg() { // auto for the top peg (Top as in farthest from
 								// BOILER)
 		switch (phase) {
 		case 0:
@@ -172,7 +197,7 @@ public class AutonmousController {
 	 * right if (clock.get() > 1) { clock.reset(); phase++; } break; case 10:
 	 * AlignHighGoal(); phase++; break; case 40: break; }
 	 */
-	public void autoMidpeg() {
+	public void autoMidPeg() {
 		// TODO: TEST
 		switch (phase) {
 		case 0:
@@ -195,7 +220,7 @@ public class AutonmousController {
 		}
 	}
 
-	public void autoBotPeg() { // inverse of autoTopPeg
+	public void autoRightPeg() { // inverse of autoleftPeg
 		// TODO: TEST
 		switch (phase) {
 		case 0:
@@ -289,7 +314,7 @@ public class AutonmousController {
 		} else if (vision.GetContour1CenterX() < (vision.GetCameraWidth() / 2)) {
 			drive.manualDrive(0, .5); // turns right, TODO: gyro
 		} else {
-			// TODO Shit is done yo!
+			// Shit is done yo!
 
 			return TeleOpMode.OPERATORCONTROL;
 		}
@@ -330,7 +355,7 @@ public class AutonmousController {
 			break;
 		case 0:
 			drive.manualDrive(0, driveAngle);// turns in a way (left)
-			if (Math.abs(gyro.getAngle()) > GEARADJUSTANGLE) {
+			if (Math.abs(ConvertGyroStuff(gyro.getAngle())) > GEARADJUSTANGLE) {
 				clock.reset();
 				gyro.reset();
 				phase++;
@@ -338,8 +363,8 @@ public class AutonmousController {
 
 			break;
 		case 1:
-			drive.manualDrive(-.65, gyro.getAngle() * 0.03);// moves
-															// backwards
+			drive.manualDrive(-.65, ConvertGyroStuff(gyro.getAngle() * 0.03));// moves
+			// backwards
 			if (clock.get() > clockTime) {
 				clock.reset();
 				gyro.reset();
@@ -349,7 +374,7 @@ public class AutonmousController {
 			break;
 		case 2:
 			drive.manualDrive(0, -driveAngle);// turns in a way(right)
-			if (Math.abs(gyro.getAngle()) > GEARADJUSTANGLE) {
+			if (Math.abs(ConvertGyroStuff(gyro.getAngle())) > GEARADJUSTANGLE) {
 				clock.reset();
 				gyro.reset();
 				phase++;
@@ -357,7 +382,8 @@ public class AutonmousController {
 
 			break;
 		case 3:
-			drive.manualDrive(.65, -gyro.getAngle() * 0.03);// moves forward
+			drive.manualDrive(.65, -ConvertGyroStuff(gyro.getAngle()) * 0.03);// moves
+																				// forward
 			if (clock.get() > clockTime) {
 				clock.reset();
 				gyro.reset();
@@ -367,14 +393,15 @@ public class AutonmousController {
 			break;
 		case 4:
 			drive.manualDrive(0, driveAngle);// turns in a way (left)
-			if (Math.abs(gyro.getAngle()) > GEARADJUSTANGLE) {
+			if (Math.abs(ConvertGyroStuff(gyro.getAngle())) > GEARADJUSTANGLE) {
 				clock.reset();
 				gyro.reset();
 				phase++;
 			}
 			break;
 		case 5:
-			drive.manualDrive(.65, -gyro.getAngle() * 0.03);// moves forward
+			drive.manualDrive(.65, -ConvertGyroStuff(gyro.getAngle()) * 0.03);// moves
+																				// forward
 			if (clock.get() > clockTime) {
 				clock.reset();
 				phase++;
@@ -389,7 +416,7 @@ public class AutonmousController {
 
 	public void testDrive() {
 
-		drive.manualDrive(-.65, gyro.getAngle() * 0.03);
+		drive.manualDrive(-.65, ConvertGyroStuff(gyro.getAngle() * 0.03));
 
 		/*
 		 * if (gyro.getAngle() > .5) { drive.manualDrive(-.65, .3); } else if

@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.Joystick;
 public class FancyJoystick {
 	Joystick thisStick;
 	FancyJoystick(int USBChannel) {
-		thisStick = new Joystick(USBChannel);
+		this.thisStick = new Joystick(USBChannel);
 	}
 	
 	boolean getButton(Button button) {

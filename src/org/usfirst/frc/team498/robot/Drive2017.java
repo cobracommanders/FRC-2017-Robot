@@ -8,7 +8,7 @@ public class Drive2017 {
 	private RobotDrive drive;
 	private RampManager forwardDriveRamp;
 	private boolean isGoingForward = true;
-	private boolean isSpeedReduced = false;
+	private boolean isSpeedReduced = true;
 	private boolean wasTransmitionPressed = false;
 	double speedCap;
 
@@ -17,15 +17,15 @@ public class Drive2017 {
 	public double turnValue;
 
 	Drive2017(FancyJoystick joystick, Ports ports) {
-		thisStick = joystick;
+		this.thisStick = joystick;
 		
 		
 		
 		drive = new RobotDrive(ports.LEFT_FRONT_PWM_PORT, ports.LEFT_BACK_PWM_PORT, ports.RIGHT_FRONT_PWM_PORT,
 				ports.RIGHT_BACK_PWM_PORT);
 		forwardDriveRamp = new RampManager(ports.forwardRampIncreaseValue);
+
 		turningDriveRamp = new RampManager(ports.turningRampIncreaseValue);
-		speedCap = ports.speedCap;
 	}
 
 	// The robot's speed slowly increases over time.
@@ -36,6 +36,7 @@ public class Drive2017 {
 		// Axis 0 is X Value of Left Stick
 		turningDriveRamp.rampTo(-thisStick.getAxis(Axis.LeftX));
 		turnValue = turningDriveRamp.getCurrentValue();
+		//turnValue = -thisStick.getAxis(Axis.LeftX);
 		transmitionListener();
 		reverseListener();
 		drive();

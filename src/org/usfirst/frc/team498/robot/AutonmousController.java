@@ -14,7 +14,7 @@ public class AutonmousController {
 	public DriverStation driveStation = DriverStation.getInstance();
 	private Timer clock;
 	private Drive2017 drive;
-	private IntakeShooterClimber2017 shooter;
+	private PewPew2017 shooter;
 	public AnalogUltrasonicSensor2017 analogSensor;
 	public ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 
@@ -34,6 +34,9 @@ public class AutonmousController {
 
 	int phase = 0;
 	int clockTime = 2;
+	int autoMode = 0;
+
+	REVDigitBoard digitBoard;
 
 	/*
 	 * public void AutoChoose() { Alliance alliance =
@@ -44,11 +47,13 @@ public class AutonmousController {
 	 * }
 	 */
 
-	AutonmousController(Drive2017 drive_a, IntakeShooterClimber2017 shoot_a, Ports ports) {
-		drive = drive_a;
-		shooter = shoot_a;
+	AutonmousController(Drive2017 drive, PewPew2017 shooter, REVDigitBoard board, Ports ports) {
+		this.drive = drive;
+		this.shooter = shooter;
 		analogSensor = new AnalogUltrasonicSensor2017(ports);
 		clock = new Timer();
+		digitBoard = board;
+
 	}
 
 	public void run(AutoSelector key) { // In theory, this should be able to
@@ -423,5 +428,28 @@ public class AutonmousController {
 		 * (gyro.getAngle() < -.5) { //yancy's line drive.manualDrive(-.65,
 		 * -.3); } else{ drive.manualDrive(-.65, 0); }
 		 */
+	}
+
+	public void autonomousSelector() {
+		autoMode++;
+		if (autoMode > 5)
+			autoMode = 0;
+		String display = "";
+		if (autoMode < 3)
+			display += "R";
+		else
+			display += "B";
+		switch (autoMode % 3) {
+		case 0:
+			display += "L";
+			break;
+		case 1:
+			display += "M";
+			break;
+		case 2:
+			display += "R";
+			break;
+		}
+		digitBoard.display(display);
 	}
 }

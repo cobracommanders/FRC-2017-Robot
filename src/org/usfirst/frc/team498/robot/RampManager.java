@@ -34,15 +34,15 @@ public class RampManager {
 		if(clock.get() > 0.1) {
 			clock.reset();
 		}
-		if(currentValue < desiredValue) {
-			
+		//if(Math.abs(currentValue) > Math.abs(desiredValue)) {
+			if(currentValue < desiredValue) {
 			currentValue = clock.get() * rampSpeed + currentValue;
 			if(currentValue > 1) {
 				currentValue = 1;
 			}
 			clock.reset();	
 		}else if(currentValue > desiredValue) {
-			currentValue = clock.get() * -rampSpeed + currentValue;
+			currentValue = clock.get() * -rampSpeed  + currentValue;
 			if(currentValue < -1) {
 				currentValue = -1;
 			}
@@ -50,6 +50,24 @@ public class RampManager {
 		} else {
 			clock.reset();
 		}
+		/*} else {
+			if(currentValue < desiredValue) {
+				
+				currentValue = clock.get() * (rampSpeed - .7)+ currentValue;
+				if(currentValue > 1) {
+					currentValue = 1;
+				}
+				clock.reset();	
+			}else if(currentValue > desiredValue) {
+				currentValue = clock.get() * -rampSpeed + currentValue;
+				if(currentValue < -1) {
+					currentValue = -1;
+				}
+				clock.reset();	//comment this flat
+			} else {
+				clock.reset();
+			}
+		}*/
 		if(Math.abs(currentValue) >= Math.abs(desiredValue)){	//Stop the clock and reset if we have gotten to the value we want.
 			if (desiredValue < 0 && currentValue < 0){
 				currentValue = desiredValue;

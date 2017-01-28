@@ -18,6 +18,9 @@ public class Drive2017 {
 
 	Drive2017(FancyJoystick joystick, Ports ports) {
 		thisStick = joystick;
+		
+		
+		
 		drive = new RobotDrive(ports.LEFT_FRONT_PWM_PORT, ports.LEFT_BACK_PWM_PORT, ports.RIGHT_FRONT_PWM_PORT,
 				ports.RIGHT_BACK_PWM_PORT);
 		forwardDriveRamp = new RampManager(ports.forwardRampIncreaseValue);

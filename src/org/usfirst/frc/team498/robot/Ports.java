@@ -2,10 +2,14 @@ package org.usfirst.frc.team498.robot;
 
 public class Ports {
 	//Motors
-	final int LEFT_FRONT_PWM_PORT = 2;
-	final int LEFT_BACK_PWM_PORT = 1;
-	final int RIGHT_FRONT_PWM_PORT = 4;
-	final int RIGHT_BACK_PWM_PORT = 3;
+	final int LEFT_FRONT_PWM_PORT = 8;
+	final int LEFT_BACK_PWM_PORT = 9;
+	final int RIGHT_FRONT_PWM_PORT = 6;
+	final int RIGHT_BACK_PWM_PORT = 7;
+	
+	
+	
+	//1 is 9, 2 is 8, 3 is 7, 4 is 6
 	
 	//We have two talons with CAN wires
 	

@@ -78,6 +78,7 @@ public class Robot extends SampleRobot {
 		 * }).start(); }
 		 */
 
+		//2 USB Cameras
 		/*
 		 * frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 		 * 

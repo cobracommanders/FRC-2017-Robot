@@ -16,7 +16,7 @@ public class AutonmousController {
 	private Drive2017 drive;
 	private PewPew2017 shooter;
 	public AnalogUltrasonicSensor2017 analogSensor;
-	public ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+	// public ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 
 	double currentContourHeight = 0.0;
 	double leftContour = 0.0;
@@ -104,8 +104,8 @@ public class AutonmousController {
 		switch (phase) {
 		case 0:
 			clock.reset();
-			gyro.reset();
-			gyro.calibrate();
+			// gyro.reset();
+			// gyro.calibrate();
 			phase++;
 
 			break;
@@ -124,11 +124,12 @@ public class AutonmousController {
 			 * drive STRAIGHT!!!* (internal screaming, KMP)
 			 */
 
-			drive.manualDrive(.6, ConvertGyroStuff(gyro.getAngle()) * -0.03); // moves
-																				// forward
-																				// for
-																				// two
-																				// seconds.
+			// drive.manualDrive(.6, ConvertGyroStuff(gyro.getAngle()) * -0.03);
+			// // moves
+			// forward
+			// for
+			// two
+			// seconds.
 			// convertGyroStuff is supposed to work. If it doesn't, ask Micah
 
 			/*
@@ -355,58 +356,64 @@ public class AutonmousController {
 		switch (phase) { // aligns from right
 		case -1:
 			clock.reset();
-			gyro.reset();
+			// gyro.reset();
 			phase++;
 			break;
 		case 0:
 			drive.manualDrive(0, driveAngle);// turns in a way (left)
-			if (Math.abs(ConvertGyroStuff(gyro.getAngle())) > GEARADJUSTANGLE) {
-				clock.reset();
-				gyro.reset();
-				phase++;
-			}
+			// if (Math.abs(ConvertGyroStuff(gyro.getAngle())) >
+			// GEARADJUSTANGLE) {
+			clock.reset();
+			// gyro.reset();
+			phase++;
+			// }
 
 			break;
 		case 1:
-			drive.manualDrive(-.65, ConvertGyroStuff(gyro.getAngle() * 0.03));// moves
+			// drive.manualDrive(-.65, ConvertGyroStuff(gyro.getAngle() *
+			// 0.03));// moves
 			// backwards
 			if (clock.get() > clockTime) {
 				clock.reset();
-				gyro.reset();
+				// gyro.reset();
 				phase++;
 			}
 
 			break;
 		case 2:
-			drive.manualDrive(0, -driveAngle);// turns in a way(right)
-			if (Math.abs(ConvertGyroStuff(gyro.getAngle())) > GEARADJUSTANGLE) {
-				clock.reset();
-				gyro.reset();
-				phase++;
-			}
+			// drive.manualDrive(0, -driveAngle);// turns in a way(right)
+			// if (Math.abs(ConvertGyroStuff(gyro.getAngle())) >
+			// GEARADJUSTANGLE) {
+			// clock.reset();
+			// gyro.reset();
+			// phase++;
+			// }
 
 			break;
 		case 3:
-			drive.manualDrive(.65, -ConvertGyroStuff(gyro.getAngle()) * 0.03);// moves
-																				// forward
+			// drive.manualDrive(.65, -ConvertGyroStuff(gyro.getAngle()) *
+			// 0.03);// moves
+			// forward
 			if (clock.get() > clockTime) {
 				clock.reset();
-				gyro.reset();
+				// gyro.reset();
 				phase++;
 			}
 
 			break;
 		case 4:
 			drive.manualDrive(0, driveAngle);// turns in a way (left)
-			if (Math.abs(ConvertGyroStuff(gyro.getAngle())) > GEARADJUSTANGLE) {
-				clock.reset();
-				gyro.reset();
-				phase++;
-			}
+			// if (Math.abs(ConvertGyroStuff(gyro.getAngle())) >
+			// GEARADJUSTANGLE) {
+			// clock.reset();
+			// gyro.reset();
+			// phase++;
+			// }
 			break;
 		case 5:
-			drive.manualDrive(.65, -ConvertGyroStuff(gyro.getAngle()) * 0.03);// moves
-																				// forward
+			// drive.manualDrive(.65, -ConvertGyroStuff(gyro.getAngle()) *
+			// 0.03);// moves
+			// forward
 			if (clock.get() > clockTime) {
 				clock.reset();
 				phase++;
@@ -421,7 +428,7 @@ public class AutonmousController {
 
 	public void testDrive() {
 
-		drive.manualDrive(-.65, ConvertGyroStuff(gyro.getAngle() * 0.03));
+		// drive.manualDrive(-.65, ConvertGyroStuff(gyro.getAngle() * 0.03));
 
 		/*
 		 * if (gyro.getAngle() > .5) { drive.manualDrive(-.65, .3); } else if
@@ -434,22 +441,24 @@ public class AutonmousController {
 		autoMode++;
 		if (autoMode > 5)
 			autoMode = 0;
-		String display = "";
+		//digitBoard.display(autoMode);
+		/*String display = "";
 		if (autoMode < 3)
 			display += "R";
 		else
 			display += "B";
 		switch (autoMode % 3) {
 		case 0:
-			display += "L";
+			display += " L";
 			break;
 		case 1:
-			display += "M";
+			display += " M";
 			break;
 		case 2:
-			display += "R";
+			display += " R";
 			break;
 		}
-		digitBoard.display(display);
+
+		digitBoard.display(display);*/
 	}
 }

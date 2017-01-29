@@ -1,14 +1,15 @@
 //Made in Japan
 package org.usfirst.frc.team498.robot;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //import edu.wpi.first.wpilibj.networktables.NetworkTable; *garbage*
 
@@ -25,15 +26,16 @@ public class Robot extends SampleRobot {
 	Drive2017 drive = new Drive2017(thisStick, ports);
 	REVDigitBoard digitBoard = new REVDigitBoard();
 	PewPew2017 shooter = new PewPew2017(digitBoard, thisStick, ports);
-
+	//AnalogInput potMaybe = new AnalogInput(7);
 	AutonmousController auto = new AutonmousController(drive, shooter, digitBoard, ports);
-	PnuematicsControlModule2017 pcm2017 = new PnuematicsControlModule2017();
 
 	Ultrasonic ultrasonic = new Ultrasonic(0, 1);
 
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 
-	DoubleSolenoid doubleSolenoid = new DoubleSolenoid(2, 3);
+	DoubleSolenoid ds;
+
+	boolean aOldState = false;
 
 	@Override
 	public void robotInit() {
@@ -69,7 +71,7 @@ public class Robot extends SampleRobot {
 		 * 
 		 * NIVision.IMAQdxConfigureGrab(currSession);
 		 */
-
+		ds = new DoubleSolenoid(0, 0, 1);
 	}
 
 	// Select which autonomous to run
@@ -80,17 +82,24 @@ public class Robot extends SampleRobot {
 
 	}
 
+	public boolean ADown() {
+		boolean localTemp = false;
+		if (!aOldState && thisStick.getButton(Button.A))
+			localTemp = true;
+		aOldState = thisStick.getButton(Button.A);
+		return localTemp;
+	}
+
 	public void operatorControl() {
-		/*
-		 * //For Network table double x = 0; *garbage* double y = 0;
-		 */
+
+		// For Network table double x = 0; *garbage* double y = 0;
 
 		drive.moveValue = 0;
 		drive.turnValue = 0;
-		auto.gyro.reset();
+		// auto.gyro.reset();
 
 		TeleOpMode teleMode = TeleOpMode.OPERATORCONTROL;
-
+		digitBoard.display(2.0);
 		while (isOperatorControl() && isEnabled()) {
 			// network table
 			/*
@@ -108,13 +117,19 @@ public class Robot extends SampleRobot {
 			 * sessionfront; NIVision.IMAQdxConfigureGrab(currSession); } }
 			 */
 
-			pcm2017.turnOn(); // Turns on all PCM ports
-
 			// Checks button
-			if (thisStick.getButton(Button.A)) {
-				auto.gyro.reset(); // resets gyro
+			if (ADown()) {
+				// auto.gyro.reset(); // resets gyro
+				if (ds.get() == Value.kOff)
+					ds.set(Value.kReverse);
+				if (ds.get() == Value.kForward)
+					ds.set(Value.kReverse);
+				if (ds.get() == Value.kReverse)
+					ds.set(Value.kForward);
+
 			}
 
+				drive.rampedDriveListener();
 			if (thisStick.getButton(Button.RightBumper)) {
 				shooter.Shoot(); // shoots
 			}
@@ -133,14 +148,12 @@ public class Robot extends SampleRobot {
 			if (thisStick.getButton(Button.X)) {
 				teleMode = TeleOpMode.TEST; // Testing code
 			}
-			if (digitBoard.getButtonA()) {
-				auto.autonomousSelector(); // Displays auto on digit board
-			}
 
-			switch (teleMode) {
+			/*switch (teleMode) {
 			case OPERATORCONTROL:
 				// Drive the robot via controller
 				drive.rampedDriveListener();
+				
 				shooter.shootListener();
 				break;
 			case GEARALIGNMENT:
@@ -154,7 +167,7 @@ public class Robot extends SampleRobot {
 				drive.moveValue = 0;
 				drive.turnValue = 0;
 				break;
-			}
+			}*/
 
 			// Send stats to the driver
 			print();
@@ -165,6 +178,9 @@ public class Robot extends SampleRobot {
 	public void disabled() {
 		while (isDisabled()) {
 			print();
+			if (digitBoard.getButtonA()) {
+				auto.autonomousSelector(); // Displays auto on digit board
+			}
 		}
 
 	}
@@ -172,8 +188,8 @@ public class Robot extends SampleRobot {
 	// Sends information to the driver
 	private void print() {
 
-		SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
-		SmartDashboard.putNumber("Gyro getRate()", auto.gyro.getRate());
+		// SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
+		// SmartDashboard.putNumber("Gyro getRate()", auto.gyro.getRate());
 		SmartDashboard.putNumber("Range (Inches)", ultrasonic.getRangeInches());
 		SmartDashboard.putNumber("Range millimeters (Analog)", auto.analogSensor.GetRangeMM());
 		SmartDashboard.putNumber("Range Inches (Analog)", auto.analogSensor.GetRangeInches());
@@ -189,10 +205,12 @@ public class Robot extends SampleRobot {
 
 		SmartDashboard.putBoolean("flag", auto.vision.flag);
 
-		SmartDashboard.putNumber("Battery Voltage", pdp.getVoltage());
+		//SmartDashboard.putNumber("Battery Voltage", pdp.getVoltage());
 		SmartDashboard.putNumber("Potentiometer Value", digitBoard.getPot());
+		SmartDashboard.putNumber("Move Value", drive.moveValue);
+		//SmartDashboard.putNumber("A7", potMaybe.getVoltage());
 
-		digitBoard.display(pdp.getVoltage());
+		// digitBoard.display(pdp.getVoltage());
 
 		// SmartDashboard.putNumber("Ramp Clock",
 		// drive.forwardDriveRamp.clock.get());

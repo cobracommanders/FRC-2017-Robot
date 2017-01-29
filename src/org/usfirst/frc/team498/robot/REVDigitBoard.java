@@ -30,9 +30,9 @@ public class REVDigitBoard {
 	
 	REVDigitBoard() {
 		i2c = new I2C(Port.kMXP, 0x70);
-		buttonA = new DigitalInput(19);
-		buttonB = new DigitalInput(20);
-		pot = new AnalogInput(3);
+		buttonA = new DigitalInput(19); //Original 19
+		buttonB = new DigitalInput(20); //Original 20
+		pot = new AnalogInput(7); //Original 3
 		
 		byte[] osc = new byte[1];
 	 	byte[] blink = new byte[1];

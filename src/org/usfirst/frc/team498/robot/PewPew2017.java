@@ -6,12 +6,12 @@ public class PewPew2017 {
 
 	Talon talon;
 	FancyJoystick thisStick;
-	REVDigitBoard digitBoard;
+	REVImprovedDigitBoard  digitBoard;
 
 	boolean wasShootPressed = false;
 	boolean isShootRunning = false;
 
-	public PewPew2017(REVDigitBoard board, FancyJoystick joystick, Ports ports) {
+	public PewPew2017(REVImprovedDigitBoard board, FancyJoystick joystick, Ports ports) {
 
 		thisStick = joystick;
 		talon = new Talon(ports.SHOOTER_PWM_PORT);

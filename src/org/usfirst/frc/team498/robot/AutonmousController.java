@@ -2,10 +2,8 @@
 
 package org.usfirst.frc.team498.robot;
 
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 import edu.wpi.first.wpilibj.Timer;
 
 public class AutonmousController {
@@ -35,24 +33,16 @@ public class AutonmousController {
 	int phase = 0;
 	int clockTime = 2;
 	int autoMode = 0;
+	String display = "";
 
-	REVDigitBoard digitBoard;
+	REVImprovedDigitBoard digitBoard;
 
-	/*
-	 * public void AutoChoose() { Alliance alliance =
-	 * driveStation.getAlliance(); switch(alliance) { case Blue: //Blue stuff
-	 * break; case Red: //Red stuff break; case Invalid: throw new
-	 * Exception("Something broke. Fix it"); break; }
-	 * 
-	 * }
-	 */
-
-	AutonmousController(Drive2017 drive, PewPew2017 shooter, REVDigitBoard board, Ports ports) {
+	AutonmousController(Drive2017 drive, PewPew2017 shooter, REVImprovedDigitBoard digitBoard, Ports ports) {
 		this.drive = drive;
 		this.shooter = shooter;
 		analogSensor = new AnalogUltrasonicSensor2017(ports);
 		clock = new Timer();
-		digitBoard = board;
+		this.digitBoard = digitBoard;
 
 	}
 
@@ -70,18 +60,6 @@ public class AutonmousController {
 			break;
 		}
 	}
-
-	/*
-	 * public void AutoChoice() { int tempChoice = 0; switch (tempChoice) {
-	 * 
-	 * case 0: // LeftRed autoLeftPeg(); break;
-	 * 
-	 * case 1: // MidRed autoMidPeg(); break;
-	 * 
-	 * 
-	 * 
-	 * } }
-	 */
 
 	// The autonomous for driving forward
 	public void autoInit(int startPhase) {
@@ -264,36 +242,9 @@ public class AutonmousController {
 	}
 
 	/*
-	 * public void autoLowBar() {
-	 * 
-	 * switch (phase) { case 0:
-	 * 
-	 * clock.reset(); phase++;
-	 * 
-	 * break; case 1: // Drive through low bar
-	 * 
-	 * drive.manualDrive(-.8, 0); if (clock.get() > 6) { phase = 40;
-	 * drive.manualDrive(0, 0); } break;
-	 * 
-	 * case 40: break;
-	 * 
-	 * } }
-	 */
-
-	/*
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
 	 * 
 	 * Below is the Alignment code for both the high goal on the boiler and the
 	 * peg alignment for the gear!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
 	 * 
 	 */
 
@@ -438,27 +389,20 @@ public class AutonmousController {
 	}
 
 	public void autonomousSelector() {
+		Timer.delay(0.25);
 		autoMode++;
 		if (autoMode > 5)
 			autoMode = 0;
 		//digitBoard.display(autoMode);
-		/*String display = "";
-		if (autoMode < 3)
-			display += "R";
-		else
-			display += "B";
-		switch (autoMode % 3) {
-		case 0:
-			display += " L";
-			break;
-		case 1:
-			display += " M";
-			break;
-		case 2:
-			display += " R";
-			break;
-		}
+		
 
-		digitBoard.display(display);*/
+		/*
+		 * display = ""; if (autoMode < 3) display += "R"; else display += "B";
+		 * switch (autoMode % 3) { case 0: display += " L"; break; case 1:
+		 * display += " M"; break; case 2: display += " R"; break; }
+		 * 
+		 * digitBoard.display(display);
+		 */
+
 	}
 }

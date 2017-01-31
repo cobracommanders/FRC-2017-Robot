@@ -20,9 +20,9 @@ public class PewPew2017 {
 
 	public void Shoot() {
 		double voltage = digitBoard.getPot();
-		double motorValue = voltage / 5;
+		double motorValue = voltage; // voltage / 5
 		
-		if (motorValue > 1) {
+		if (motorValue > 4) { // 1
 			motorValue = 1;
 		} 
 		talon.set(motorValue); 

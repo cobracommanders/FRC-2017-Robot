@@ -106,6 +106,15 @@ public class Robot extends SampleRobot {
 				digitBoard.SlideScrollMsg();
 			}
 			count++;
+		
+		while (isOperatorControl() && isEnabled()) {
+			
+			if(thisStick.getButton(Button.Y)) { // 0.735 on smart dashboard is perfect!
+			shooter.Shoot();
+			} else {
+				shooter.StopShoot();
+			}
+		}
 
 			// digitBoard.display(10.00);
 
@@ -165,8 +174,8 @@ public class Robot extends SampleRobot {
 			// Send stats to the driver
 			print();
 		}
-
 	}
+	
 
 	public void disabled() {
 		while (isDisabled()) {
@@ -182,6 +191,7 @@ public class Robot extends SampleRobot {
 				else
 					digitBoard.UpdateDisplay('8', '-', '-', 'D');
 			}
+			
 		}
 
 	}
@@ -194,6 +204,8 @@ public class Robot extends SampleRobot {
 
 		// SmartDashboard.putNumber("Range (Inches)", ultra.GetRangeInches());
 		// SmartDashboard.putNumber("Ultrasonic Voltage", ultra.GetVoltage());
+		
+		SmartDashboard.putNumber("Shooter value", digitBoard.getPot());
 
 		/*
 		 * SmartDashboard.putNumber("Range millimeters (Analog)",

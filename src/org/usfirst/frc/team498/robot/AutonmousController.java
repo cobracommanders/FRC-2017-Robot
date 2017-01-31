@@ -33,7 +33,8 @@ public class AutonmousController {
 	int phase = 0;
 	int clockTime = 2;
 	int autoMode = 0;
-	String display = "";
+	char colorAuto;
+	char positionAuto;
 
 	REVImprovedDigitBoard digitBoard;
 
@@ -393,16 +394,25 @@ public class AutonmousController {
 		autoMode++;
 		if (autoMode > 5)
 			autoMode = 0;
-		//digitBoard.display(autoMode);
-		
 
-		/*
-		 * display = ""; if (autoMode < 3) display += "R"; else display += "B";
-		 * switch (autoMode % 3) { case 0: display += " L"; break; case 1:
-		 * display += " M"; break; case 2: display += " R"; break; }
-		 * 
-		 * digitBoard.display(display);
-		 */
+		colorAuto = ' ';
+		positionAuto = ' ';
+		if (autoMode < 3)
+			colorAuto = 'R';
+		else
+			colorAuto = 'B';
+		switch (autoMode % 3) {
+		case 0:
+			positionAuto = 'L';
+			break;
+		case 1:
+			positionAuto = 'M';
+			break;
+		case 2:
+			positionAuto = 'R';
+			break;
+		}
+		digitBoard.UpdateDisplay(' ', colorAuto, ' ', positionAuto);
 
 	}
 }

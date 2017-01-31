@@ -6,7 +6,7 @@ public class AnalogUltrasonicSensor2017 {
 	AnalogInput AI;
 
 	public AnalogUltrasonicSensor2017(Ports ports) {
-		AI = new AnalogInput(ports.ULTRASONIC_SENSOR); // !!!MUY IMPORTANTE!!!
+		AI = new AnalogInput(1); // !!!MUY IMPORTANTE!!!
 	}
 
 	public double GetRangeMM() {

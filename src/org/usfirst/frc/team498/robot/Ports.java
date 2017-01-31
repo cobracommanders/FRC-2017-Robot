@@ -16,7 +16,7 @@ public class Ports {
 	// We have two talons with CAN wires
 
 	// analog sensors
-	final int ULTRASONIC_SENSOR = 2;
+	final int ULTRASONIC_SENSOR_ANALOG_PORT = 0;
 	// ramp code
 	final double forwardRampIncreaseValue = 1.3;
 	final double reverseRampIncreaseValue = .1;

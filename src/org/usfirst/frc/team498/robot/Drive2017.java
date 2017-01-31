@@ -18,9 +18,7 @@ public class Drive2017 {
 
 	Drive2017(FancyJoystick joystick, Ports ports) {
 		this.thisStick = joystick;
-		
-		
-		
+
 		drive = new RobotDrive(ports.LEFT_FRONT_PWM_PORT, ports.LEFT_BACK_PWM_PORT, ports.RIGHT_FRONT_PWM_PORT,
 				ports.RIGHT_BACK_PWM_PORT);
 		forwardDriveRamp = new RampManager(ports.forwardRampIncreaseValue);
@@ -36,7 +34,7 @@ public class Drive2017 {
 		// Axis 0 is X Value of Left Stick
 		turningDriveRamp.rampTo(-thisStick.getAxis(Axis.LeftX));
 		turnValue = turningDriveRamp.getCurrentValue();
-		//turnValue = -thisStick.getAxis(Axis.LeftX);
+		// turnValue = -thisStick.getAxis(Axis.LeftX);
 		transmitionListener();
 		reverseListener();
 		drive();

@@ -31,22 +31,19 @@ public class Robot extends SampleRobot {
 	FancyJoystick thisStick = new FancyJoystick(0);
 	Drive2017 drive = new Drive2017(thisStick, ports);
 	REVImprovedDigitBoard digitBoard = new REVImprovedDigitBoard();
-	
+
 	PewPew2017 shooter = new PewPew2017(digitBoard, thisStick, ports);
 	AutonmousController auto = new AutonmousController(drive, shooter, digitBoard, ports);
 
 	GearIntake2017 gearIntake = new GearIntake2017(thisStick, ports);
-	Ultrasonic ultrasonic = new Ultrasonic(0, 1);	
+	// AnalogUltrasonicSensor2017 ultra = new AnalogUltrasonicSensor2017(ports);
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
-	
-	
+
+	boolean dToggle = false;
+
 	@Override
 	public void robotInit() {
-		
-		
-			
-		
-		
+
 		// table = NetworkTable.getTable("datatable"); *garbage*
 		// CameraServer.getInstance().startAutomaticCapture();
 
@@ -80,17 +77,19 @@ public class Robot extends SampleRobot {
 		 * NIVision.IMAQdxConfigureGrab(currSession);
 		 */
 	}
-	
+
 	// Select which autonomous to run
 	public void autonomous() {
 
-		//auto.autoInit(-1); // This autonomous method is copied from Unnamed Mark
-							// 4
+		// auto.autoInit(-1); // This autonomous method is copied from Unnamed
+		// Mark
+		// 4
 
 	}
+
 	int count = 0;
 	int count2 = 0;
-	
+
 	public void operatorControl() {
 
 		// For Network table double x = 0; *garbage* double y = 0;
@@ -100,20 +99,16 @@ public class Robot extends SampleRobot {
 		// auto.gyro.reset();
 
 		TeleOpMode teleMode = TeleOpMode.OPERATORCONTROL;
-		//digitBoard.display(2.0);
+		// digitBoard.display(2.0);
 		digitBoard.CreateScrollMsg("Randy Left Early    ");
 		while (isOperatorControl() && isEnabled()) {
-			if(count % 1000 == 0) {
+			if (count % 1000 == 0) {
 				digitBoard.SlideScrollMsg();
 			}
 			count++;
-			
-			
-				
-				
-			
-			//digitBoard.display(10.00);
-			
+
+			// digitBoard.display(10.00);
+
 			// network table
 			/*
 			 * Timer.delay(0.25); table.putNumber("X", x); *garbage*
@@ -132,10 +127,8 @@ public class Robot extends SampleRobot {
 
 			// Checks button
 
-			
-
 			if (thisStick.getButton(Button.BACK) && thisStick.getButton(Button.B)) {
-				// climbing feature
+				// TODO climbing feature
 			}
 
 			if (thisStick.getButton(Button.B)) {
@@ -154,16 +147,16 @@ public class Robot extends SampleRobot {
 				// Drive the robot via controller
 				drive.rampedDriveListener();
 				gearIntake.Listener();
-				//shooter.shootListener();
+				// shooter.shootListener();
 				break;
 			case GEARALIGNMENT:
-				//teleMode = auto.AlignGearPeg();
+				// teleMode = auto.AlignGearPeg();
 				break;
 			case HIGHGOALALIGNMENT:
-				//teleMode = auto.AlignHighGoal();
+				// teleMode = auto.AlignHighGoal();
 				break;
 			case TEST:
-				//auto.testDrive();
+				// auto.testDrive();
 				drive.moveValue = 0;
 				drive.turnValue = 0;
 				break;
@@ -178,9 +171,17 @@ public class Robot extends SampleRobot {
 	public void disabled() {
 		while (isDisabled()) {
 			print();
-			//if (digitBoard.getButtonA()) {
-				//auto.autonomousSelector(); // Displays auto on digit board
-			//}
+			if (digitBoard.getButtonA()) {
+				auto.autonomousSelector(); // Displays auto on digit board
+			}
+			if (digitBoard.getButtonB()) {
+				Timer.delay(0.25);
+				dToggle = !dToggle;
+				if (dToggle)
+					digitBoard.UpdateDisplay('C', 'U', 'C', 'K');
+				else
+					digitBoard.UpdateDisplay('8', '-', '-', 'D');
+			}
 		}
 
 	}
@@ -190,39 +191,51 @@ public class Robot extends SampleRobot {
 
 		// SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
 		// SmartDashboard.putNumber("Gyro getRate()", auto.gyro.getRate());
-		SmartDashboard.putNumber("Range (Inches)", ultrasonic.getRangeInches());
-		/*SmartDashboard.putNumber("Range millimeters (Analog)", auto.analogSensor.GetRangeMM());
-		SmartDashboard.putNumber("Range Inches (Analog)", auto.analogSensor.GetRangeInches());
-		SmartDashboard.putNumber("Voltage (Analog)", auto.analogSensor.GetVoltage());
 
-		// These should print out GRIP's contour info into Dashboard
-		SmartDashboard.putNumber("Contour1 CenterX", auto.vision.GetContour1CenterX());
-		SmartDashboard.putNumber("Contour1 CenterY", auto.vision.GetContour1CenterY());
-		SmartDashboard.putNumber("Contour1 Height", auto.vision.GetContour1Height());
-		SmartDashboard.putNumber("Contour2 CenterX", auto.vision.GetContour2CenterX());
-		SmartDashboard.putNumber("Contour2 CenterY", auto.vision.GetContour2CenterY());
-		SmartDashboard.putNumber("Contour2 Height", auto.vision.GetContour2Height());
+		// SmartDashboard.putNumber("Range (Inches)", ultra.GetRangeInches());
+		// SmartDashboard.putNumber("Ultrasonic Voltage", ultra.GetVoltage());
 
-		SmartDashboard.putBoolean("flag", auto.vision.flag);
-
-		// SmartDashboard.putNumber("Battery Voltage", pdp.getVoltage());
-		//SmartDashboard.putNumber("Potentiometer Value", digitBoard.getPot());
-		SmartDashboard.putNumber("Move Value", drive.moveValue);
-
-		//SmartDashboard.putBoolean("Button A", digitBoard.getButtonA());
-		//SmartDashboard.putBoolean("Button B", digitBoard.getButtonB());
-		SmartDashboard.putNumber("AutoMode", auto.autoMode);
-		SmartDashboard.putString("Display", auto.display);
-		// SmartDashboard.putNumber("A7", potMaybe.getVoltage());
-
-		// digitBoard.display(pdp.getVoltage());
-
-		// SmartDashboard.putNumber("Ramp Clock",
-		// drive.forwardDriveRamp.clock.get());
-
-		// 2 camera code
 		/*
-		 * 8NIVision.IMAQdxGrab(currSession, frame, 1);
+		 * SmartDashboard.putNumber("Range millimeters (Analog)",
+		 * auto.analogSensor.GetRangeMM());
+		 * SmartDashboard.putNumber("Range Inches (Analog)",
+		 * auto.analogSensor.GetRangeInches());
+		 * SmartDashboard.putNumber("Voltage (Analog)",
+		 * auto.analogSensor.GetVoltage());
+		 * 
+		 * // These should print out GRIP's contour info into Dashboard
+		 * SmartDashboard.putNumber("Contour1 CenterX",
+		 * auto.vision.GetContour1CenterX());
+		 * SmartDashboard.putNumber("Contour1 CenterY",
+		 * auto.vision.GetContour1CenterY());
+		 * SmartDashboard.putNumber("Contour1 Height",
+		 * auto.vision.GetContour1Height());
+		 * SmartDashboard.putNumber("Contour2 CenterX",
+		 * auto.vision.GetContour2CenterX());
+		 * SmartDashboard.putNumber("Contour2 CenterY",
+		 * auto.vision.GetContour2CenterY());
+		 * SmartDashboard.putNumber("Contour2 Height",
+		 * auto.vision.GetContour2Height());
+		 * 
+		 * SmartDashboard.putBoolean("flag", auto.vision.flag);
+		 * 
+		 * // SmartDashboard.putNumber("Battery Voltage", pdp.getVoltage());
+		 * //SmartDashboard.putNumber("Potentiometer Value",
+		 * digitBoard.getPot()); SmartDashboard.putNumber("Move Value",
+		 * drive.moveValue);
+		 * 
+		 * //SmartDashboard.putBoolean("Button A", digitBoard.getButtonA());
+		 * //SmartDashboard.putBoolean("Button B", digitBoard.getButtonB());
+		 * SmartDashboard.putNumber("AutoMode", auto.autoMode);
+		 * SmartDashboard.putString("Display", auto.display); //
+		 * SmartDashboard.putNumber("A7", potMaybe.getVoltage());
+		 * 
+		 * // digitBoard.display(pdp.getVoltage());
+		 * 
+		 * // SmartDashboard.putNumber("Ramp Clock", //
+		 * drive.forwardDriveRamp.clock.get());
+		 * 
+		 * // 2 camera code /* 8NIVision.IMAQdxGrab(currSession, frame, 1);
 		 * CameraServer.getInstance().setImage(frame);
 		 */
 	}

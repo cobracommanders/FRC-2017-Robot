@@ -22,7 +22,7 @@ public class REVImprovedDigitBoard {
 	int scrollOffset = 0;
 
 	public REVImprovedDigitBoard() {
-		charreg = new byte[37][2]; // charreg is short for character registry
+		charreg = new byte[38][2]; // charreg is short for character registry
 		charmap = new HashMap<Character, Integer>();
 
 		charreg[0][0] = (byte) 0b00111111;
@@ -137,6 +137,9 @@ public class REVImprovedDigitBoard {
 		charreg[36][0] = (byte) 0b00000000;
 		charreg[36][1] = (byte) 0b00000000; // space
 		charmap.put(' ', 36);
+		charreg[37][0] = (byte) 0b11000000;
+		charreg[37][1] = (byte) 0b00000000; // -
+		charmap.put('-', 37);
 
 		i2c = new I2C(Port.kMXP, 0x70); // 0x70 0xA8
 
@@ -276,6 +279,8 @@ public class REVImprovedDigitBoard {
 			return 8;
 		case '9':
 			return 9;
+		case '-':
+			return 37;
 			default:
 				return 36;
 		
@@ -283,7 +288,7 @@ public class REVImprovedDigitBoard {
 		
 		
 	}
-	public boolean GetA() {
+	public boolean getButtonA() {
 		return !buttonA.get();
 	}
 

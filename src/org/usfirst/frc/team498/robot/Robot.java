@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.command.Command;
@@ -20,26 +21,32 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.networktables.NetworkTable; *garbage*
 
 public class Robot extends SampleRobot {
-	Command autonomousCommand;
+	// Command autonomousCommand;
 
 	/*
-	 * //Network tables NetworkTable table; *garbage*
+	 * //Network tales NetworkTable table; *garbage*
 	 */
 	// Drive
 	Ports ports = new Ports();
-	private Timer clock;
+	private Timer clock = new Timer();
+	Spark intake = new Spark(5);
 	FancyJoystick thisStick = new FancyJoystick(0);
 	Drive2017 drive = new Drive2017(thisStick, ports);
 	REVImprovedDigitBoard digitBoard = new REVImprovedDigitBoard();
 
 	PewPew2017 shooter = new PewPew2017(digitBoard, thisStick, ports);
-	AutonmousController auto = new AutonmousController(drive, shooter, digitBoard, ports);
+	// AnalogUltrasonicSensor2017 ultra = new
+	// AnalogUltrasonicSensor2017(thisStick, ports);
+	// AutonmousController auto = new AutonmousController(drive, shooter,
+	// digitBoard, thisStick, ports, ultra, clock);
 
-	GearIntake2017 gearIntake = new GearIntake2017(thisStick, ports);
-	// AnalogUltrasonicSensor2017 ultra = new AnalogUltrasonicSensor2017(ports);
+	// GearIntake2017 gearIntake = new GearIntake2017(thisStick, ports);
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 
 	boolean dToggle = false;
+
+	boolean intakeToggle = false;
+	boolean xDown = false;
 
 	@Override
 	public void robotInit() {
@@ -78,9 +85,29 @@ public class Robot extends SampleRobot {
 		 */
 	}
 
+	public boolean xDown() {
+		if (!xDown && thisStick.getButton(Button.X)) {
+			return true;
+		}
+		
+		xDown = thisStick.getButton(Button.X);
+		return false;
+	}
+
 	// Select which autonomous to run
 	public void autonomous() {
 
+		while (isAutonomous() && isEnabled()) {
+			print();
+			// Another bonding moment
+			// auto.Auto();
+		}
+
+		while (isAutonomous() && !isEnabled()) {
+			// auto.phase = 0;
+		}
+
+		// auto.Auto();
 		// auto.autoInit(-1); // This autonomous method is copied from Unnamed
 		// Mark
 		// 4
@@ -99,24 +126,43 @@ public class Robot extends SampleRobot {
 		// auto.gyro.reset();
 
 		TeleOpMode teleMode = TeleOpMode.OPERATORCONTROL;
-		// digitBoard.display(2.0);
 		digitBoard.CreateScrollMsg("Randy Left Early    ");
 		while (isOperatorControl() && isEnabled()) {
 			if (count % 1000 == 0) {
-				digitBoard.SlideScrollMsg();
+				//digitBoard.SlideScrollMsg();
 			}
 			count++;
-		
-		while (isOperatorControl() && isEnabled()) {
 			
-			if(thisStick.getButton(Button.Y)) { // 0.735 on smart dashboard is perfect!
-			shooter.Shoot();
-			} else {
-				shooter.StopShoot();
+			if(xDown()) {
+				intakeToggle = !intakeToggle;
+				if(intakeToggle) 
+					//intake.set(1);
+					drive.manualDrive(0.5, 0);
+				else
+					drive.manualDrive(0, 0);
+					//intake.set(0);
 			}
-		}
 
-			// digitBoard.display(10.00);
+				// Randy made this a bonding moment
+				print();
+
+				// powers the sensor from PCM
+				// ultra.ultraListener();
+
+				// gets inches and voltage
+				// ultra.GetRangeMM();
+				// ultra.GetRangeInches();
+				// ultra.GetVoltage();
+				// ultra.getValue();
+
+				if (thisStick.getButton(Button.Y)) { // 0.735 on smart dashboard
+														// is perfect!
+					shooter.Shoot();
+				} else {
+					shooter.StopShoot();
+				}
+				drive.rampedDriveListener();
+			}
 
 			// network table
 			/*
@@ -147,15 +193,22 @@ public class Robot extends SampleRobot {
 				teleMode = TeleOpMode.OPERATORCONTROL; // makes robot go back to
 														// TeleOp
 			}
+
 			if (thisStick.getButton(Button.X)) {
-				teleMode = TeleOpMode.TEST; // Testing code
+				//intakeToggle = !intakeToggle;
+				//if (intakeToggle)
+					//intake.set(1);
+				//else
+				//	intake.set(0);
+			} else {
+				//intake.set(0);
 			}
 
 			switch (teleMode) {
 			case OPERATORCONTROL:
 				// Drive the robot via controller
 				drive.rampedDriveListener();
-				gearIntake.Listener();
+				// gearIntake.Listener();
 				// shooter.shootListener();
 				break;
 			case GEARALIGNMENT:
@@ -172,16 +225,14 @@ public class Robot extends SampleRobot {
 			}
 
 			// Send stats to the driver
-			print();
-		}
+
+		
 	}
-	
 
 	public void disabled() {
 		while (isDisabled()) {
-			print();
 			if (digitBoard.getButtonA()) {
-				auto.autonomousSelector(); // Displays auto on digit board
+				// auto.autonomousSelector(); // Displays auto on digit board
 			}
 			if (digitBoard.getButtonB()) {
 				Timer.delay(0.25);
@@ -191,7 +242,7 @@ public class Robot extends SampleRobot {
 				else
 					digitBoard.UpdateDisplay('8', '-', '-', 'D');
 			}
-			
+
 		}
 
 	}
@@ -202,10 +253,26 @@ public class Robot extends SampleRobot {
 		// SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
 		// SmartDashboard.putNumber("Gyro getRate()", auto.gyro.getRate());
 
-		// SmartDashboard.putNumber("Range (Inches)", ultra.GetRangeInches());
+		SmartDashboard.putBoolean("A Button", thisStick.getButton(Button.A));
+		// SmartDashboard.putNumber("Ultrasonic MilliMeters",
+		// ultra.GetRangeMM());
+		// SmartDashboard.putNumber("Ultrasonic value", ultra.getValue());
+		// SmartDashboard.putNumber("Ultrasonic Inches",
+		// ultra.GetRangeInches());
 		// SmartDashboard.putNumber("Ultrasonic Voltage", ultra.GetVoltage());
-		
-		SmartDashboard.putNumber("Shooter value", digitBoard.getPot());
+		// SmartDashboard.putNumber("Phase", auto.phase);
+		// SmartDashboard.putNumber("AutoMode", auto.autoMode);
+		if (clock != null) {
+			try {
+				SmartDashboard.putNumber("Clock Time", clock.get());
+			} catch (Exception e) {
+				SmartDashboard.putNumber("Clock Time", -1);
+			}
+		} else {
+			SmartDashboard.putNumber("Clock Null", 1337);
+		}
+
+		// SmartDashboard.putNumber("Shooter value", digitBoard.getPot());
 
 		/*
 		 * SmartDashboard.putNumber("Range millimeters (Analog)",
@@ -214,23 +281,23 @@ public class Robot extends SampleRobot {
 		 * auto.analogSensor.GetRangeInches());
 		 * SmartDashboard.putNumber("Voltage (Analog)",
 		 * auto.analogSensor.GetVoltage());
-		 * 
-		 * // These should print out GRIP's contour info into Dashboard
-		 * SmartDashboard.putNumber("Contour1 CenterX",
-		 * auto.vision.GetContour1CenterX());
-		 * SmartDashboard.putNumber("Contour1 CenterY",
-		 * auto.vision.GetContour1CenterY());
-		 * SmartDashboard.putNumber("Contour1 Height",
-		 * auto.vision.GetContour1Height());
-		 * SmartDashboard.putNumber("Contour2 CenterX",
-		 * auto.vision.GetContour2CenterX());
-		 * SmartDashboard.putNumber("Contour2 CenterY",
-		 * auto.vision.GetContour2CenterY());
-		 * SmartDashboard.putNumber("Contour2 Height",
-		 * auto.vision.GetContour2Height());
-		 * 
-		 * SmartDashboard.putBoolean("flag", auto.vision.flag);
-		 * 
+		 */
+		// These should print out GRIP's contour info into Dashboard
+		// SmartDashboard.putNumber("Contour1 CenterX",
+		// auto.vision.GetContour1CenterX());
+		// SmartDashboard.putNumber("Contour1 CenterY",
+		// auto.vision.GetContour1CenterY());
+		// SmartDashboard.putNumber("Contour1 Height",
+		// auto.vision.GetContour1Height());
+		// SmartDashboard.putNumber("Contour2
+		// CenterX",auto.vision.GetContour2CenterX());
+		// SmartDashboard.putNumber("Contour2 CenterY",
+		// auto.vision.GetContour2CenterY());
+		// SmartDashboard.putNumber("Contour2 Height",
+		// auto.vision.GetContour2Height());
+
+		// SmartDashboard.putBoolean("flag", auto.vision.flag);
+		/*
 		 * // SmartDashboard.putNumber("Battery Voltage", pdp.getVoltage());
 		 * //SmartDashboard.putNumber("Potentiometer Value",
 		 * digitBoard.getPot()); SmartDashboard.putNumber("Move Value",

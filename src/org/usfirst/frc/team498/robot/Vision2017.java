@@ -26,12 +26,14 @@ public class Vision2017 {
 	private double contour2Height = 0.0;
 
 	public boolean flag = false;
+	//public CameraServer cam1 = CameraServer.getInstance();
 
 	private final Object imgLock = new Object();
 
 	public Vision2017(int cam) {
 		UsbCamera camera = new UsbCamera("cam0", cam);
-		camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+		//camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+		//cam1.startAutomaticCapture("cam1", 0);
 
 		//2 camera code
 		/*

@@ -70,7 +70,7 @@ public class Drive2017 {
 	private void drive() {
 		double moveValue_f;
 		double turnValue_f;
-		if (false) {
+		if (false) {//false
 			moveValue_f = moveValue * speedCap;
 			turnValue_f = turnValue * speedCap;
 		} else {

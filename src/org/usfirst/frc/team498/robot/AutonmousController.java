@@ -38,11 +38,12 @@ public class AutonmousController {
 
 	REVImprovedDigitBoard digitBoard;
 
-	AutonmousController(Drive2017 drive, PewPew2017 shooter, REVImprovedDigitBoard digitBoard, Ports ports) {
+	AutonmousController(Drive2017 drive, PewPew2017 shooter, REVImprovedDigitBoard digitBoard, FancyJoystick thisStick,
+			Ports ports, AnalogUltrasonicSensor2017 ultra, Timer clock) {
 		this.drive = drive;
 		this.shooter = shooter;
-		analogSensor = new AnalogUltrasonicSensor2017(ports);
-		clock = new Timer();
+		this.analogSensor = ultra;
+		this.clock = clock;
 		this.digitBoard = digitBoard;
 
 	}
@@ -77,6 +78,29 @@ public class AutonmousController {
 			theta -= 360d;
 		// Otherwise, no change needed
 		return theta;
+	}
+
+	public void Auto() {
+		switch (autoMode) {
+		case 0:
+			autoLeftPeg(false);
+			break;
+		case 1:
+			autoMidPeg(false);
+			break;
+		case 2:
+			autoRightPeg(false);
+			break;
+		case 3:
+			autoLeftPeg(true);
+			break;
+		case 4:
+			autoMidPeg(true);
+			break;
+		case 5:
+			autoRightPeg(true);
+			break;
+		}
 	}
 
 	public void autoDriveForward() { // This is our test auto
@@ -125,36 +149,49 @@ public class AutonmousController {
 		}
 	}
 
-	public void autoLeftPeg() { // auto for the top peg (Top as in farthest from
-								// BOILER)
+	public void autoLeftPeg(boolean blue) { // auto for the top peg (Top as in
+											// farthest from
+		// BOILER)
+		/*
+		 * drive.manualDrive(0, -.5 * blueToggle); drive.manualDrive(.5, 0);
+		 * drive.manualDrive(0, .5 * blueToggle); AlignGearPeg();
+		 */
+		int blueToggle = 1;
+		if (blue)
+			blueToggle = -1;
 		switch (phase) {
 		case 0:
 			clock.start();
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(0, -.5); // turns left
+			drive.manualDrive(0, -.5 * blueToggle); // turns left
 			if (clock.get() > 2) {
-				clock.reset();
+				clock.start();
 				phase++;
 			}
 			break;
 		case 2:
 			drive.manualDrive(.5, 0); // moves forward
 			if (clock.get() > 3) {
-				clock.reset();
+				clock.start();
 				phase++;
 			}
 			break;
 		case 3:
-			drive.manualDrive(0, .5); // turns right
+			drive.manualDrive(0, .5 * blueToggle); // turns right
+
 			if (clock.get() > 2) {
-				clock.reset();
+				clock.start();
 				phase++;
 			}
+
 			break;
 		case 4:
-			AlignGearPeg(); // aligns gear peg
+			clock.reset();
+			clock.stop();
+			drive.manualDrive(0, 0);
+			// AlignGearPeg(); // aligns gear peg
 			phase++;
 			break;
 		case 40:
@@ -182,8 +219,11 @@ public class AutonmousController {
 	 * right if (clock.get() > 1) { clock.reset(); phase++; } break; case 10:
 	 * AlignHighGoal(); phase++; break; case 40: break; }
 	 */
-	public void autoMidPeg() {
+	public void autoMidPeg(boolean blue) {
 		// TODO: TEST
+		int blueToggle = 1;
+		if (blue)
+			blueToggle = -1;
 		switch (phase) {
 		case 0:
 			clock.start();
@@ -192,7 +232,7 @@ public class AutonmousController {
 		case 1:
 			drive.manualDrive(.5, 0); // moves forward
 			if (clock.get() > 2) {
-				clock.reset();
+				clock.start();
 				phase++;
 			}
 			break;
@@ -205,36 +245,44 @@ public class AutonmousController {
 		}
 	}
 
-	public void autoRightPeg() { // inverse of autoleftPeg
+	public void autoRightPeg(boolean blue) { // inverse of autoleftPeg
 		// TODO: TEST
+		int blueToggle = 1;
+		if (blue)
+			blueToggle = -1;
 		switch (phase) {
 		case 0:
 			clock.start();
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(0, .5); // turns right
+			drive.manualDrive(0, .5 * blueToggle); // turns right
 			if (clock.get() > 2) {
-				clock.reset();
+				clock.start();
 				phase++;
 			}
 			break;
 		case 2:
+
 			drive.manualDrive(.5, 0); // moves forward
 			if (clock.get() > 3) {
-				clock.reset();
+
+				clock.start();
 				phase++;
 			}
 			break;
 		case 3:
-			drive.manualDrive(0, -.5); // turns left
+			drive.manualDrive(0, -.5 * blueToggle); // turns left
 			if (clock.get() > 2) {
-				clock.reset();
+				clock.start();
 				phase++;
 			}
 			break;
 		case 4:
-			AlignGearPeg(); // aligns gear peg
+			clock.reset();
+			clock.stop();
+			drive.manualDrive(0, 0);
+			//AlignGearPeg(); // aligns gear peg
 			phase++;
 			break;
 		case 40:
@@ -281,6 +329,21 @@ public class AutonmousController {
 
 	public TeleOpMode AlignGearPeg() {
 		// Checks if we are in the gear Deadzone
+		double turnDirection = 0.5;
+		switch (autoMode) {
+		case 0:
+			break;
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		case 4:
+			break;
+		case 5:
+			break;
+		}
 		if (Math.abs(vision.GetContour1Height() - vision.GetContour2Height()) > gearDeadzone) {
 
 			if (analogSensor.GetRangeInches() > rangeInches) {

@@ -179,7 +179,7 @@ public class REVImprovedDigitBoard {
 		byte1[9] = charreg[charz[0]][1];
 		// send the array to the board\ \
 		i2c.writeBulk(byte1);
-		Timer.delay(0.1);
+
 	}
 	
 	//Sets scrolling message

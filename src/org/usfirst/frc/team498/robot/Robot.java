@@ -29,22 +29,23 @@ public class Robot extends SampleRobot {
 	// Drive
 	Ports ports = new Ports();
 	private Timer clock = new Timer();
-	Spark intake = new Spark(6); // 5 (1st robot)
 	FancyJoystick thisStick = new FancyJoystick(0);
 	Drive2017 drive = new Drive2017(thisStick, ports);
 	REVImprovedDigitBoard digitBoard = new REVImprovedDigitBoard();
+	Spark spark;
 
 	PewPew2017 shooter = new PewPew2017(digitBoard, thisStick, ports);
 	AnalogUltrasonicSensor2017 ultra = new AnalogUltrasonicSensor2017(thisStick, ports);
 	AutonmousController auto = new AutonmousController(drive, shooter, digitBoard, thisStick, ports, ultra, clock);
 
-	GearIntake2017 gearIntake = new GearIntake2017(thisStick, ports);
+	GearIntake2017 gearIntake = new GearIntake2017(thisStick, ports, spark);
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 
 	boolean dToggle = false;
-
-	boolean intakeToggle = false;
-	boolean xDown = false;
+	
+	
+	//boolean intakeToggle = false;
+	//boolean xDown = false;
 
 	@Override
 	public void robotInit() {
@@ -83,16 +84,16 @@ public class Robot extends SampleRobot {
 		 */
 	}
 
-	public boolean xDown() {
+	/*public boolean xDown() {
 		if (!xDown && thisStick.getButton(Button.X)) {
-			xDown = thisStick.getButton(Button.X);
-			System.out.println("Should have set to true");
+			//xDown = thisStick.getButton(Button.X);
+			// System.out.println("Should have set to true");
 			return true;
+		} else {
+			xDown = thisStick.getButton(Button.X);
+			return false;
 		}
-
-		xDown = thisStick.getButton(Button.X);
-		return false;
-	}
+	}*/
 
 	// Select which autonomous to run
 	public void autonomous() {
@@ -129,14 +130,19 @@ public class Robot extends SampleRobot {
 
 		while (isOperatorControl() && isEnabled()) {
 			// digitBoard.CreateScrollMsg(String.valueOf(pdp.getVoltage()));
-			if (xDown()) {
+			
+	
+			
+			/*if (xDown()) {
 				intakeToggle = !intakeToggle;
 				System.out.println("Should have toggled");
-				/*
-				 * if(intakeToggle) //intake.set(1); drive.manualDrive(.5, 0);
-				 * else drive.manualDrive(0, 0); //intake.set(0);
-				 */
-			}
+
+				if (intakeToggle) // intake.set(1);
+					drive.manualDrive(.5, 0);
+				else
+					drive.manualDrive(0, 0); // intake.set(0);
+
+			}*/
 			// Checks button
 
 			if (thisStick.getButton(Button.BACK) && thisStick.getButton(Button.B)) {
@@ -144,7 +150,7 @@ public class Robot extends SampleRobot {
 			}
 
 			if (thisStick.getButton(Button.B)) {
-				teleMode = TeleOpMode.GEARALIGNMENT; // aligns robot to peg
+				teleMode = TeleOpMode.TEST; // drives straight w/ gyro
 			}
 			if (thisStick.getButton(Button.START)) {
 				teleMode = TeleOpMode.OPERATORCONTROL; // makes robot go back to
@@ -165,7 +171,7 @@ public class Robot extends SampleRobot {
 				// teleMode = auto.AlignHighGoal();
 				break;
 			case TEST:
-				// auto.testDrive();
+				auto.autoDriveForward();
 				drive.moveValue = 0;
 				drive.turnValue = 0;
 				break;
@@ -199,13 +205,14 @@ public class Robot extends SampleRobot {
 	// Sends information to the driver
 	private void print() {
 
-		// SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
+		SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
 		// SmartDashboard.putNumber("Gyro getRate()", auto.gyro.getRate());
+		SmartDashboard.putNumber("Gyro Converted Angle", auto.ConvertGyroStuff(auto.gyro.getAngle()));
 
-		SmartDashboard.putBoolean("intakeToggle", intakeToggle);
-		SmartDashboard.putBoolean("xDown", xDown);
+		//SmartDashboard.putBoolean("intakeToggle", intakeToggle);
+		//SmartDashboard.putBoolean("xDown", xDown);
 		SmartDashboard.putBoolean("Xbutton", thisStick.getButton(Button.X));
-		SmartDashboard.putBoolean("output", xDown());
+		//SmartDashboard.putBoolean("output", xDown());
 		// SmartDashboard.putNumber("Ultrasonic MilliMeters",
 		// ultra.GetRangeMM());
 		// SmartDashboard.putNumber("Ultrasonic value", ultra.getValue());

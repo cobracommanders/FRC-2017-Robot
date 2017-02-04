@@ -10,10 +10,9 @@ public class AnalogUltrasonicSensor2017 {
 
 	public AnalogUltrasonicSensor2017(FancyJoystick thisStick, Ports ports) {
 		this.thisStick = thisStick;
-		AI = new AnalogInput(ports.ULTRASONIC_SENSOR_ANALOG_PORT); // !!!MUY
-
+		AI = new AnalogInput(ports.ULTRASONIC_SENSOR_ANALOG_PORT);
 		sol = new Solenoid(ports.ULTRASONIC_SENSOR_PCM_PORT);
-		// IMPORTANTE!!!
+		
 		if (!sol.get()) {
 			sol.set(true);
 		}
@@ -24,10 +23,10 @@ public class AnalogUltrasonicSensor2017 {
 	 */
 
 	public double GetRangeMM() {
-		//double output = 0;
-		//output = AI.getVoltage();
-		//output = output / 1000; // Measured in millivolts
-		//output = output / 0.977;
+		// double output = 0;
+		// output = AI.getVoltage();
+		// output = output / 1000; // Measured in millivolts
+		// output = output / 0.977;
 		return GetRangeInches() / 25.4;
 	}
 
@@ -47,5 +46,4 @@ public class AnalogUltrasonicSensor2017 {
 		return AI.getValue();
 	}
 
-	
 }

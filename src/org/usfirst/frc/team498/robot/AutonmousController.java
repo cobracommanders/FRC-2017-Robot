@@ -2,6 +2,7 @@
 
 package org.usfirst.frc.team498.robot;
 
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DriverStation;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -14,7 +15,7 @@ public class AutonmousController {
 	private Drive2017 drive;
 	private PewPew2017 shooter;
 	public AnalogUltrasonicSensor2017 analogSensor;
-	// public ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+	public ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 
 	double currentContourHeight = 0.0;
 	double leftContour = 0.0;
@@ -76,6 +77,9 @@ public class AutonmousController {
 		// Makes 270 = -90, 350 = -10, etc.
 		if (theta >= 180)
 			theta -= 360d;
+		//randy's modifier, makes -270 = 90, -350 = 10, etc.
+		if (theta <= -180)
+			theta -= -360d;
 		// Otherwise, no change needed
 		return theta;
 	}
@@ -107,8 +111,8 @@ public class AutonmousController {
 		switch (phase) {
 		case 0:
 			clock.reset();
-			// gyro.reset();
-			// gyro.calibrate();
+			 gyro.reset();
+			gyro.calibrate();
 			phase++;
 
 			break;
@@ -127,7 +131,7 @@ public class AutonmousController {
 			 * drive STRAIGHT!!!* (internal screaming, KMP)
 			 */
 
-			// drive.manualDrive(.6, ConvertGyroStuff(gyro.getAngle()) * -0.03);
+			drive.manualDrive(.6, ConvertGyroStuff(gyro.getAngle()) * -0.03);
 			// // moves
 			// forward
 			// for

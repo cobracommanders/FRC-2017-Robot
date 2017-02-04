@@ -6,7 +6,7 @@ public class PewPew2017 {
 
 	Talon talon;
 	FancyJoystick thisStick;
-	REVImprovedDigitBoard  digitBoard;
+	REVImprovedDigitBoard digitBoard;
 
 	boolean wasShootPressed = false;
 	boolean isShootRunning = false;
@@ -19,14 +19,9 @@ public class PewPew2017 {
 	}
 
 	public void Shoot() {
-		double voltage = digitBoard.getPot();
-		double motorValue = voltage; // voltage / 5
-		
-		if (motorValue > 4) { // 1
-			motorValue = 1;
-		} 
-		talon.set(motorValue); 
-
+		// double voltage = digitBoard.getPot();
+		double motorValue = .735; // voltage / 5
+		talon.set(motorValue);
 	}
 
 	public void StopShoot() {

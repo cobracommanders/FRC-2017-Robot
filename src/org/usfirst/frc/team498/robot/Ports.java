@@ -7,7 +7,7 @@ public class Ports {
 	final int RIGHT_FRONT_PWM_PORT = 2;// 6, 4 2
 	final int RIGHT_BACK_PWM_PORT = 1;// 7, 3 1
 
-	final int SHOOTER_PWM_PORT = 5;
+	final int SHOOTER_PWM_PORT = 5; //4 (1st robot), 5 (test robot)
 	final int GEAR_INTAKE_FORWARD_CHANNEL = 2; //0, 2
 	final int GEAR_INTAKE_REVERSE_CHANNEL = 3; //1, 3
 

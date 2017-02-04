@@ -14,6 +14,9 @@ public class AnalogUltrasonicSensor2017 {
 
 		sol = new Solenoid(ports.ULTRASONIC_SENSOR_PCM_PORT);
 		// IMPORTANTE!!!
+		if (!sol.get()) {
+			sol.set(true);
+		}
 	}
 
 	/*
@@ -44,9 +47,5 @@ public class AnalogUltrasonicSensor2017 {
 		return AI.getValue();
 	}
 
-	public void ultraListener() {
-		if (!sol.get()) {
-			sol.set(true);
-		}
-	}
+	
 }

@@ -29,18 +29,16 @@ public class Robot extends SampleRobot {
 	// Drive
 	Ports ports = new Ports();
 	private Timer clock = new Timer();
-	Spark intake = new Spark(5);
+	Spark intake = new Spark(6); // 5 (1st robot)
 	FancyJoystick thisStick = new FancyJoystick(0);
 	Drive2017 drive = new Drive2017(thisStick, ports);
 	REVImprovedDigitBoard digitBoard = new REVImprovedDigitBoard();
 
 	PewPew2017 shooter = new PewPew2017(digitBoard, thisStick, ports);
-	// AnalogUltrasonicSensor2017 ultra = new
-	// AnalogUltrasonicSensor2017(thisStick, ports);
-	// AutonmousController auto = new AutonmousController(drive, shooter,
-	// digitBoard, thisStick, ports, ultra, clock);
+	AnalogUltrasonicSensor2017 ultra = new AnalogUltrasonicSensor2017(thisStick, ports);
+	AutonmousController auto = new AutonmousController(drive, shooter, digitBoard, thisStick, ports, ultra, clock);
 
-	// GearIntake2017 gearIntake = new GearIntake2017(thisStick, ports);
+	GearIntake2017 gearIntake = new GearIntake2017(thisStick, ports);
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 
 	boolean dToggle = false;
@@ -87,9 +85,11 @@ public class Robot extends SampleRobot {
 
 	public boolean xDown() {
 		if (!xDown && thisStick.getButton(Button.X)) {
+			xDown = thisStick.getButton(Button.X);
+			System.out.println("Should have set to true");
 			return true;
 		}
-		
+
 		xDown = thisStick.getButton(Button.X);
 		return false;
 	}
@@ -100,11 +100,11 @@ public class Robot extends SampleRobot {
 		while (isAutonomous() && isEnabled()) {
 			print();
 			// Another bonding moment
-			// auto.Auto();
+			auto.Auto();
 		}
 
 		while (isAutonomous() && !isEnabled()) {
-			// auto.phase = 0;
+			auto.phase = 0;
 		}
 
 		// auto.Auto();
@@ -126,60 +126,17 @@ public class Robot extends SampleRobot {
 		// auto.gyro.reset();
 
 		TeleOpMode teleMode = TeleOpMode.OPERATORCONTROL;
-		digitBoard.CreateScrollMsg("Randy Left Early    ");
+
 		while (isOperatorControl() && isEnabled()) {
-			if (count % 1000 == 0) {
-				//digitBoard.SlideScrollMsg();
-			}
-			count++;
-			
-			if(xDown()) {
+			// digitBoard.CreateScrollMsg(String.valueOf(pdp.getVoltage()));
+			if (xDown()) {
 				intakeToggle = !intakeToggle;
-				if(intakeToggle) 
-					//intake.set(1);
-					drive.manualDrive(0.5, 0);
-				else
-					drive.manualDrive(0, 0);
-					//intake.set(0);
+				System.out.println("Should have toggled");
+				/*
+				 * if(intakeToggle) //intake.set(1); drive.manualDrive(.5, 0);
+				 * else drive.manualDrive(0, 0); //intake.set(0);
+				 */
 			}
-
-				// Randy made this a bonding moment
-				print();
-
-				// powers the sensor from PCM
-				// ultra.ultraListener();
-
-				// gets inches and voltage
-				// ultra.GetRangeMM();
-				// ultra.GetRangeInches();
-				// ultra.GetVoltage();
-				// ultra.getValue();
-
-				if (thisStick.getButton(Button.Y)) { // 0.735 on smart dashboard
-														// is perfect!
-					shooter.Shoot();
-				} else {
-					shooter.StopShoot();
-				}
-				drive.rampedDriveListener();
-			}
-
-			// network table
-			/*
-			 * Timer.delay(0.25); table.putNumber("X", x); *garbage*
-			 * table.putNumber("Y", y); x += 0.05; y +=1.0;
-			 */
-
-			// 2 camera code
-			/*
-			 * if(button pressing code){ if(currSession == sessionfront){
-			 * NIVision.IMAQdxStopAcquisition(currSession); currSession =
-			 * sessionback; NIVision.IMAQdxConfigureGrab(currSession); } else
-			 * if(currSession == sessionback){
-			 * NIVision.IMAQdxStopAcquisition(currSession); currSession =
-			 * sessionfront; NIVision.IMAQdxConfigureGrab(currSession); } }
-			 */
-
 			// Checks button
 
 			if (thisStick.getButton(Button.BACK) && thisStick.getButton(Button.B)) {
@@ -194,22 +151,12 @@ public class Robot extends SampleRobot {
 														// TeleOp
 			}
 
-			if (thisStick.getButton(Button.X)) {
-				//intakeToggle = !intakeToggle;
-				//if (intakeToggle)
-					//intake.set(1);
-				//else
-				//	intake.set(0);
-			} else {
-				//intake.set(0);
-			}
-
 			switch (teleMode) {
 			case OPERATORCONTROL:
 				// Drive the robot via controller
-				drive.rampedDriveListener();
-				// gearIntake.Listener();
-				// shooter.shootListener();
+				// drive.rampedDriveListener();
+				gearIntake.Listener();
+				shooter.shootListener();
 				break;
 			case GEARALIGNMENT:
 				// teleMode = auto.AlignGearPeg();
@@ -225,8 +172,10 @@ public class Robot extends SampleRobot {
 			}
 
 			// Send stats to the driver
+			// Randy made this a bonding moment
+			print();
+		}
 
-		
 	}
 
 	public void disabled() {
@@ -253,7 +202,10 @@ public class Robot extends SampleRobot {
 		// SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
 		// SmartDashboard.putNumber("Gyro getRate()", auto.gyro.getRate());
 
-		SmartDashboard.putBoolean("A Button", thisStick.getButton(Button.A));
+		SmartDashboard.putBoolean("intakeToggle", intakeToggle);
+		SmartDashboard.putBoolean("xDown", xDown);
+		SmartDashboard.putBoolean("Xbutton", thisStick.getButton(Button.X));
+		SmartDashboard.putBoolean("output", xDown());
 		// SmartDashboard.putNumber("Ultrasonic MilliMeters",
 		// ultra.GetRangeMM());
 		// SmartDashboard.putNumber("Ultrasonic value", ultra.getValue());

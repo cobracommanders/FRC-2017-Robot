@@ -19,9 +19,9 @@ public class PewPew2017 {
 	}
 
 	public void Shoot() {
-		// double voltage = digitBoard.getPot();
-		double motorValue = .735; // voltage / 5
-		talon.set(motorValue);
+		double voltage = digitBoard.getPot();
+		double motorValue = voltage; // voltage / 5
+		talon.set(motorValue); // motorValue works
 	}
 
 	public void StopShoot() {

@@ -3,9 +3,12 @@
 
 package org.usfirst.frc.team498.robot;
 
+import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.vision.VisionRunner;
@@ -26,67 +29,67 @@ public class Vision2017 {
 	private double contour2Height = 0.0;
 
 	public boolean flag = false;
-	//public CameraServer cam1 = CameraServer.getInstance();
 
 	private final Object imgLock = new Object();
+	
 
 	public Vision2017(int cam) {
-		UsbCamera camera = new UsbCamera("cam0", cam);
-		//camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
-		//cam1.startAutomaticCapture("cam1", 0);
+		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture("cam0", 0);
+		camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 
-		//2 camera code
+		//cam0.addCamera(camera);
+
+		// 2 camera code
 		/*
-		 * int currSession; 
-		 * int sessionfront; 
-		 * int sessionback; 
-		 * Image frame; */
+		 * int currSession; int sessionfront; int sessionback; Image frame;
+		 */
+
 		
+		/*new Thread(() -> {
+			UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+			camera.setResolution(640, 480);
+
+			CvSink cvSink = CameraServer.getInstance().getVideo();
+			CvSource outputStream = CameraServer.getInstance().putVideo("Blur", 640, 480);
+
+			Mat source = new Mat();
+			Mat output = new Mat();
+
+			while (true) {
+				cvSink.grabFrame(source);
+				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+				outputStream.putFrame(output);
+			}
+		}).start();*/
 		
-		  
 		// Good, you create a VisionThread
-		visionThread = new VisionThread(camera, new Pipeline(), pipeline -> {
-		// I would modify this if statement to check if you have 2 contours:
-		// pipeline.filterContoursOutput().size() >= 2
+		/*visionThread = new VisionThread(camera, new Pipeline(), pipeline -> {
+			// I would modify this if statement to check if you have 2 contours:
+			// pipeline.filterContoursOutput().size() >= 2
+
 			
-			//modified
-		if (pipeline.filterContoursOutput().size() >= 2) {
+			  //modified
+			  if (pipeline.filterContoursOutput().size() >= 2) {
 				Rect contour1 = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
 				Rect contour2 = Imgproc.boundingRect(pipeline.filterContoursOutput().get(1));
-
-				// We take the lock here but we never use it anywhere else?  This seems weird.
-				// I can't help much more unless I can see your entire program.
+				// We take the lock here but we never use it anywhere else? This
+				// seems weird. // I can't help much more unless I can see your
+				// entire
+				// * program.
 				synchronized (imgLock) {
 					contour1CenterX = contour1.x + (contour1.width / 2);
 					contour1CenterY = contour1.y + (contour1.height / 2);
 					contour1Height = contour1.height;
-
 					contour2CenterX = contour2.x + (contour2.width / 2);
 					contour2CenterY = contour2.y + (contour2.height / 2);
 					contour2Height = contour2.height;
 					flag = true;
 				}
-		}
-		});
+			}
+		});*/
+
 		
-		 /* // old vision thread code
-		 * 
-		 * /* visionThread = new VisionThread(camera, new Pipeline(), pipeline
-		 * -> { if (!pipeline.filterContoursOutput().isEmpty()) { Rect contour1
-		 * = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0)); Rect
-		 * contour2 =
-		 * Imgproc.boundingRect(pipeline.filterContoursOutput().get(1));
-		 * synchronized (imgLock) { contour1CenterX = contour1.x +
-		 * (contour1.width / 2); contour1CenterY = contour1.y + (contour1.height
-		 * / 2); contour1Height = contour1.height;
-		 * 
-		 * contour2CenterX = contour2.x + (contour2.width / 2); contour2CenterY
-		 * = contour2.y + (contour2.height / 2); contour2Height =
-		 * contour2.height; flag = true; }
-		 * 
-		 * } });
-		 */
-		visionThread.start();
+		//visionThread.start();
 	}
 
 	// methods for getting contour values

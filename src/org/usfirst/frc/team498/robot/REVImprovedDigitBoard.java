@@ -203,6 +203,12 @@ public class REVImprovedDigitBoard {
 		UpdateDisplay(CharToNum(char1),CharToNum(char2),CharToNum(char3),CharToNum(char4));		
 	}
 	
+	public void UpdateDisplay(char[] charz)
+	{
+		if(charz.length == 4)
+		UpdateDisplay(CharToNum(charz[0]),CharToNum(charz[1]),CharToNum(charz[2]),CharToNum(charz[3]));		
+	}
+	
 	//Converts a character to its equivelent int value for display
 	private int CharToNum(char letter) {
 		letter = Character.toUpperCase(letter);

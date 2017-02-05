@@ -143,7 +143,7 @@ public class Robot extends SampleRobot {
 		TeleOpMode teleMode = TeleOpMode.OPERATORCONTROL;
 
 		while (isOperatorControl() && isEnabled()) {
-			System.out.println("We made it to teleop");
+
 			if (!hasDigitStarted) {
 				digitClock.start();
 				hasDigitStarted = true;
@@ -154,20 +154,11 @@ public class Robot extends SampleRobot {
 				digitBoard.UpdateDisplay(DisplayVoltageConversion(), true);
 			}
 
-			/*
-			 * if (xDown()) { intakeToggle = !intakeToggle;
-			 * System.out.println("Should have toggled");
-			 * 
-			 * if (intakeToggle) // intake.set(1); drive.manualDrive(.5, 0);
-			 * else drive.manualDrive(0, 0); // intake.set(0);
-			 * 
-			 * }
-			 */
 			// Checks button
 
-			//if (thisStick.getButton(Button.B)) {
-			//	teleMode = TeleOpMode.TEST; // drives straight w/ gyro
-		//	}
+			// if (thisStick.getButton(Button.B)) {
+			// teleMode = TeleOpMode.TEST; // drives straight w/ gyro
+			// }
 			if (thisStick.getButton(Button.START)) {
 				teleMode = TeleOpMode.OPERATORCONTROL; // makes robot go back to
 														// TeleOp
@@ -195,11 +186,11 @@ public class Robot extends SampleRobot {
 
 			// Send stats to the driver
 			// Randy made this a bonding moment
-			//print();//TODO
-			//TODO
-			//TODO
-			//TODO
-			//TODO
+			print();// TODO
+			// TODO
+			// TODO
+			// TODO
+			// TODO
 		}
 
 	}
@@ -225,7 +216,7 @@ public class Robot extends SampleRobot {
 
 	// Sends information to the driver
 	private void print() {
-		System.out.println("We made it to Print()");
+
 		// TODO Just so we can click here
 		// SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
 		// SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
@@ -235,37 +226,32 @@ public class Robot extends SampleRobot {
 
 		// SmartDashboard.putBoolean("intakeToggle", intakeToggle);
 		// SmartDashboard.putBoolean("xDown", xDown);
-		SmartDashboard.putBoolean("Abutton", thisStick.getButton(Button.A));
+
 		// SmartDashboard.putBoolean("output", xDown());
-		SmartDashboard.putNumber("Ultrasonic MilliMeters", ultra.GetRangeMM());
-		SmartDashboard.putNumber("Digit Clock Time", digitClock.get());
 		SmartDashboard.putNumber("Ultrasonic value", ultra.getValue());
 		SmartDashboard.putNumber("Ultrasonic Inches", ultra.GetRangeInches());
 		SmartDashboard.putNumber("Ultrasonic Voltage", ultra.GetVoltage());
-		SmartDashboard.putNumber("Phase", auto.phase);
-		SmartDashboard.putNumber("AutoMode", auto.autoMode);
-		if (clock != null) {
-			try {
-				SmartDashboard.putNumber("Clock Time", clock.get());
-			} catch (Exception e) {
-				SmartDashboard.putNumber("Clock Time", -1);
-			}
-		} else {
-			SmartDashboard.putNumber("Clock Null", 1337);
-		}
 
 		SmartDashboard.putNumber("Shooter value", digitBoard.getPot());
 
-		// SmartDashboard.putNumber("Voltage", pdp.getVoltage());
-		//if (auto.vision.GetMatOfPointOut() != null) {
-		//	SmartDashboard.putNumber("Contour Height", auto.vision.GetMatOfPointOut().height());
-		//	SmartDashboard.putNumber("Contour Width", auto.vision.GetMatOfPointOut().width());
-		//} else {
-		//	SmartDashboard.putNumber("Contour Height", 1337);
-		//	SmartDashboard.putNumber("Contour Width", 1337);
-		//}
-		//SmartDashboard.putNumber("Contours", auto.vision.GetContourCount());
-
+		try {
+			SmartDashboard.putNumber("Contour Height", Vision2017.matPointStuff.get(0).height());
+		} catch (Exception e) {
+			System.out.println("Height error");
+			System.out.println(e);
+		}
+		try {
+			SmartDashboard.putNumber("Contour Width", Vision2017.matPointStuff.get(0).width());
+		} catch (Exception e) {
+			System.out.println("Width error");
+			System.out.println(e);
+		}
+		try {
+			SmartDashboard.putNumber("Contours", Vision2017.matPointStuff.size());
+		} catch (Exception e) {
+			System.out.println("Contour Count error");
+			System.out.println(e);
+		}
 		// SmartDashboard.putNumber("Network Table Value",
 		// auto.netTable.getDouble("test"));
 

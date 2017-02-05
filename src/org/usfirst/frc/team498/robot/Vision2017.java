@@ -23,7 +23,6 @@ public class Vision2017 {
 	private static final int IMG_WIDTH = 320;
 	private static final int IMG_HEIGHT = 240;
 
-	private VisionThread visionThread;
 	private double contour1CenterX = 0.0;
 	private double contour1CenterY = 0.0;
 	private double contour1Height = 0.0;
@@ -32,13 +31,8 @@ public class Vision2017 {
 	private double contour2CenterY = 0.0;
 	private double contour2Height = 0.0;
 
-	private static ArrayList<MatOfPoint> matPointStuff;
+	public static ArrayList<MatOfPoint> matPointStuff;
 
-	public boolean flag = false;
-
-	private final Object imgLock = new Object();
-
-	Pipeline pipeline = new Pipeline();
 	// NetworkTable netTable = NetworkTable.getTable("CamTable");
 
 	public Vision2017(int cam) {
@@ -54,30 +48,24 @@ public class Vision2017 {
 		new Thread(() -> {
 			// NetworkTable netTable = NetworkTable.getTable("CamTable");
 			// netTable.setIPAddress("172.22.11.2");
-			// UsbCamera camera0 =
-			// CameraServer.getInstance().startAutomaticCapture("cam0", 0);
-			// camera0.setResolution(IMG_WIDTH, IMG_HEIGHT);
-			// UsbCamera camera1 =
-			// CameraServer.getInstance().startAutomaticCapture("cam1", 1);
-			// camera1.setResolution(IMG_WIDTH, IMG_HEIGHT);
+			Pipeline pipeline = new Pipeline();
+			UsbCamera camera0 = CameraServer.getInstance().startAutomaticCapture("cam0", 0);
+			camera0.setResolution(IMG_WIDTH, IMG_HEIGHT);
+			UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture("cam1", 1);
+			camera1.setResolution(IMG_WIDTH, IMG_HEIGHT);
 
 			CvSink cvSink = CameraServer.getInstance().getVideo();
-			CvSource outputStream = CameraServer.getInstance().putVideo("USB Camera 1", 640, 480);
+			CvSource outputStream = CameraServer.getInstance().putVideo("Blur/RGB", 640, 480);
 
 			Mat source = new Mat();
-			Mat output = new Mat();
 
 			// netTable.putDouble("test", 8.7);
 
 			while (true) {
 				cvSink.grabFrame(source);
-				//pipeline.setsource0(source);
-				//pipeline.process();
-				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
-				outputStream.putFrame(output);
-				// netTable.putValue("contours",
-				//matPointStuff = pipeline.filterContoursOutput();
-
+				pipeline.process(source);
+				outputStream.putFrame(pipeline.rgbThresholdOutput());
+				matPointStuff = pipeline.filterContoursOutput();
 			}
 		}).start();
 
@@ -141,17 +129,4 @@ public class Vision2017 {
 		return IMG_HEIGHT;
 	}
 
-	public MatOfPoint GetMatOfPointOut() {
-		if (!(matPointStuff==null) && !matPointStuff.isEmpty() )
-			return matPointStuff.get(0);
-		else
-			return null;
-	}
-
-	//public int GetContourCount() {
-	//	if(matPointStuff != null) 
-	//		return matPointStuff.size();
-	//	else
-	//		return -1;
-	//}
 }

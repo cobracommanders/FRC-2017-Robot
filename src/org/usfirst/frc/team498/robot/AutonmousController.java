@@ -38,7 +38,7 @@ public class AutonmousController {
 	char colorAuto;
 	char positionAuto;
 	
-	//NetworkTable netTable = NetworkTable.getTable("CamTable");
+	NetworkTable netTable = NetworkTable.getTable("CamTable");
 
 	REVImprovedDigitBoard digitBoard;
 

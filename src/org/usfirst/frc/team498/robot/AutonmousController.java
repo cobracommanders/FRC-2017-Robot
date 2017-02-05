@@ -4,6 +4,7 @@ package org.usfirst.frc.team498.robot;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 import edu.wpi.first.wpilibj.Timer;
 
@@ -15,7 +16,7 @@ public class AutonmousController {
 	private Drive2017 drive;
 	private PewPew2017 shooter;
 	public AnalogUltrasonicSensor2017 analogSensor;
-	public ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+	//public ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 
 	double currentContourHeight = 0.0;
 	double leftContour = 0.0;
@@ -36,6 +37,8 @@ public class AutonmousController {
 	int autoMode = 0;
 	char colorAuto;
 	char positionAuto;
+	
+	//NetworkTable netTable = NetworkTable.getTable("CamTable");
 
 	REVImprovedDigitBoard digitBoard;
 
@@ -46,6 +49,7 @@ public class AutonmousController {
 		this.analogSensor = ultra;
 		this.clock = clock;
 		this.digitBoard = digitBoard;
+		//netTable.setIPAddress("172.22.11.2");
 
 	}
 
@@ -111,8 +115,8 @@ public class AutonmousController {
 		switch (phase) {
 		case 0:
 			clock.reset();
-			 gyro.reset();
-			gyro.calibrate();
+			 //gyro.reset();
+			//gyro.calibrate();
 			phase++;
 
 			break;
@@ -131,7 +135,7 @@ public class AutonmousController {
 			 * drive STRAIGHT!!!* (internal screaming, KMP)
 			 */
 
-			drive.manualDrive(.6, ConvertGyroStuff(gyro.getAngle()) * -0.03);
+			//drive.manualDrive(.6, ConvertGyroStuff(gyro.getAngle()) * -0.03);
 			// // moves
 			// forward
 			// for

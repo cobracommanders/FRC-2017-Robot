@@ -1,21 +1,17 @@
 //Made in Japan
 package org.usfirst.frc.team498.robot;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.I2C.Port;
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Ultrasonic;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //import edu.wpi.first.wpilibj.networktables.NetworkTable; *garbage*
@@ -23,29 +19,26 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends SampleRobot {
 	// Command autonomousCommand;
 
-	/*
-	 * //Network tales NetworkTable table; *garbage*
-	 */
 	// Drive
 	Ports ports = new Ports();
 	private Timer clock = new Timer();
+	private Timer digitClock = new Timer();
 	FancyJoystick thisStick = new FancyJoystick(0);
 	Drive2017 drive = new Drive2017(thisStick, ports);
 	REVImprovedDigitBoard digitBoard = new REVImprovedDigitBoard();
-	Spark spark;
+	public boolean hasDigitStarted = false;
 
 	PewPew2017 shooter = new PewPew2017(digitBoard, thisStick, ports);
 	AnalogUltrasonicSensor2017 ultra = new AnalogUltrasonicSensor2017(thisStick, ports);
 	AutonmousController auto = new AutonmousController(drive, shooter, digitBoard, thisStick, ports, ultra, clock);
 
-	GearIntake2017 gearIntake = new GearIntake2017(thisStick, ports, spark);
+	GearIntake2017 gearIntake = new GearIntake2017(thisStick, ports);
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 
 	boolean dToggle = false;
-	
-	
-	//boolean intakeToggle = false;
-	//boolean xDown = false;
+
+	// boolean intakeToggle = false;
+	// boolean xDown = false;
 
 	@Override
 	public void robotInit() {
@@ -53,47 +46,29 @@ public class Robot extends SampleRobot {
 		// table = NetworkTable.getTable("datatable"); *garbage*
 		// CameraServer.getInstance().startAutomaticCapture();
 
-		/*
-		 * new Thread(() -> { UsbCamera camera =
-		 * CameraServer.getInstance().startAutomaticCapture();
-		 * camera.setResolution(640, 480);
-		 * 
-		 * CvSink cvSink = CameraServer.getInstance().getVideo(); CvSource
-		 * outputStream = CameraServer.getInstance().putVideo("Blur", 640, 480);
-		 * 
-		 * Mat source = new Mat(); Mat output = new Mat();
-		 * 
-		 * while(true) { cvSink.grabFrame(source); Imgproc.cvtColor(source,
-		 * output, Imgproc.COLOR_BGR2GRAY); outputStream.putFrame(output); }
-		 * }).start(); }
-		 */
-
-		// 2 USB Cameras
-		/*
-		 * frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
-		 * 
-		 * sessionfront = NIVision.IMAQdxOpenCamera("cam1",
-		 * NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-		 * 
-		 * sessionback = NIVision.IMAQdxOpenCamera("cam2",
-		 * NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-		 * 
-		 * currSession = sessionfront;
-		 * 
-		 * NIVision.IMAQdxConfigureGrab(currSession);
-		 */
 	}
 
-	/*public boolean xDown() {
-		if (!xDown && thisStick.getButton(Button.X)) {
-			//xDown = thisStick.getButton(Button.X);
-			// System.out.println("Should have set to true");
-			return true;
-		} else {
-			xDown = thisStick.getButton(Button.X);
-			return false;
-		}
-	}*/
+	// 2 USB Cameras
+	/*
+	 * frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+	 * 
+	 * sessionfront = NIVision.IMAQdxOpenCamera("cam1",
+	 * NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+	 * 
+	 * sessionback = NIVision.IMAQdxOpenCamera("cam2",
+	 * NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+	 * 
+	 * currSession = sessionfront;
+	 * 
+	 * NIVision.IMAQdxConfigureGrab(currSession);
+	 */
+
+	/*
+	 * public boolean xDown() { if (!xDown && thisStick.getButton(Button.X)) {
+	 * //xDown = thisStick.getButton(Button.X); //
+	 * System.out.println("Should have set to true"); return true; } else {
+	 * xDown = thisStick.getButton(Button.X); return false; } }
+	 */
 
 	// Select which autonomous to run
 	public void autonomous() {
@@ -118,6 +93,45 @@ public class Robot extends SampleRobot {
 	int count = 0;
 	int count2 = 0;
 
+	public char[] DisplayVoltageConversion() {
+		double voltage = pdp.getVoltage();
+		voltage *= 100;
+		voltage = Math.floor(voltage);
+		voltage /= 100;
+		char[] charz = new char[4];
+		charz[0] = ConvertNumToChar((int)(voltage / 10));
+		charz[1] = ConvertNumToChar((int)(voltage % 10));
+		charz[2] = ConvertNumToChar((int)(voltage * 10 % 10));
+		charz[3] = ConvertNumToChar((int)(voltage * 100 % 10));
+		return charz;
+	}
+	
+	public char ConvertNumToChar(int num) {
+		switch(num) {
+		case 0:
+			return '0';
+		case 1:
+			return '1';
+		case 2:
+			return '2';
+		case 3:
+			return '3';
+		case 4:
+			return '4';
+		case 5:
+			return '5';
+		case 6:
+			return '6';
+		case 7:
+			return '7';
+		case 8:
+			return '8';
+		case 9:
+			return '9';
+		}
+		return '0';
+	}
+	
 	public void operatorControl() {
 
 		// For Network table double x = 0; *garbage* double y = 0;
@@ -129,25 +143,27 @@ public class Robot extends SampleRobot {
 		TeleOpMode teleMode = TeleOpMode.OPERATORCONTROL;
 
 		while (isOperatorControl() && isEnabled()) {
-			// digitBoard.CreateScrollMsg(String.valueOf(pdp.getVoltage()));
-			
-	
-			
-			/*if (xDown()) {
-				intakeToggle = !intakeToggle;
-				System.out.println("Should have toggled");
-
-				if (intakeToggle) // intake.set(1);
-					drive.manualDrive(.5, 0);
-				else
-					drive.manualDrive(0, 0); // intake.set(0);
-
-			}*/
-			// Checks button
-
-			if (thisStick.getButton(Button.BACK) && thisStick.getButton(Button.B)) {
-				// TODO climbing feature
+			System.out.println("We made it to teleop");
+			if (!hasDigitStarted) {
+				digitClock.start();
+				hasDigitStarted = true;
+				digitBoard.UpdateDisplay(DisplayVoltageConversion());
 			}
+			if (digitClock.get() > 3) {
+				digitClock.start();
+				digitBoard.UpdateDisplay(DisplayVoltageConversion());
+			}
+
+			/*
+			 * if (xDown()) { intakeToggle = !intakeToggle;
+			 * System.out.println("Should have toggled");
+			 * 
+			 * if (intakeToggle) // intake.set(1); drive.manualDrive(.5, 0);
+			 * else drive.manualDrive(0, 0); // intake.set(0);
+			 * 
+			 * }
+			 */
+			// Checks button
 
 			if (thisStick.getButton(Button.B)) {
 				teleMode = TeleOpMode.TEST; // drives straight w/ gyro
@@ -187,15 +203,16 @@ public class Robot extends SampleRobot {
 	public void disabled() {
 		while (isDisabled()) {
 			if (digitBoard.getButtonA()) {
-				// auto.autonomousSelector(); // Displays auto on digit board
+				Timer.delay(0.25);
+				auto.autonomousSelector(); // Displays auto on digit board
 			}
 			if (digitBoard.getButtonB()) {
 				Timer.delay(0.25);
-				dToggle = !dToggle;
-				if (dToggle)
-					digitBoard.UpdateDisplay('C', 'U', 'C', 'K');
-				else
-					digitBoard.UpdateDisplay('8', '-', '-', 'D');
+				/*
+				 * dToggle = !dToggle; if (dToggle)
+				 * digitBoard.UpdateDisplay('C', 'U', 'C', 'K'); else
+				 * digitBoard.UpdateDisplay('8', '-', '-', 'D');
+				 */
 			}
 
 		}
@@ -204,23 +221,24 @@ public class Robot extends SampleRobot {
 
 	// Sends information to the driver
 	private void print() {
-
-		SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
+		System.out.println("We made it to Print()");
+		// TODO Just so we can click here
+		//SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
+		//SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
 		// SmartDashboard.putNumber("Gyro getRate()", auto.gyro.getRate());
-		SmartDashboard.putNumber("Gyro Converted Angle", auto.ConvertGyroStuff(auto.gyro.getAngle()));
+		//SmartDashboard.putNumber("Gyro Converted Angle", auto.ConvertGyroStuff(auto.gyro.getAngle()));
 
-		//SmartDashboard.putBoolean("intakeToggle", intakeToggle);
-		//SmartDashboard.putBoolean("xDown", xDown);
-		SmartDashboard.putBoolean("Xbutton", thisStick.getButton(Button.X));
-		//SmartDashboard.putBoolean("output", xDown());
-		// SmartDashboard.putNumber("Ultrasonic MilliMeters",
-		// ultra.GetRangeMM());
-		// SmartDashboard.putNumber("Ultrasonic value", ultra.getValue());
-		// SmartDashboard.putNumber("Ultrasonic Inches",
-		// ultra.GetRangeInches());
-		// SmartDashboard.putNumber("Ultrasonic Voltage", ultra.GetVoltage());
-		// SmartDashboard.putNumber("Phase", auto.phase);
-		// SmartDashboard.putNumber("AutoMode", auto.autoMode);
+		// SmartDashboard.putBoolean("intakeToggle", intakeToggle);
+		// SmartDashboard.putBoolean("xDown", xDown);
+		SmartDashboard.putBoolean("Abutton", thisStick.getButton(Button.A));
+		// SmartDashboard.putBoolean("output", xDown());
+		SmartDashboard.putNumber("Ultrasonic MilliMeters", ultra.GetRangeMM());
+		SmartDashboard.putNumber("Digit Clock Time", digitClock.get());
+		SmartDashboard.putNumber("Ultrasonic value", ultra.getValue());
+		SmartDashboard.putNumber("Ultrasonic Inches", ultra.GetRangeInches());
+		SmartDashboard.putNumber("Ultrasonic Voltage", ultra.GetVoltage());
+		SmartDashboard.putNumber("Phase", auto.phase);
+		SmartDashboard.putNumber("AutoMode", auto.autoMode);
 		if (clock != null) {
 			try {
 				SmartDashboard.putNumber("Clock Time", clock.get());
@@ -231,7 +249,11 @@ public class Robot extends SampleRobot {
 			SmartDashboard.putNumber("Clock Null", 1337);
 		}
 
-		// SmartDashboard.putNumber("Shooter value", digitBoard.getPot());
+		SmartDashboard.putNumber("Shooter value", digitBoard.getPot());
+		
+		SmartDashboard.putNumber("Voltage", pdp.getVoltage());
+		
+		//SmartDashboard.putNumber("Network Table Value", auto.netTable.getDouble("test"));
 
 		/*
 		 * SmartDashboard.putNumber("Range millimeters (Analog)",
@@ -242,20 +264,15 @@ public class Robot extends SampleRobot {
 		 * auto.analogSensor.GetVoltage());
 		 */
 		// These should print out GRIP's contour info into Dashboard
-		// SmartDashboard.putNumber("Contour1 CenterX",
-		// auto.vision.GetContour1CenterX());
-		// SmartDashboard.putNumber("Contour1 CenterY",
-		// auto.vision.GetContour1CenterY());
-		// SmartDashboard.putNumber("Contour1 Height",
-		// auto.vision.GetContour1Height());
-		// SmartDashboard.putNumber("Contour2
-		// CenterX",auto.vision.GetContour2CenterX());
-		// SmartDashboard.putNumber("Contour2 CenterY",
-		// auto.vision.GetContour2CenterY());
-		// SmartDashboard.putNumber("Contour2 Height",
-		// auto.vision.GetContour2Height());
+		//SmartDashboard.putNumber("Contour1 CenterX", auto.vision.GetContour1CenterX());
+		//SmartDashboard.putNumber("Contour1 CenterY", auto.vision.GetContour1CenterY());
+		//SmartDashboard.putNumber("Contour1 Height", auto.vision.GetContour1Height());
+		//SmartDashboard.putNumber("Contour2 CenterX", auto.vision.GetContour2CenterX());
+		//SmartDashboard.putNumber("Contour2 CenterY", auto.vision.GetContour2CenterY());
+		//SmartDashboard.putNumber("Contour2 Height", auto.vision.GetContour2Height());
 
-		// SmartDashboard.putBoolean("flag", auto.vision.flag);
+		//SmartDashboard.putBoolean("flag", auto.vision.flag);
+
 		/*
 		 * // SmartDashboard.putNumber("Battery Voltage", pdp.getVoltage());
 		 * //SmartDashboard.putNumber("Potentiometer Value",
@@ -273,7 +290,7 @@ public class Robot extends SampleRobot {
 		 * // SmartDashboard.putNumber("Ramp Clock", //
 		 * drive.forwardDriveRamp.clock.get());
 		 * 
-		 * // 2 camera code /* 8NIVision.IMAQdxGrab(currSession, frame, 1);
+		 * // 2 camera code 8NIVision.IMAQdxGrab(currSession, frame, 1);
 		 * CameraServer.getInstance().setImage(frame);
 		 */
 	}

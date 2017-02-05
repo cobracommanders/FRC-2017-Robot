@@ -483,7 +483,7 @@ public class AutonmousController {
 			positionAuto = 'R';
 			break;
 		}
-		digitBoard.UpdateDisplay(' ', colorAuto, ' ', positionAuto);
+		digitBoard.UpdateDisplay(' ', colorAuto, ' ', positionAuto, false);
 
 	}
 }

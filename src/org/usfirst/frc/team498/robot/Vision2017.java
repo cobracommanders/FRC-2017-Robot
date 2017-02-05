@@ -32,6 +32,8 @@ public class Vision2017 {
 	private double contour2CenterY = 0.0;
 	private double contour2Height = 0.0;
 
+	private static ArrayList<MatOfPoint> matPointStuff;
+
 	public boolean flag = false;
 
 	private final Object imgLock = new Object();
@@ -52,10 +54,12 @@ public class Vision2017 {
 		new Thread(() -> {
 			// NetworkTable netTable = NetworkTable.getTable("CamTable");
 			// netTable.setIPAddress("172.22.11.2");
-			UsbCamera camera0 = CameraServer.getInstance().startAutomaticCapture("cam0", 0);
-			camera0.setResolution(IMG_WIDTH, IMG_HEIGHT);
-			UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture("cam1", 1);
-			camera1.setResolution(IMG_WIDTH, IMG_HEIGHT);
+			// UsbCamera camera0 =
+			// CameraServer.getInstance().startAutomaticCapture("cam0", 0);
+			// camera0.setResolution(IMG_WIDTH, IMG_HEIGHT);
+			// UsbCamera camera1 =
+			// CameraServer.getInstance().startAutomaticCapture("cam1", 1);
+			// camera1.setResolution(IMG_WIDTH, IMG_HEIGHT);
 
 			CvSink cvSink = CameraServer.getInstance().getVideo();
 			CvSource outputStream = CameraServer.getInstance().putVideo("USB Camera 1", 640, 480);
@@ -67,12 +71,13 @@ public class Vision2017 {
 
 			while (true) {
 				cvSink.grabFrame(source);
-				// pipeline.setsource0(source);
-				// pipeline.process();
+				//pipeline.setsource0(source);
+				//pipeline.process();
 				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
 				outputStream.putFrame(output);
 				// netTable.putValue("contours",
-				// pipeline.filterContoursOutput());
+				//matPointStuff = pipeline.filterContoursOutput();
+
 			}
 		}).start();
 
@@ -135,4 +140,18 @@ public class Vision2017 {
 	public int GetCameraHeight() {
 		return IMG_HEIGHT;
 	}
+
+	public MatOfPoint GetMatOfPointOut() {
+		if (!(matPointStuff==null) && !matPointStuff.isEmpty() )
+			return matPointStuff.get(0);
+		else
+			return null;
+	}
+
+	//public int GetContourCount() {
+	//	if(matPointStuff != null) 
+	//		return matPointStuff.size();
+	//	else
+	//		return -1;
+	//}
 }

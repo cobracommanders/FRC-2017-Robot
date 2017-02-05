@@ -95,19 +95,19 @@ public class Robot extends SampleRobot {
 
 	public char[] DisplayVoltageConversion() {
 		double voltage = pdp.getVoltage();
-		voltage *= 100;
+		voltage *= 10;
 		voltage = Math.floor(voltage);
-		voltage /= 100;
+		voltage /= 10;
 		char[] charz = new char[4];
-		charz[0] = ConvertNumToChar((int)(voltage / 10));
-		charz[1] = ConvertNumToChar((int)(voltage % 10));
-		charz[2] = ConvertNumToChar((int)(voltage * 10 % 10));
-		charz[3] = ConvertNumToChar((int)(voltage * 100 % 10));
+		charz[0] = ConvertNumToChar((int) (voltage / 10));
+		charz[1] = ConvertNumToChar((int) (voltage % 10));
+		charz[2] = ConvertNumToChar((int) (voltage * 10 % 10));
+		charz[3] = 'V';
 		return charz;
 	}
-	
+
 	public char ConvertNumToChar(int num) {
-		switch(num) {
+		switch (num) {
 		case 0:
 			return '0';
 		case 1:
@@ -131,7 +131,7 @@ public class Robot extends SampleRobot {
 		}
 		return '0';
 	}
-	
+
 	public void operatorControl() {
 
 		// For Network table double x = 0; *garbage* double y = 0;
@@ -147,11 +147,11 @@ public class Robot extends SampleRobot {
 			if (!hasDigitStarted) {
 				digitClock.start();
 				hasDigitStarted = true;
-				digitBoard.UpdateDisplay(DisplayVoltageConversion());
+				digitBoard.UpdateDisplay(DisplayVoltageConversion(), true);
 			}
 			if (digitClock.get() > 3) {
 				digitClock.start();
-				digitBoard.UpdateDisplay(DisplayVoltageConversion());
+				digitBoard.UpdateDisplay(DisplayVoltageConversion(), true);
 			}
 
 			/*
@@ -165,9 +165,9 @@ public class Robot extends SampleRobot {
 			 */
 			// Checks button
 
-			if (thisStick.getButton(Button.B)) {
-				teleMode = TeleOpMode.TEST; // drives straight w/ gyro
-			}
+			//if (thisStick.getButton(Button.B)) {
+			//	teleMode = TeleOpMode.TEST; // drives straight w/ gyro
+		//	}
 			if (thisStick.getButton(Button.START)) {
 				teleMode = TeleOpMode.OPERATORCONTROL; // makes robot go back to
 														// TeleOp
@@ -195,7 +195,11 @@ public class Robot extends SampleRobot {
 
 			// Send stats to the driver
 			// Randy made this a bonding moment
-			print();
+			//print();//TODO
+			//TODO
+			//TODO
+			//TODO
+			//TODO
 		}
 
 	}
@@ -223,10 +227,11 @@ public class Robot extends SampleRobot {
 	private void print() {
 		System.out.println("We made it to Print()");
 		// TODO Just so we can click here
-		//SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
-		//SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
+		// SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
+		// SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
 		// SmartDashboard.putNumber("Gyro getRate()", auto.gyro.getRate());
-		//SmartDashboard.putNumber("Gyro Converted Angle", auto.ConvertGyroStuff(auto.gyro.getAngle()));
+		// SmartDashboard.putNumber("Gyro Converted Angle",
+		// auto.ConvertGyroStuff(auto.gyro.getAngle()));
 
 		// SmartDashboard.putBoolean("intakeToggle", intakeToggle);
 		// SmartDashboard.putBoolean("xDown", xDown);
@@ -250,10 +255,19 @@ public class Robot extends SampleRobot {
 		}
 
 		SmartDashboard.putNumber("Shooter value", digitBoard.getPot());
-		
-		SmartDashboard.putNumber("Voltage", pdp.getVoltage());
-		
-		//SmartDashboard.putNumber("Network Table Value", auto.netTable.getDouble("test"));
+
+		// SmartDashboard.putNumber("Voltage", pdp.getVoltage());
+		//if (auto.vision.GetMatOfPointOut() != null) {
+		//	SmartDashboard.putNumber("Contour Height", auto.vision.GetMatOfPointOut().height());
+		//	SmartDashboard.putNumber("Contour Width", auto.vision.GetMatOfPointOut().width());
+		//} else {
+		//	SmartDashboard.putNumber("Contour Height", 1337);
+		//	SmartDashboard.putNumber("Contour Width", 1337);
+		//}
+		//SmartDashboard.putNumber("Contours", auto.vision.GetContourCount());
+
+		// SmartDashboard.putNumber("Network Table Value",
+		// auto.netTable.getDouble("test"));
 
 		/*
 		 * SmartDashboard.putNumber("Range millimeters (Analog)",
@@ -264,14 +278,20 @@ public class Robot extends SampleRobot {
 		 * auto.analogSensor.GetVoltage());
 		 */
 		// These should print out GRIP's contour info into Dashboard
-		//SmartDashboard.putNumber("Contour1 CenterX", auto.vision.GetContour1CenterX());
-		//SmartDashboard.putNumber("Contour1 CenterY", auto.vision.GetContour1CenterY());
-		//SmartDashboard.putNumber("Contour1 Height", auto.vision.GetContour1Height());
-		//SmartDashboard.putNumber("Contour2 CenterX", auto.vision.GetContour2CenterX());
-		//SmartDashboard.putNumber("Contour2 CenterY", auto.vision.GetContour2CenterY());
-		//SmartDashboard.putNumber("Contour2 Height", auto.vision.GetContour2Height());
+		// SmartDashboard.putNumber("Contour1 CenterX",
+		// auto.vision.GetContour1CenterX());
+		// SmartDashboard.putNumber("Contour1 CenterY",
+		// auto.vision.GetContour1CenterY());
+		// SmartDashboard.putNumber("Contour1 Height",
+		// auto.vision.GetContour1Height());
+		// SmartDashboard.putNumber("Contour2 CenterX",
+		// auto.vision.GetContour2CenterX());
+		// SmartDashboard.putNumber("Contour2 CenterY",
+		// auto.vision.GetContour2CenterY());
+		// SmartDashboard.putNumber("Contour2 Height",
+		// auto.vision.GetContour2Height());
 
-		//SmartDashboard.putBoolean("flag", auto.vision.flag);
+		// SmartDashboard.putBoolean("flag", auto.vision.flag);
 
 		/*
 		 * // SmartDashboard.putNumber("Battery Voltage", pdp.getVoltage());

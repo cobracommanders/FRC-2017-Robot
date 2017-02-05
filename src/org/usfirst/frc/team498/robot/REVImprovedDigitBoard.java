@@ -17,7 +17,7 @@ public class REVImprovedDigitBoard {
 	AnalogInput pot;
 	DigitalInput buttonA;
 	DigitalInput buttonB;
-	
+
 	String scrollMsg;
 	int scrollOffset = 0;
 
@@ -163,8 +163,8 @@ public class REVImprovedDigitBoard {
 
 	}
 
-	//Set a static 4 characters to the display
-	public void UpdateDisplay(int num1, int num2, int num3, int num4) {
+	// Set a static 4 characters to the display
+	public void UpdateDisplay(int num1, int num2, int num3, int num4, boolean radixPoint) {
 		System.out.println("Update Display");
 		int[] charz = new int[] { num1, num2, num3, num4 };
 		byte[] byte1 = new byte[10];
@@ -174,45 +174,50 @@ public class REVImprovedDigitBoard {
 		byte1[4] = charreg[charz[2]][0];
 		byte1[5] = charreg[charz[2]][1];
 		byte1[6] = charreg[charz[1]][0];
-		byte1[7] = charreg[charz[1]][1];
+		if (radixPoint)
+			byte1[7] = (byte)(charreg[charz[1]][1] | (byte) 0b11000000);
+		else
+			byte1[7] = charreg[charz[1]][1];
 		byte1[8] = charreg[charz[0]][0];
 		byte1[9] = charreg[charz[0]][1];
 		// send the array to the board\ \
 		i2c.writeBulk(byte1);
 
 	}
-	
-	//Sets scrolling message
+
+	// Sets scrolling message
 	public void CreateScrollMsg(String msg) {
 		System.out.println("Create Scroll Msg");
 		scrollMsg = msg;
 		scrollOffset = 0;
 	}
-	
-	//Moves message along path by one character
-	public void SlideScrollMsg() {
 
-		UpdateDisplay(scrollMsg.charAt(scrollOffset % (scrollMsg.length() - 1)),scrollMsg.charAt((scrollOffset + 1) % (scrollMsg.length() - 1)),scrollMsg.charAt((scrollOffset + 2) % (scrollMsg.length() - 1)),scrollMsg.charAt((scrollOffset + 3) % (scrollMsg.length() - 1)));
+	// Moves message along path by one character
+	public void SlideScrollMsg(boolean radixPoint) {
+
+		UpdateDisplay(scrollMsg.charAt(scrollOffset % (scrollMsg.length() - 1)),
+				scrollMsg.charAt((scrollOffset + 1) % (scrollMsg.length() - 1)),
+				scrollMsg.charAt((scrollOffset + 2) % (scrollMsg.length() - 1)),
+				scrollMsg.charAt((scrollOffset + 3) % (scrollMsg.length() - 1)),
+				radixPoint);
 		scrollOffset++;
-		
+
 	}
-	
-	//Sets static 4 characters to the display
-	public void UpdateDisplay(char char1, char char2, char char3, char char4)
-	{		
-		UpdateDisplay(CharToNum(char1),CharToNum(char2),CharToNum(char3),CharToNum(char4));		
+
+	// Sets static 4 characters to the display
+	public void UpdateDisplay(char char1, char char2, char char3, char char4, boolean radixPoint) {
+		UpdateDisplay(CharToNum(char1), CharToNum(char2), CharToNum(char3), CharToNum(char4), radixPoint);
 	}
-	
-	public void UpdateDisplay(char[] charz)
-	{
-		if(charz.length == 4)
-		UpdateDisplay(CharToNum(charz[0]),CharToNum(charz[1]),CharToNum(charz[2]),CharToNum(charz[3]));		
+
+	public void UpdateDisplay(char[] charz, boolean radixPoint) {
+		if (charz.length == 4)
+			UpdateDisplay(CharToNum(charz[0]), CharToNum(charz[1]), CharToNum(charz[2]), CharToNum(charz[3]), radixPoint);
 	}
-	
-	//Converts a character to its equivelent int value for display
+
+	// Converts a character to its equivelent int value for display
 	private int CharToNum(char letter) {
 		letter = Character.toUpperCase(letter);
-		switch(letter) {
+		switch (letter) {
 		case 'A':
 			return 10;
 		case 'B':
@@ -287,13 +292,13 @@ public class REVImprovedDigitBoard {
 			return 9;
 		case '-':
 			return 37;
-			default:
-				return 36;
-		
+		default:
+			return 36;
+
 		}
-		
-		
+
 	}
+
 	public boolean getButtonA() {
 		return !buttonA.get();
 	}

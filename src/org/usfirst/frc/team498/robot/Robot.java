@@ -1,6 +1,14 @@
 //Made in Japan
 package org.usfirst.frc.team498.robot;
 
+import org.opencv.core.Rect;
+import org.opencv.imgproc.Imgproc;
+import com.ctre.CANTalon;
+import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.vision.VisionRunner;
+import edu.wpi.first.wpilibj.vision.VisionThread;
+
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
@@ -24,16 +32,29 @@ public class Robot extends SampleRobot {
 	private Timer clock = new Timer();
 	private Timer digitClock = new Timer();
 	FancyJoystick thisStick = new FancyJoystick(0);
-	Drive2017 drive = new Drive2017(thisStick, ports);
+	Drive2017 drive2017 = new Drive2017(thisStick, ports);
 	REVImprovedDigitBoard digitBoard = new REVImprovedDigitBoard();
 	public boolean hasDigitStarted = false;
 
 	PewPew2017 shooter = new PewPew2017(digitBoard, thisStick, ports);
 	AnalogUltrasonicSensor2017 ultra = new AnalogUltrasonicSensor2017(thisStick, ports);
-	AutonmousController auto = new AutonmousController(drive, shooter, digitBoard, thisStick, ports, ultra, clock);
+	AutonmousController auto = new AutonmousController(drive2017, shooter, digitBoard, thisStick, ports, ultra, clock);
 
 	GearIntake2017 gearIntake = new GearIntake2017(thisStick, ports);
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
+	CameraVision2017 vision = new CameraVision2017();
+	
+	//Camera Code
+	private static final int IMG_WIDTH = 320;
+	private static final int IMG_HEIGHT = 240;
+	
+	private VisionThread visionThread;
+	private double centerX = 0.0;
+	
+	private final Object imgLock = new Object();
+	private RobotDrive drive;
+	
+	
 
 	boolean dToggle = false;
 
@@ -46,6 +67,21 @@ public class Robot extends SampleRobot {
 		// table = NetworkTable.getTable("datatable"); *garbage*
 		// CameraServer.getInstance().startAutomaticCapture();
 
+		//Camera Code
+		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+	    camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+	    
+	    visionThread = new VisionThread(camera, new GearPipeline(), pipeline -> {
+	        if (!pipeline.filterContoursOutput().isEmpty()) {
+	            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
+	            synchronized (imgLock) {
+	                centerX = r.x + (r.width / 2);
+	            }
+	        }
+	    });
+	    visionThread.start();
+	        
+	    drive = new RobotDrive(1, 2);
 	}
 
 	// 2 USB Cameras
@@ -71,6 +107,18 @@ public class Robot extends SampleRobot {
 	 */
 
 	// Select which autonomous to run
+	
+	//Camera Code
+	//@Override
+	public void autonomousPeriodic() {
+		double centerX;
+		synchronized (imgLock) {
+			centerX = this.centerX;
+		}
+		double turn = centerX - (IMG_WIDTH / 2);
+		drive.arcadeDrive(-0.6, turn * 0.005);
+	}
+	
 	public void autonomous() {
 
 		while (isAutonomous() && isEnabled()) {
@@ -136,8 +184,8 @@ public class Robot extends SampleRobot {
 
 		// For Network table double x = 0; *garbage* double y = 0;
 
-		drive.moveValue = 0;
-		drive.turnValue = 0;
+		drive2017.moveValue = 0;
+		drive2017.turnValue = 0;
 		// auto.gyro.reset();
 
 		TeleOpMode teleMode = TeleOpMode.OPERATORCONTROL;
@@ -179,18 +227,14 @@ public class Robot extends SampleRobot {
 				break;
 			case TEST:
 				auto.autoDriveForward();
-				drive.moveValue = 0;
-				drive.turnValue = 0;
+				drive2017.moveValue = 0;
+				drive2017.turnValue = 0;
 				break;
 			}
 
 			// Send stats to the driver
 			// Randy made this a bonding moment
-			print();// TODO
-			// TODO
-			// TODO
-			// TODO
-			// TODO
+			print();
 		}
 
 	}
@@ -235,23 +279,23 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("Shooter value", digitBoard.getPot());
 
 		try {
-			SmartDashboard.putNumber("Contour Height", Vision2017.matPointStuff.get(0).height());
-		} catch (Exception e) {
-			System.out.println("Height error");
-			System.out.println(e);
+			for(int i = 0; i < CameraVision2017.boxes.size(); i++) {
+				SmartDashboard.putNumber("Boxes", CameraVision2017.boxes.size());
+				SmartDashboard.putNumber("Box Height" + String.valueOf(CameraVision2017.boxes.get(i)), CameraVision2017.boxes.get(i).height);
+				SmartDashboard.putNumber("Box Width" + String.valueOf(CameraVision2017.boxes.get(i)), CameraVision2017.boxes.get(i).width);
+			}
 		}
-		try {
-			SmartDashboard.putNumber("Contour Width", Vision2017.matPointStuff.get(0).width());
-		} catch (Exception e) {
-			System.out.println("Width error");
-			System.out.println(e);
+		catch (Exception e) {
+			SmartDashboard.putString("Error", e.getMessage());
 		}
-		try {
+		/*try {
 			SmartDashboard.putNumber("Contours", Vision2017.matPointStuff.size());
 		} catch (Exception e) {
 			System.out.println("Contour Count error");
 			System.out.println(e);
-		}
+		}*/
+		
+		
 		// SmartDashboard.putNumber("Network Table Value",
 		// auto.netTable.getDouble("test"));
 

@@ -49,8 +49,7 @@ public class AutonmousController {
 		this.analogSensor = ultra;
 		this.clock = clock;
 		this.digitBoard = digitBoard;
-		//netTable.setIPAddress("172.22.11.2");
-
+		digitBoard.UpdateDisplay(' ', 'R', ' ', 'L', false);
 	}
 
 	public void run(AutoSelector key) { // In theory, this should be able to

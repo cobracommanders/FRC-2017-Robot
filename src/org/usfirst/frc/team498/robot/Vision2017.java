@@ -20,8 +20,8 @@ import edu.wpi.first.wpilibj.vision.VisionThread;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class Vision2017 {
-	private static final int IMG_WIDTH = 320;
-	private static final int IMG_HEIGHT = 240;
+	private static final int IMG_WIDTH = 640;
+	private static final int IMG_HEIGHT = 480;
 
 	private double contour1CenterX = 0.0;
 	private double contour1CenterY = 0.0;
@@ -34,6 +34,9 @@ public class Vision2017 {
 	public static ArrayList<MatOfPoint> matPointStuff;
 
 	// NetworkTable netTable = NetworkTable.getTable("CamTable");
+	/*
+	 * VISION IS CANCER (delete when it actually works)
+	 */
 
 	public Vision2017(int cam) {
 		// netTable.setIPAddress("172.22.11.2");
@@ -48,14 +51,15 @@ public class Vision2017 {
 		new Thread(() -> {
 			// NetworkTable netTable = NetworkTable.getTable("CamTable");
 			// netTable.setIPAddress("172.22.11.2");
-			Pipeline pipeline = new Pipeline();
+			GearPipeline pipeline = new GearPipeline();
+			Rect rect1;
 			UsbCamera camera0 = CameraServer.getInstance().startAutomaticCapture("cam0", 0);
 			camera0.setResolution(IMG_WIDTH, IMG_HEIGHT);
 			UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture("cam1", 1);
 			camera1.setResolution(IMG_WIDTH, IMG_HEIGHT);
 
 			CvSink cvSink = CameraServer.getInstance().getVideo();
-			CvSource outputStream = CameraServer.getInstance().putVideo("Blur/RGB", 640, 480);
+			CvSource outputStream = CameraServer.getInstance().putVideo("RgbThreshold", 640, 480);
 
 			Mat source = new Mat();
 
@@ -65,7 +69,6 @@ public class Vision2017 {
 				cvSink.grabFrame(source);
 				pipeline.process(source);
 				outputStream.putFrame(pipeline.rgbThresholdOutput());
-				matPointStuff = pipeline.filterContoursOutput();
 			}
 		}).start();
 

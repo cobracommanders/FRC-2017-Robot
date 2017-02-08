@@ -1,135 +1,127 @@
-//oooh vision
-//get it working randy or else.
-
 package org.usfirst.frc.team498.robot;
 
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.List;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.ImageObserver;
+import java.awt.image.WritableRaster;
+import java.lang.reflect.Array;
+import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Timer;
 
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.videoio.VideoCapture;
 
-import edu.wpi.cscore.CvSink;
-import edu.wpi.cscore.CvSource;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.vision.VisionRunner;
-import edu.wpi.first.wpilibj.vision.VisionRunner.Listener;
-import edu.wpi.first.wpilibj.vision.VisionThread;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
-
 public class Vision2017 {
-	private static final int IMG_WIDTH = 640;
-	private static final int IMG_HEIGHT = 480;
 
-	private double contour1CenterX = 0.0;
-	private double contour1CenterY = 0.0;
-	private double contour1Height = 0.0;
+	static{ 
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
-	private double contour2CenterX = 0.0;
-	private double contour2CenterY = 0.0;
-	private double contour2Height = 0.0;
+	}
+//	Process for GRIP	
+	public static GearPipeline pipeline;
+	public static VideoCapture videoCapture;
+//	Constants for known variables
+	static Mat matOriginal;
+	public static final double OFFSET_TO_FRONT = 0;
+	public static final double CAMERA_WIDTH = 640;
+	public static final double DISTANCE_CONSTANT= 5738;
+	public static final double WIDTH_BETWEEN_TARGET = 8.5;
+	public static boolean shouldRun = true;
+	public static NetworkTable table;
+	
+	
+	static double lengthBetweenContours;
+	static double distanceFromTarget;
+	static double lengthError;
+	static double[] centerX;
 
-	public static ArrayList<MatOfPoint> matPointStuff;
+	public void processImage(){
+		System.out.println("Processing Started");
+		 matOriginal = new Mat();
 
-	// NetworkTable netTable = NetworkTable.getTable("CamTable");
-	/*
-	 * VISION IS CANCER (delete when it actually works)
-	 */
-
-	public Vision2017(int cam) {
-		// netTable.setIPAddress("172.22.11.2");
-
-		// cam0.addCamera(camera);
-
-		// 2 camera code
-		/*
-		 * int currSession; int sessionfront; int sessionback; Image frame;
-		 */
-
-		new Thread(() -> {
-			// NetworkTable netTable = NetworkTable.getTable("CamTable");
-			// netTable.setIPAddress("172.22.11.2");
-			GearPipeline pipeline = new GearPipeline();
-			Rect rect1;
-			UsbCamera camera0 = CameraServer.getInstance().startAutomaticCapture("cam0", 0);
-			camera0.setResolution(IMG_WIDTH, IMG_HEIGHT);
-			UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture("cam1", 1);
-			camera1.setResolution(IMG_WIDTH, IMG_HEIGHT);
-
-			CvSink cvSink = CameraServer.getInstance().getVideo();
-			CvSource outputStream = CameraServer.getInstance().putVideo("RgbThreshold", 640, 480);
-
-			Mat source = new Mat();
-
-			// netTable.putDouble("test", 8.7);
-
-			while (true) {
-				cvSink.grabFrame(source);
-				pipeline.process(source);
-				outputStream.putFrame(pipeline.rgbThresholdOutput());
+//		only run for the specified time
+		while(true){
+			//System.out.println("Hey I'm Processing Something!");
+			videoCapture.read(matOriginal);
+			pipeline.process(matOriginal);
+			returnCenterX();
+			System.out.println(getAngle());
+			table.putDouble("distanceFromTarget", distanceFromTarget());
+			table.putDouble("angleFromGoal", getAngle());
+			table.putNumberArray("centerX", centerX);
+			videoCapture.read(matOriginal);
+		}
+		
+	}
+	public static double returnCenterX(){
+		double[] defaultValue = new double[0];
+			// This is the center value returned by GRIP thank WPI
+			if(!pipeline.filterContoursOutput.isEmpty() && pipeline.filterContoursOutput.size() >= 2){
+				Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput.get(1));
+				Rect r1 = Imgproc.boundingRect(pipeline.filterContoursOutput.get(0)); 
+				centerX = new double[]{r1.x + (r1.width / 2), r.x + (r.width / 2)};
+				Imgcodecs.imwrite("output.png", matOriginal);
+				//System.out.println(centerX.length); //testing
+				// this again checks for the 2 shapes on the target
+				if(centerX.length == 2){
+					// subtracts one another to get length in pixels
+					lengthBetweenContours = Math.abs(centerX[0] - centerX[1]);
+				}
 			}
-		}).start();
-
-		// Good, you create a VisionThread
-		/*
-		 * visionThread = new VisionThread(camera, new Pipeline(), pipeline -> {
-		 * // I would modify this if statement to check if you have 2 contours:
-		 * // pipeline.filterContoursOutput().size() >= 2
-		 * 
-		 * 
-		 * //modified if (pipeline.filterContoursOutput().size() >= 2) { Rect
-		 * contour1 =
-		 * Imgproc.boundingRect(pipeline.filterContoursOutput().get(0)); Rect
-		 * contour2 =
-		 * Imgproc.boundingRect(pipeline.filterContoursOutput().get(1)); // We
-		 * take the lock here but we never use it anywhere else? This // seems
-		 * weird. // I can't help much more unless I can see your // entire // *
-		 * program. synchronized (imgLock) { contour1CenterX = contour1.x +
-		 * (contour1.width / 2); contour1CenterY = contour1.y + (contour1.height
-		 * / 2); contour1Height = contour1.height; contour2CenterX = contour2.x
-		 * + (contour2.width / 2); contour2CenterY = contour2.y +
-		 * (contour2.height / 2); contour2Height = contour2.height; flag = true;
-		 * } } });
-		 */
-
-		// visionThread.start();
+		return lengthBetweenContours;
 	}
-
-	// methods for getting contour values
-	public double GetContour1CenterX() {
-		// ArrayList<MatOfPoint> f =
-		// (ArrayList<MatOfPoint>)netTable.getValue("contours");
-		return contour1CenterX;
+	
+	public static double distanceFromTarget(){
+		// distance costant divided by length between centers of contours
+		distanceFromTarget = DISTANCE_CONSTANT / lengthBetweenContours;
+		return distanceFromTarget - OFFSET_TO_FRONT; 
 	}
+	public static double getAngle(){
+		// 8.5in is for the distance from center to center from goal, then divide by lengthBetweenCenters in pixels to get proportion
+		double constant = WIDTH_BETWEEN_TARGET / lengthBetweenContours;
+		double angleToGoal = 0;
+			//Looking for the 2 blocks to actually start trig
+		if(!pipeline.filterContoursOutput.isEmpty() && pipeline.filterContoursOutput.size() >= 2){
 
-	public double GetContour1CenterY() {
-		return contour1CenterY;
-	}
-
-	public double GetContour1Height() {
-		return contour1Height;
-	}
-
-	public double GetContour2CenterX() {
-		return contour2CenterX;
-	}
-
-	public double GetContour2CenterY() {
-		return contour2CenterY;
-	}
-
-	public double GetContour2Height() {
-		return contour2Height;
-	}
-
-	public int GetCameraWidth() {
-		return IMG_WIDTH;
-	}
-
-	public int GetCameraHeight() {
-		return IMG_HEIGHT;
+			if(centerX.length == 2){
+				// this calculates the distance from the center of goal to center of webcam 
+				double distanceFromCenterPixels= ((centerX[0] + centerX[1]) / 2) - (CAMERA_WIDTH / 2);
+				// Converts pixels to inches using the constant from above.
+				double distanceFromCenterInch = distanceFromCenterPixels * constant;
+				// math brought to you buy Chris and Jones
+				angleToGoal = Math.atan(distanceFromCenterInch / distanceFromTarget());
+				angleToGoal = Math.toDegrees(angleToGoal);
+				// prints angle
+				//System.out.println("Angle: " + angleToGoal);
+				}
+			}
+			return angleToGoal;
 	}
 
 }

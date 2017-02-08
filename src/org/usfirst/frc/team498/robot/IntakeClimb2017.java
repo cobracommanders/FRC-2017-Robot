@@ -5,9 +5,10 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Spark;
 
-public class GearIntake2017 {
+public class IntakeClimb2017 {
 
-	Spark spark;
+	Spark sparkBall;
+	Spark sparkClimb;
 	FancyJoystick thisStick;
 	DoubleSolenoid ds;
 	boolean aOldState = false;
@@ -15,11 +16,15 @@ public class GearIntake2017 {
 	boolean wasIntakePressed = false;
 	boolean isIntakeRunning = false;
 	boolean intakeReverse = false;
+	
+	boolean wasClimbPressed = false;
+	boolean isClimbRunning = false;
 
-	public GearIntake2017(FancyJoystick thisStick, Ports ports) {
+	public IntakeClimb2017(FancyJoystick thisStick, Ports ports) {
 		ds = new DoubleSolenoid(ports.GEAR_INTAKE_FORWARD_CHANNEL, ports.GEAR_INTAKE_REVERSE_CHANNEL);
 		this.thisStick = thisStick;
-		spark = new Spark(ports.SPARK_BALL_INTAKE_PWM_CHANNEL);
+		sparkBall = new Spark(ports.SPARK_BALL_INTAKE_PWM_CHANNEL);
+		sparkClimb = new Spark(ports.SPARK_CLIMB_PWM_CHANNEL);
 
 	}
 
@@ -30,20 +35,45 @@ public class GearIntake2017 {
 		aOldState = thisStick.getButton(Button.A);
 		return localTemp;
 	}
-
+	
+	//ball
 	public void IntakeOn() {
-		spark.set(1);
+		sparkBall.set(1);
 	}
 
 	public void IntakeOff() {
-		spark.set(0);
+		sparkBall.set(0);
 	}
 
 	public void IntakeReverse() {
-		spark.set(-1);
+		sparkBall.set(-1);
 	}
-
+	
+	//climb
+	public void ClimbOn() {
+		sparkClimb.set(1);
+	}
+	
+	public void ClimbOff() {
+		sparkClimb.set(0);
+	}
+	
 	public void Listener() {
+		
+		if ((thisStick.getButton(Button.BACK) && thisStick.getButton(Button.RightJoystick)) && wasClimbPressed == false) {
+			isClimbRunning = !isClimbRunning;
+			wasClimbPressed = true;
+		}
+		
+		if (wasClimbPressed == true && (thisStick.getButton(Button.BACK) && thisStick.getButton(Button.RightJoystick)) == false) {
+			wasClimbPressed = false;
+		}
+		
+		if (isClimbRunning) {
+			ClimbOn();
+		} else {
+			ClimbOff();
+		}
 
 		if (thisStick.getButton(Button.X) && wasIntakePressed == false) {
 			isIntakeRunning = !isIntakeRunning;

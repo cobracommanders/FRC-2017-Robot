@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class AutonmousController {
 	// Vision
-	public Vision2017 vision = new Vision2017(0);
+	//public Vision2017 vision = new Vision2017(0);
 	public DriverStation driveStation = DriverStation.getInstance();
 	private Timer clock;
 	private Drive2017 drive;
@@ -304,7 +304,7 @@ public class AutonmousController {
 	 * 
 	 */
 
-	public TeleOpMode AlignHighGoal() {
+	/*public TeleOpMode AlignHighGoal() {
 		// Checks if we are within horizontal Deadzone
 		if (Math.abs(vision.GetContour1CenterX() - (vision.GetCameraWidth() / 2)) < horizontalDeadzone) {
 			// gets thickest contour
@@ -332,7 +332,7 @@ public class AutonmousController {
 			return TeleOpMode.OPERATORCONTROL;
 		}
 		return TeleOpMode.HIGHGOALALIGNMENT;
-	}
+	}*/
 
 	public TeleOpMode AlignGearPeg() {
 		// Checks if we are in the gear Deadzone
@@ -351,7 +351,7 @@ public class AutonmousController {
 		case 5:
 			break;
 		}
-		if (Math.abs(vision.GetContour1Height() - vision.GetContour2Height()) > gearDeadzone) {
+		/*if (Math.abs(vision.GetContour1Height() - vision.GetContour2Height()) > gearDeadzone) {
 
 			if (analogSensor.GetRangeInches() > rangeInches) {
 				drive.manualDrive(.5, 0);
@@ -372,7 +372,7 @@ public class AutonmousController {
 			driveAngle = .5;
 		} else {
 			driveAngle = -.5;
-		}
+		}*/
 
 		// If the left contour is shorter than the right one, turns right.
 		switch (phase) { // aligns from right

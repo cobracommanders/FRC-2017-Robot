@@ -60,9 +60,14 @@ public class CameraVision2017 {
 				for(int i = 0; i < matOfPoints.size(); i++) {
 					boxes.add(Imgproc.boundingRect(matOfPoints.get(i)));
 				}
+				outputStream.putFrame(gearPipe.rgbThresholdOutput());
 			}
 		}).start();
 	}
 	
-	
+	//public double GetCenter() {
+	//	List<Double> widths;
+	//	List<Double> heights;
+	//	
+	//}
 }

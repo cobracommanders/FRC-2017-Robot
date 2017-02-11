@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
+//import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //import edu.wpi.first.wpilibj.networktables.NetworkTable; *garbage*
@@ -45,95 +45,75 @@ public class Robot extends SampleRobot {
 
 	IntakeClimb2017 gearIntake = new IntakeClimb2017(thisStick, ports);
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
-	Vision2017 vision = new Vision2017();
-	
-	//Camera Code
-	private static final int IMG_WIDTH = 320;
-	private static final int IMG_HEIGHT = 240;
-	
-	private VisionThread visionThread;
-	private double centerX = 0.0;
-	
-	private final Object imgLock = new Object();
-	private RobotDrive drive;
-	public static NetworkTable table;
-	public static boolean shouldRun = true;
-	public static GearPipeline pipeline;
-	public static VideoCapture videoCapture;
-	
+	Processing vision = new Processing();
+	Thread randy;
 	
 
-	boolean dToggle = false;
+	// Camera Code
+	//private static final int IMG_WIDTH = 320;
+	//private static final int IMG_HEIGHT = 240;
+
+	//private VisionThread visionThread;
+	//private double centerX = 0.0;
+
+	//private final Object imgLock = new Object();
+	//private RobotDrive drive;
+
+	//public NetworkTable table;
+
+	// boolean dToggle = false;
 
 	// boolean intakeToggle = false;
 	// boolean xDown = false;
 
 	@Override
 	public void robotInit() {
-		//NetworkTable.setClientMode();
-		NetworkTable.setTeam(498);
-		NetworkTable.setIPAddress("roborio-498-frc.local");
-		NetworkTable.initialize();
-		table = NetworkTable.getTable("GearPipeline");
-		
-		while(shouldRun){
-			try {
-//				opens up the camera stream and tries to load it
-				videoCapture = new VideoCapture();
-				pipeline = new GearPipeline();
-				videoCapture.open("http://roborio-498-frc.local:1181/?action=stream");
-				// change that to your team number boi("http://roborio-XXXX-frc.local:1181/?action=stream");
-				while(!videoCapture.isOpened()){
-					System.out.println("Didn't open Camera, restart jar");
-				}
-//				time to actually process the acquired images
-				while(videoCapture.isOpened()){
-					vision.processImage();
-				}
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-				break;
-			}
-		}
-		videoCapture.release();
+		 randy = new Thread(() -> {
+			Processing.start();
+		});
+		 
+		 randy.start();
+		 
+		 //randy.interrupt();
+		//table = NetworkTable.getTable("LiftTracker");
+
+		// 2 USB Cameras
+		/*
+		 * frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+		 * 
+		 * sessionfront = NIVision.IMAQdxOpenCamera("cam1",
+		 * NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+		 * 
+		 * sessionback = NIVision.IMAQdxOpenCamera("cam2",
+		 * NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+		 * 
+		 * currSession = sessionfront;
+		 * 
+		 * NIVision.IMAQdxConfigureGrab(currSession);
+		 */
+
+		/*
+		 * public boolean xDown() { if (!xDown && thisStick.getButton(Button.X))
+		 * { //xDown = thisStick.getButton(Button.X); //
+		 * System.out.println("Should have set to true"); return true; } else {
+		 * xDown = thisStick.getButton(Button.X); return false; } }
+		 */
+
+		// Select which autonomous to run
+
+		// Camera Code
+		// @Override
 	}
 
-	// 2 USB Cameras
-	/*
-	 * frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
-	 * 
-	 * sessionfront = NIVision.IMAQdxOpenCamera("cam1",
-	 * NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-	 * 
-	 * sessionback = NIVision.IMAQdxOpenCamera("cam2",
-	 * NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-	 * 
-	 * currSession = sessionfront;
-	 * 
-	 * NIVision.IMAQdxConfigureGrab(currSession);
-	 */
-
-	/*
-	 * public boolean xDown() { if (!xDown && thisStick.getButton(Button.X)) {
-	 * //xDown = thisStick.getButton(Button.X); //
-	 * System.out.println("Should have set to true"); return true; } else {
-	 * xDown = thisStick.getButton(Button.X); return false; } }
-	 */
-
-	// Select which autonomous to run
-	
-	//Camera Code
-	//@Override
-	public void autonomousPeriodic() {
+	/*public void autonomousPeriodic() {
 		double centerX;
 		synchronized (imgLock) {
 			centerX = this.centerX;
 		}
 		double turn = centerX - (IMG_WIDTH / 2);
 		drive.arcadeDrive(-0.6, turn * 0.005);
-	}
-	
+	}*/
+
 	public void autonomous() {
 
 		while (isAutonomous() && isEnabled()) {
@@ -276,7 +256,7 @@ public class Robot extends SampleRobot {
 	// Sends information to the driver
 	private void print() {
 
-		// TODO Just so we can click here
+		// TODO Just so we can click here easier, nothing to actually do here.
 		// SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
 		// SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
 		// SmartDashboard.putNumber("Gyro getRate()", auto.gyro.getRate());
@@ -292,80 +272,98 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("Ultrasonic Voltage", ultra.GetVoltage());
 
 		SmartDashboard.putNumber("Shooter value", digitBoard.getPot());
-
-		String widthStuff = "";
-		String heightStuff = "";
+		SmartDashboard.putNumber("Center X Process", Processing.returnCenterX());
+		SmartDashboard.putNumber("Angle Process", Processing.getAngle());
+		SmartDashboard.putNumber("Distance From Target Process", Processing.distanceFromTarget());
+		//SmartDashboard.putString("AutoModeString2", SmartDashboard.getString("AutoModeString", "RL"));
 		
-		try {
-			for(int i = 0; i < CameraVision2017.boxes.size(); i++) {
-				//SmartDashboard.putNumber("Boxes", CameraVision2017.boxes.size());
-				//SmartDashboard.putNumber("Box Height" + String.valueOf(CameraVision2017.boxes.get(i)), CameraVision2017.boxes.get(i).height);
-				//SmartDashboard.putNumber("Box Width" + String.valueOf(CameraVision2017.boxes.get(i)), CameraVision2017.boxes.get(i).width);
-				widthStuff += " " + String.valueOf(CameraVision2017.boxes.get(i).width) +"; ";
-				heightStuff += " " + String.valueOf(CameraVision2017.boxes.get(i).height) + "; ";
-			}
-			SmartDashboard.putString("Contour Heights", heightStuff);
-			SmartDashboard.putString("Contour Widths", widthStuff);
-			SmartDashboard.putNumber("Contours", CameraVision2017.boxes.size());
-		}
-		catch (Exception e) {
-			SmartDashboard.putString("Error", e.getMessage());
-		}
 		/*try {
-			SmartDashboard.putNumber("Contours", Vision2017.matPointStuff.size());
+			SmartDashboard.putNumber("QWERTYUIOPASDFGHJKLZXCVBNM Center X",
+					Vision2017.table.getNumber("centerX", 1337));
 		} catch (Exception e) {
-			System.out.println("Contour Count error");
-			System.out.println(e);
-		}*/
-		
-		
-		// SmartDashboard.putNumber("Network Table Value",
-		// auto.netTable.getDouble("test"));
+			if (e != null) {
+				SmartDashboard.putString("Error message", e.getMessage());
+			} else {
+				SmartDashboard.putString("Error message", "The error was null"); 
+			}
+			}*/
 
-		/*
-		 * SmartDashboard.putNumber("Range millimeters (Analog)",
-		 * auto.analogSensor.GetRangeMM());
-		 * SmartDashboard.putNumber("Range Inches (Analog)",
-		 * auto.analogSensor.GetRangeInches());
-		 * SmartDashboard.putNumber("Voltage (Analog)",
-		 * auto.analogSensor.GetVoltage());
-		 */
-		// These should print out GRIP's contour info into Dashboard
-		// SmartDashboard.putNumber("Contour1 CenterX",
-		// auto.vision.GetContour1CenterX());
-		// SmartDashboard.putNumber("Contour1 CenterY",
-		// auto.vision.GetContour1CenterY());
-		// SmartDashboard.putNumber("Contour1 Height",
-		// auto.vision.GetContour1Height());
-		// SmartDashboard.putNumber("Contour2 CenterX",
-		// auto.vision.GetContour2CenterX());
-		// SmartDashboard.putNumber("Contour2 CenterY",
-		// auto.vision.GetContour2CenterY());
-		// SmartDashboard.putNumber("Contour2 Height",
-		// auto.vision.GetContour2Height());
+			// String widthStuff = "";
+			// String heightStuff = "";
 
-		// SmartDashboard.putBoolean("flag", auto.vision.flag);
+			/*
+			 * try { for(int i = 0; i < CameraVision2017.boxes.size(); i++) {
+			 * //SmartDashboard.putNumber("Boxes",
+			 * CameraVision2017.boxes.size());
+			 * //SmartDashboard.putNumber("Box Height" +
+			 * String.valueOf(CameraVision2017.boxes.get(i)),
+			 * CameraVision2017.boxes.get(i).height);
+			 * //SmartDashboard.putNumber("Box Width" +
+			 * String.valueOf(CameraVision2017.boxes.get(i)),
+			 * CameraVision2017.boxes.get(i).width); widthStuff += " " +
+			 * String.valueOf(CameraVision2017.boxes.get(i).width) +"; ";
+			 * heightStuff += " " +
+			 * String.valueOf(CameraVision2017.boxes.get(i).height) + "; "; }
+			 * SmartDashboard.putString("Contour Heights", heightStuff);
+			 * SmartDashboard.putString("Contour Widths", widthStuff);
+			 * SmartDashboard.putNumber("Contours",
+			 * CameraVision2017.boxes.size()); } catch (Exception e) {
+			 * SmartDashboard.putString("Error", e.getMessage()); }
+			 */
+			/*
+			 * try { SmartDashboard.putNumber("Contours",
+			 * Vision2017.matPointStuff.size()); } catch (Exception e) {
+			 * System.out.println("Contour Count error"); System.out.println(e);
+			 * }
+			 */
 
-		/*
-		 * // SmartDashboard.putNumber("Battery Voltage", pdp.getVoltage());
-		 * //SmartDashboard.putNumber("Potentiometer Value",
-		 * digitBoard.getPot()); SmartDashboard.putNumber("Move Value",
-		 * drive.moveValue);
-		 * 
-		 * //SmartDashboard.putBoolean("Button A", digitBoard.getButtonA());
-		 * //SmartDashboard.putBoolean("Button B", digitBoard.getButtonB());
-		 * SmartDashboard.putNumber("AutoMode", auto.autoMode);
-		 * SmartDashboard.putString("Display", auto.display); //
-		 * SmartDashboard.putNumber("A7", potMaybe.getVoltage());
-		 * 
-		 * // digitBoard.display(pdp.getVoltage());
-		 * 
-		 * // SmartDashboard.putNumber("Ramp Clock", //
-		 * drive.forwardDriveRamp.clock.get());
-		 * 
-		 * // 2 camera code 8NIVision.IMAQdxGrab(currSession, frame, 1);
-		 * CameraServer.getInstance().setImage(frame);
-		 */
+			// SmartDashboard.putNumber("Network Table Value",
+			// auto.netTable.getDouble("test"));
+
+			/*
+			 * SmartDashboard.putNumber("Range millimeters (Analog)",
+			 * auto.analogSensor.GetRangeMM());
+			 * SmartDashboard.putNumber("Range Inches (Analog)",
+			 * auto.analogSensor.GetRangeInches());
+			 * SmartDashboard.putNumber("Voltage (Analog)",
+			 * auto.analogSensor.GetVoltage());
+			 */
+			// These should print out GRIP's contour info into Dashboard
+			// SmartDashboard.putNumber("Contour1 CenterX",
+			// auto.vision.GetContour1CenterX());
+			// SmartDashboard.putNumber("Contour1 CenterY",
+			// auto.vision.GetContour1CenterY());
+			// SmartDashboard.putNumber("Contour1 Height",
+			// auto.vision.GetContour1Height());
+			// SmartDashboard.putNumber("Contour2 CenterX",
+			// auto.vision.GetContour2CenterX());
+			// SmartDashboard.putNumber("Contour2 CenterY",
+			// auto.vision.GetContour2CenterY());
+			// SmartDashboard.putNumber("Contour2 Height",
+			// auto.vision.GetContour2Height());
+
+			// SmartDashboard.putBoolean("flag", auto.vision.flag);
+
+			/*
+			 * // SmartDashboard.putNumber("Battery Voltage", pdp.getVoltage());
+			 * //SmartDashboard.putNumber("Potentiometer Value",
+			 * digitBoard.getPot()); SmartDashboard.putNumber("Move Value",
+			 * drive.moveValue);
+			 * 
+			 * //SmartDashboard.putBoolean("Button A", digitBoard.getButtonA());
+			 * //SmartDashboard.putBoolean("Button B", digitBoard.getButtonB());
+			 * SmartDashboard.putNumber("AutoMode", auto.autoMode);
+			 * SmartDashboard.putString("Display", auto.display); //
+			 * SmartDashboard.putNumber("A7", potMaybe.getVoltage());
+			 * 
+			 * // digitBoard.display(pdp.getVoltage());
+			 * 
+			 * // SmartDashboard.putNumber("Ramp Clock", //
+			 * drive.forwardDriveRamp.clock.get());
+			 * 
+			 * // 2 camera code 8NIVision.IMAQdxGrab(currSession, frame, 1);
+			 * CameraServer.getInstance().setImage(frame);
+			 */
+		}
 	}
 
-}

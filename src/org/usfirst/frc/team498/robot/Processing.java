@@ -36,15 +36,18 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
-public class Vision2017 {
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
+
+//import edu.wpi.first.wpilibj.networktables.NetworkTable;
+public class Processing {
 
 	static{ 
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
 	}
 //	Process for GRIP	
-	public static GearPipeline pipeline;
+	static LiftTracker tracker;
 	public static VideoCapture videoCapture;
 //	Constants for known variables
 	static Mat matOriginal;
@@ -53,15 +56,48 @@ public class Vision2017 {
 	public static final double DISTANCE_CONSTANT= 5738;
 	public static final double WIDTH_BETWEEN_TARGET = 8.5;
 	public static boolean shouldRun = true;
-	public static NetworkTable table;
+	//static NetworkTable table;
 	
 	
 	static double lengthBetweenContours;
 	static double distanceFromTarget;
 	static double lengthError;
-	static double[] centerX;
-
-	public void processImage(){
+	public static double[] centerX;
+	
+	public static void start() {
+		/*NetworkTable.setClientMode();
+		NetworkTable.setTeam(498);
+		NetworkTable.setIPAddress("roborio-498-frc.local");
+		NetworkTable.initialize();
+		table = NetworkTable.getTable("LiftTracker");
+		*/
+		while(shouldRun){
+			try {
+//				opens up the camera stream and tries to load it
+				videoCapture = new VideoCapture();
+				tracker = new LiftTracker();
+				//videoCapture.open("http://roborio-498-frc.local:1181/?action=stream");
+				UsbCamera camera0 = CameraServer.getInstance().startAutomaticCapture("cam0", 0);
+				videoCapture.open(0);
+				// change that to your team number boi("http://roborio-XXXX-frc.local:1181/?action=stream");
+				while(!videoCapture.isOpened()){
+					System.out.println("Didn't open Camera, restart jar");
+				}
+//				time to actually process the acquired images
+				while(videoCapture.isOpened()){
+					processImage();
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				break;
+			}
+		}
+//		make sure the java process quits when the loop finishes
+		videoCapture.release();
+		System.exit(0);
+	}
+	public static void processImage(){
 		System.out.println("Processing Started");
 		 matOriginal = new Mat();
 
@@ -69,12 +105,12 @@ public class Vision2017 {
 		while(true){
 			//System.out.println("Hey I'm Processing Something!");
 			videoCapture.read(matOriginal);
-			pipeline.process(matOriginal);
+			tracker.process(matOriginal);
 			returnCenterX();
 			System.out.println(getAngle());
-			table.putDouble("distanceFromTarget", distanceFromTarget());
-			table.putDouble("angleFromGoal", getAngle());
-			table.putNumberArray("centerX", centerX);
+			//table.putDouble("distanceFromTarget", distanceFromTarget());
+			//table.putDouble("angleFromGoal", getAngle());
+			//table.putNumberArray("centerX", centerX);
 			videoCapture.read(matOriginal);
 		}
 		
@@ -82,9 +118,9 @@ public class Vision2017 {
 	public static double returnCenterX(){
 		double[] defaultValue = new double[0];
 			// This is the center value returned by GRIP thank WPI
-			if(!pipeline.filterContoursOutput.isEmpty() && pipeline.filterContoursOutput.size() >= 2){
-				Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput.get(1));
-				Rect r1 = Imgproc.boundingRect(pipeline.filterContoursOutput.get(0)); 
+			if(!tracker.filterContoursOutput.isEmpty() && tracker.filterContoursOutput.size() >= 2){
+				Rect r = Imgproc.boundingRect(tracker.filterContoursOutput.get(1));
+				Rect r1 = Imgproc.boundingRect(tracker.filterContoursOutput.get(0)); 
 				centerX = new double[]{r1.x + (r1.width / 2), r.x + (r.width / 2)};
 				Imgcodecs.imwrite("output.png", matOriginal);
 				//System.out.println(centerX.length); //testing
@@ -107,7 +143,7 @@ public class Vision2017 {
 		double constant = WIDTH_BETWEEN_TARGET / lengthBetweenContours;
 		double angleToGoal = 0;
 			//Looking for the 2 blocks to actually start trig
-		if(!pipeline.filterContoursOutput.isEmpty() && pipeline.filterContoursOutput.size() >= 2){
+		if(!tracker.filterContoursOutput.isEmpty() && tracker.filterContoursOutput.size() >= 2){
 
 			if(centerX.length == 2){
 				// this calculates the distance from the center of goal to center of webcam 

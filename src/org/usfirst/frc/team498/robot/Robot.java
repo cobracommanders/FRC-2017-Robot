@@ -45,8 +45,8 @@ public class Robot extends SampleRobot {
 
 	IntakeClimb2017 gearIntake = new IntakeClimb2017(thisStick, ports);
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
-	Processing vision = new Processing();
-	Thread randy;
+	
+	CameraVision2017 vision = new CameraVision2017();
 	
 
 	// Camera Code
@@ -68,13 +68,7 @@ public class Robot extends SampleRobot {
 
 	@Override
 	public void robotInit() {
-		 randy = new Thread(() -> {
-			Processing.start();
-		});
 		 
-		 randy.start();
-		 
-		 //randy.interrupt();
 		//table = NetworkTable.getTable("LiftTracker");
 
 		// 2 USB Cameras
@@ -255,6 +249,7 @@ public class Robot extends SampleRobot {
 
 	// Sends information to the driver
 	private void print() {
+		
 
 		// TODO Just so we can click here easier, nothing to actually do here.
 		// SmartDashboard.putNumber("Gyro Angle", auto.gyro.getAngle());
@@ -272,9 +267,6 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("Ultrasonic Voltage", ultra.GetVoltage());
 
 		SmartDashboard.putNumber("Shooter value", digitBoard.getPot());
-		SmartDashboard.putNumber("Center X Process", Processing.returnCenterX());
-		SmartDashboard.putNumber("Angle Process", Processing.getAngle());
-		SmartDashboard.putNumber("Distance From Target Process", Processing.distanceFromTarget());
 		//SmartDashboard.putString("AutoModeString2", SmartDashboard.getString("AutoModeString", "RL"));
 		
 		/*try {

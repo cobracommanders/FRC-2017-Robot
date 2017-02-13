@@ -37,10 +37,10 @@ public class CameraVision2017 {
 	
 	public CameraVision2017() {
 		cam0 = CameraServer.getInstance().startAutomaticCapture(0);
-		cam1 = CameraServer.getInstance().startAutomaticCapture(1);
+		//cam1 = CameraServer.getInstance().startAutomaticCapture(1);
 		cam0.setResolution(RES_WIDTH, RES_HEIGHT);
-		cam1.setResolution(RES_WIDTH, RES_HEIGHT);
-		startThread();
+		//cam1.setResolution(RES_WIDTH, RES_HEIGHT);
+		//startThread();
 	}
 	
 	public void startThread() {

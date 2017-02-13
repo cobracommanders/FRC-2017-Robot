@@ -1,43 +1,53 @@
 package org.usfirst.frc.team498.robot;
 
+import com.ctre.CANTalon;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.Talon;
 
-public class IntakeClimb2017 {
+public class IntakeClimb2017 { //TODO add belt victor for feeder
 
 	Spark sparkBall;
-	Spark sparkClimb;
+	CANTalon climb1; 
+	CANTalon climb0;
 	FancyJoystick thisStick;
 	DoubleSolenoid ds;
 	boolean aOldState = false;
+	//Talon talonConveyor;
 
 	boolean wasIntakePressed = false;
 	boolean isIntakeRunning = false;
 	boolean intakeReverse = false;
 	
+	//boolean wasConveyorPressed = false;
+	//boolean isConveyorRunning = false;
+	
 	boolean wasClimbPressed = false;
 	boolean isClimbRunning = false;
+	boolean climbReverse = false;
 
 	public IntakeClimb2017(FancyJoystick thisStick, Ports ports) {
 		ds = new DoubleSolenoid(ports.GEAR_INTAKE_FORWARD_CHANNEL, ports.GEAR_INTAKE_REVERSE_CHANNEL);
 		this.thisStick = thisStick;
 		sparkBall = new Spark(ports.SPARK_BALL_INTAKE_PWM_CHANNEL);
-		sparkClimb = new Spark(ports.SPARK_CLIMB_PWM_CHANNEL);
+		climb0 = new CANTalon(ports.CANTALON_CLIMBER_0);
+		climb1 = new CANTalon(ports.CANTALON_CLIMBER_1);
 
 	}
 
-	public boolean ADown() {
+	/*public boolean ADown() {
 		boolean localTemp = false;
 		if (!aOldState && thisStick.getButton(Button.A))
 			localTemp = true;
 		aOldState = thisStick.getButton(Button.A);
 		return localTemp;
-	}
+	}*/
 	
 	//ball
-	public void IntakeOn() {
+	/*public void IntakeOn() {
 		sparkBall.set(1);
 	}
 
@@ -47,35 +57,88 @@ public class IntakeClimb2017 {
 
 	public void IntakeReverse() {
 		sparkBall.set(-1);
+	}*/
+	
+	//conveyor
+	/*public void ConveyorOn() {
+		talonConveyor.set(1);
 	}
+	public void ConveyorOff() {
+		talonConveyor.set(0);
+	}*/
 	
 	//climb
 	public void ClimbOn() {
-		sparkClimb.set(1);
+		//For some reason, the motors are calibrated in reverse?
+		climb0.set(.8);
+		climb1.set(.8);
 	}
 	
 	public void ClimbOff() {
-		sparkClimb.set(0);
+		climb0.set(0);
+		climb1.set(0);
+	}
+	
+	public void ClimbReverse() {
+		climb0.set(-.8);
+		climb1.set(-.8);
 	}
 	
 	public void Listener() {
 		
-		if ((thisStick.getButton(Button.BACK) && thisStick.getButton(Button.RightJoystick)) && wasClimbPressed == false) {
-			isClimbRunning = !isClimbRunning;
-			wasClimbPressed = true;
+		/*if (thisStick.getButton(Button.B) && wasConveyorPressed == false) {
+			isConveyorRunning = !isConveyorRunning;
+			wasConveyorPressed = true;
 		}
 		
-		if (wasClimbPressed == true && (thisStick.getButton(Button.BACK) && thisStick.getButton(Button.RightJoystick)) == false) {
+		if (wasConveyorPressed == true && (thisStick.getButton(Button.B) == false)) {
+			wasConveyorPressed = false;
+		}
+		
+		if (isConveyorRunning) {
+			ConveyorOn();
+		}
+		
+		if (isConveyorRunning) {
+			ConveyorOff();
+		}*/
+		
+		if (thisStick.getButton(Button.B)) {
+			ClimbOn();
+		}
+		if (thisStick.getButton(Button.X)) {
+			ClimbOff();
+		}
+		if (thisStick.getButton(Button.A)) {
+			ClimbReverse();
+		}
+		
+		/*if (thisStick.getButton(Button.B) && wasClimbPressed == false) {
+			isClimbRunning = !isClimbRunning;
+			wasClimbPressed = true;
+			if(thisStick.getButton(Button.X)) {
+				climbReverse = true;
+			} else {
+				climbReverse = false;
+			}
+		}
+		
+		if (wasClimbPressed == true && (thisStick.getButton(Button.B)) == false) {
 			wasClimbPressed = false;
 		}
 		
 		if (isClimbRunning) {
+			if (climbReverse) {
+				ClimbReverse();
+			} else {
+				ClimbOn();
+			}
 			ClimbOn();
 		} else {
 			ClimbOff();
-		}
+		}*/
 
-		if (thisStick.getButton(Button.X) && wasIntakePressed == false) {
+		/*if (thisStick.getButton(Button.X) && wasIntakePressed == false) {
 			isIntakeRunning = !isIntakeRunning;
 			wasIntakePressed = true;
 			if (thisStick.getButton(Button.LeftBumper))
@@ -112,6 +175,7 @@ public class IntakeClimb2017 {
 
 	public void CloseFlap() {
 		ds.set(Value.kForward);
-	}
+	}*/
 
+	}
 }

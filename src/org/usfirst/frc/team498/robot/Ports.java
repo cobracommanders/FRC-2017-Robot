@@ -10,7 +10,9 @@ public class Ports {
 	final int SHOOTER_PWM_PORT = 4; //4 (1st robot), 5 (test robot)
 	
 	final int SPARK_BALL_INTAKE_PWM_CHANNEL = 5; //5 (1st robot), 1
-	final int SPARK_CLIMB_PWM_CHANNEL = 0; //TODO change to correct port
+	final int CANTALON_CLIMBER_0 = 0; //TODO change to correct port
+	final int CANTALON_CLIMBER_1 = 1;
+	//final int TALON_CONVEYOR_CHANNEL = 1;
 
 	
 	//PCM

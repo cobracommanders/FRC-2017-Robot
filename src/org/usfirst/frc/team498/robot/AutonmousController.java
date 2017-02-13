@@ -7,16 +7,17 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Ultrasonic;
 
 public class AutonmousController {
 	// Vision
-	//public Vision2017 vision = new Vision2017(0);
+	// public Vision2017 vision = new Vision2017(0);
 	public DriverStation driveStation = DriverStation.getInstance();
 	private Timer clock;
 	private Drive2017 drive;
 	private PewPew2017 shooter;
-	public AnalogUltrasonicSensor2017 analogSensor;
-	//public ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+	public AnalogUltrasonicSensor2017 ultra;
+	// public ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 
 	double currentContourHeight = 0.0;
 	double leftContour = 0.0;
@@ -34,10 +35,9 @@ public class AutonmousController {
 
 	int phase = 0;
 	int clockTime = 2;
-	int autoMode = 0;
 	char colorAuto;
 	char positionAuto;
-	
+
 	NetworkTable netTable = NetworkTable.getTable("CamTable");
 
 	REVImprovedDigitBoard digitBoard;
@@ -46,7 +46,7 @@ public class AutonmousController {
 			Ports ports, AnalogUltrasonicSensor2017 ultra, Timer clock) {
 		this.drive = drive;
 		this.shooter = shooter;
-		this.analogSensor = ultra;
+		this.ultra = ultra;
 		this.clock = clock;
 		this.digitBoard = digitBoard;
 		digitBoard.UpdateDisplay(' ', 'R', ' ', 'L', false);
@@ -74,37 +74,24 @@ public class AutonmousController {
 		clock.start();
 	}
 
-	public double ConvertGyroStuff(double theta) {
-		// Gets rid of excess rotations
-		theta %= 360d;
-		// Makes 270 = -90, 350 = -10, etc.
-		if (theta >= 180)
-			theta -= 360d;
-		//randy's modifier, makes -270 = 90, -350 = 10, etc.
-		if (theta <= -180)
-			theta -= -360d;
-		// Otherwise, no change needed
-		return theta;
-	}
-
 	public void Auto() {
-		switch (autoMode) {
-		case 0:
+		switch (AutoMode.currentValue) {
+		case AutoMode.RED_LEFT:
 			autoLeftPeg(false);
 			break;
-		case 1:
+		case AutoMode.RED_MIDDLE:
 			autoMidPeg(false);
 			break;
-		case 2:
+		case AutoMode.RED_RIGHT:
 			autoRightPeg(false);
 			break;
-		case 3:
+		case AutoMode.BLUE_LEFT:
 			autoLeftPeg(true);
 			break;
-		case 4:
+		case AutoMode.BLUE_MIDDLE:
 			autoMidPeg(true);
 			break;
-		case 5:
+		case AutoMode.BLUE_RIGHT:
 			autoRightPeg(true);
 			break;
 		}
@@ -114,8 +101,8 @@ public class AutonmousController {
 		switch (phase) {
 		case 0:
 			clock.reset();
-			 //gyro.reset();
-			//gyro.calibrate();
+			// gyro.reset();
+			// gyro.calibrate();
 			phase++;
 
 			break;
@@ -134,7 +121,7 @@ public class AutonmousController {
 			 * drive STRAIGHT!!!* (internal screaming, KMP)
 			 */
 
-			//drive.manualDrive(.6, ConvertGyroStuff(gyro.getAngle()) * -0.03);
+			// drive.manualDrive(.6, ConvertGyroStuff(gyro.getAngle()) * -0.03);
 			// // moves
 			// forward
 			// for
@@ -163,40 +150,62 @@ public class AutonmousController {
 		 * drive.manualDrive(0, -.5 * blueToggle); drive.manualDrive(.5, 0);
 		 * drive.manualDrive(0, .5 * blueToggle); AlignGearPeg();
 		 */
-		int blueToggle = 1;
-		if (blue)
-			blueToggle = -1;
+		int blueToggle = blue ? -1 : 1;
 		switch (phase) {
 		case 0:
 			clock.start();
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(0, -.5 * blueToggle); // turns left
-			if (clock.get() > 2) {
-				clock.start();
-				phase++;
-			}
-			break;
-		case 2:
-			drive.manualDrive(.5, 0); // moves forward
+			drive.manualDrive(-0.5, 0); // TODO: Set this back to + for real bot
 			if (clock.get() > 3) {
 				clock.start();
 				phase++;
 			}
 			break;
-		case 3:
-			drive.manualDrive(0, .5 * blueToggle); // turns right
-
-			if (clock.get() > 2) {
+		case 2:
+			drive.manualDrive(0, -0.8);
+			if (clock.get() > 0.2) {
 				clock.start();
 				phase++;
 			}
-
+			break;
+		case 3:
+			drive.manualDrive(-0.5, 0);
+			if (clock.get() > 2) {
+				clock.stop();
+				clock.reset();
+				phase++;
+			}
 			break;
 		case 4:
-			clock.reset();
-			clock.stop();
+			drive.manualDrive(0, 0);
+			break;
+		}
+	}
+
+	public void autoMidPeg(boolean blue) {
+		// TODO: TEST
+		int blueToggle = blue ? -1 : 1;
+		double ultraInches = ultra.GetRangeInches();
+		switch (phase) {
+		case 0:
+			drive.manualDrive(0, 0);
+			if (ultraInches > 11) {
+				phase++;
+			}
+			break;
+		case 1:
+			drive.manualDrive(-.4, 0); // moves forward
+			if (ultraInches < 2.5) {
+				phase--;
+				break;
+			}
+			if (ultraInches < 5) {
+				phase++;
+			}
+			break;
+		case 2:
 			drive.manualDrive(0, 0);
 			// AlignGearPeg(); // aligns gear peg
 			phase++;
@@ -206,93 +215,38 @@ public class AutonmousController {
 		}
 	}
 
-	// code for high goal below from top peg, just in case
-
-	/*
-	 * public void autoTopPeg() { // auto for the top peg (Top as in farthest
-	 * from // BOILER) switch (phase) { case 0: clock.start(); phase++; break;
-	 * case 1: drive.manualDrive(0, -.5); // turns left if (clock.get() > 2) {
-	 * clock.reset(); phase++; } break; case 2: case 2: drive.manualDrive(.5,
-	 * 0); // moves forward if (clock.get() > 3) { clock.reset(); phase++; }
-	 * break; case 3: drive.manualDrive(0, .5); // turns right if (clock.get() >
-	 * 2) { clock.reset(); phase++; } break; case 4: AlignGearPeg(); // aligns
-	 * gear peg phase++; break; case 5: drive.manualDrive(0, .5); //turns right
-	 * if (clock.get() > 2) { clock.reset(); phase++; } break; case 6:
-	 * drive.manualDrive(.5, 0) //moves forward if (clock.get() > 2) {
-	 * clock.reset(); phase++; } break; case 7: drive.manualDrive(0, -.5)
-	 * //turns left if (clock.get() > 2) { clock.reset(); phase++; } break; case
-	 * 8: drive.manualDrive(.5, 0) //moves forward if (clock.get() > 6) {
-	 * clock.reset(); phase++; } break; case 9: drive.manualDrive(0, .5) //turns
-	 * right if (clock.get() > 1) { clock.reset(); phase++; } break; case 10:
-	 * AlignHighGoal(); phase++; break; case 40: break; }
-	 */
-	public void autoMidPeg(boolean blue) {
-		// TODO: TEST
-		int blueToggle = 1;
-		if (blue)
-			blueToggle = -1;
-		switch (phase) {
-		case 0:
-			clock.start();
-			phase++;
-			break;
-		case 1:
-			drive.manualDrive(.5, 0); // moves forward
-			if (clock.get() > 2) {
-				clock.start();
-				phase++;
-			}
-			break;
-		case 2:
-			AlignGearPeg(); // aligns gear peg
-			phase++;
-			break;
-		case 40:
-			break;
-		}
-	}
-
 	public void autoRightPeg(boolean blue) { // inverse of autoleftPeg
 		// TODO: TEST
-		int blueToggle = 1;
-		if (blue)
-			blueToggle = -1;
+		int blueToggle = blue ? -1 : 1;
 		switch (phase) {
 		case 0:
 			clock.start();
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(0, .5 * blueToggle); // turns right
-			if (clock.get() > 2) {
+			drive.manualDrive(-0.5, 0); // TODO: Set this back to + for real bot
+			if (clock.get() > 3) {
 				clock.start();
 				phase++;
 			}
 			break;
 		case 2:
-
-			drive.manualDrive(.5, 0); // moves forward
-			if (clock.get() > 3) {
-
+			drive.manualDrive(0, 0.8);
+			if (clock.get() > 0.2) {
 				clock.start();
 				phase++;
 			}
 			break;
 		case 3:
-			drive.manualDrive(0, -.5 * blueToggle); // turns left
+			drive.manualDrive(-0.5, 0);
 			if (clock.get() > 2) {
-				clock.start();
+				clock.stop();
+				clock.reset();
 				phase++;
 			}
 			break;
 		case 4:
-			clock.reset();
-			clock.stop();
 			drive.manualDrive(0, 0);
-			//AlignGearPeg(); // aligns gear peg
-			phase++;
-			break;
-		case 40:
 			break;
 		}
 	}
@@ -304,75 +258,60 @@ public class AutonmousController {
 	 * 
 	 */
 
-	/*public TeleOpMode AlignHighGoal() {
-		// Checks if we are within horizontal Deadzone
-		if (Math.abs(vision.GetContour1CenterX() - (vision.GetCameraWidth() / 2)) < horizontalDeadzone) {
-			// gets thickest contour
-			if (vision.GetContour1Height() > vision.GetContour2Height()) {
-				currentContourHeight = vision.GetContour1Height();
-			} else {
-				currentContourHeight = vision.GetContour2Height();
-			}
-			// Aligns distance
-			if (Math.abs(currentContourHeight - (vision.GetCameraHeight())) < verticalDeadzone) {
-				shooter.Shoot();
-			} else if (currentContourHeight < highGoalheight) {
-				drive.manualDrive(-.5, 0);
-			} else if (currentContourHeight > highGoalheight) {
-				drive.manualDrive(.5, 0);
-			}
-			// Turns camera towards goal
-		} else if (vision.GetContour1CenterX() > (vision.GetCameraWidth() / 2)) {
-			drive.manualDrive(0, -.5); // turns left, TODO: gyro
-		} else if (vision.GetContour1CenterX() < (vision.GetCameraWidth() / 2)) {
-			drive.manualDrive(0, .5); // turns right, TODO: gyro
-		} else {
-			// Shit is done yo!
-
-			return TeleOpMode.OPERATORCONTROL;
-		}
-		return TeleOpMode.HIGHGOALALIGNMENT;
-	}*/
+	/*
+	 * public TeleOpMode AlignHighGoal() { // Checks if we are within horizontal
+	 * Deadzone if (Math.abs(vision.GetContour1CenterX() -
+	 * (vision.GetCameraWidth() / 2)) < horizontalDeadzone) { // gets thickest
+	 * contour if (vision.GetContour1Height() > vision.GetContour2Height()) {
+	 * currentContourHeight = vision.GetContour1Height(); } else {
+	 * currentContourHeight = vision.GetContour2Height(); } // Aligns distance
+	 * if (Math.abs(currentContourHeight - (vision.GetCameraHeight())) <
+	 * verticalDeadzone) { shooter.Shoot(); } else if (currentContourHeight <
+	 * highGoalheight) { drive.manualDrive(-.5, 0); } else if
+	 * (currentContourHeight > highGoalheight) { drive.manualDrive(.5, 0); } //
+	 * Turns camera towards goal } else if (vision.GetContour1CenterX() >
+	 * (vision.GetCameraWidth() / 2)) { drive.manualDrive(0, -.5); // turns
+	 * left, TODO: gyro } else if (vision.GetContour1CenterX() <
+	 * (vision.GetCameraWidth() / 2)) { drive.manualDrive(0, .5); // turns
+	 * right, TODO: gyro } else { // Shit is done yo!
+	 * 
+	 * return TeleOpMode.OPERATORCONTROL; } return TeleOpMode.HIGHGOALALIGNMENT;
+	 * }
+	 */
 
 	public TeleOpMode AlignGearPeg() {
 		// Checks if we are in the gear Deadzone
 		double turnDirection = 0.5;
-		switch (autoMode) {
-		case 0:
+		switch (AutoMode.currentValue) {
+		case AutoMode.RED_LEFT:
 			break;
-		case 1:
+		case AutoMode.RED_MIDDLE:
 			break;
-		case 2:
+		case AutoMode.RED_RIGHT:
 			break;
-		case 3:
+		case AutoMode.BLUE_LEFT:
 			break;
-		case 4:
+		case AutoMode.BLUE_MIDDLE:
 			break;
-		case 5:
+		case AutoMode.BLUE_RIGHT:
 			break;
 		}
-		/*if (Math.abs(vision.GetContour1Height() - vision.GetContour2Height()) > gearDeadzone) {
-
-			if (analogSensor.GetRangeInches() > rangeInches) {
-				drive.manualDrive(.5, 0);
-				return TeleOpMode.OPERATORCONTROL;
-			}
-		} else if (vision.GetContour1Height() < vision.GetContour2Height()) {
-			leftContour = vision.GetContour1Height();
-			rightContour = vision.GetContour2Height();
-			// Checks the first contour if its farthest makes it the left
-			// contour.
-		} else {
-			leftContour = vision.GetContour2Height();
-			// This makes the left contour the second one.
-			rightContour = vision.GetContour1Height();
-		}
-
-		if (leftContour < rightContour) {
-			driveAngle = .5;
-		} else {
-			driveAngle = -.5;
-		}*/
+		/*
+		 * if (Math.abs(vision.GetContour1Height() - vision.GetContour2Height())
+		 * > gearDeadzone) {
+		 * 
+		 * if (analogSensor.GetRangeInches() > rangeInches) {
+		 * drive.manualDrive(.5, 0); return TeleOpMode.OPERATORCONTROL; } } else
+		 * if (vision.GetContour1Height() < vision.GetContour2Height()) {
+		 * leftContour = vision.GetContour1Height(); rightContour =
+		 * vision.GetContour2Height(); // Checks the first contour if its
+		 * farthest makes it the left // contour. } else { leftContour =
+		 * vision.GetContour2Height(); // This makes the left contour the second
+		 * one. rightContour = vision.GetContour1Height(); }
+		 * 
+		 * if (leftContour < rightContour) { driveAngle = .5; } else {
+		 * driveAngle = -.5; }
+		 */
 
 		// If the left contour is shorter than the right one, turns right.
 		switch (phase) { // aligns from right
@@ -460,29 +399,42 @@ public class AutonmousController {
 	}
 
 	public void autonomousSelector() {
+
+		// LCD display needs a pause between changes
 		Timer.delay(0.25);
-		autoMode++;
-		if (autoMode > 5)
-			autoMode = 0;
+
+		AutoMode.currentValue++;
+		if (AutoMode.currentValue > 5)
+			AutoMode.currentValue = 0;
 
 		colorAuto = ' ';
 		positionAuto = ' ';
-		if (autoMode < 3)
+		switch (AutoMode.currentValue) {
+		case AutoMode.RED_LEFT:
 			colorAuto = 'R';
-		else
-			colorAuto = 'B';
-		switch (autoMode % 3) {
-		case 0:
 			positionAuto = 'L';
 			break;
-		case 1:
+		case AutoMode.RED_MIDDLE:
+			colorAuto = 'R';
 			positionAuto = 'M';
 			break;
-		case 2:
+		case AutoMode.RED_RIGHT:
+			colorAuto = 'R';
+			positionAuto = 'R';
+			break;
+		case AutoMode.BLUE_LEFT:
+			colorAuto = 'B';
+			positionAuto = 'L';
+			break;
+		case AutoMode.BLUE_MIDDLE:
+			colorAuto = 'B';
+			positionAuto = 'M';
+			break;
+		case AutoMode.BLUE_RIGHT:
+			colorAuto = 'B';
 			positionAuto = 'R';
 			break;
 		}
 		digitBoard.UpdateDisplay(' ', colorAuto, ' ', positionAuto, false);
-
 	}
 }

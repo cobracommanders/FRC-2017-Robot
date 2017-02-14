@@ -104,7 +104,7 @@ public class Robot extends SampleRobot {
 	}
 
 	int count = 0;
-	int count2 = 0;
+	int count2 = 0; 
 
 	public char[] DisplayVoltageConversion() {
 		double voltage = pdp.getVoltage();
@@ -173,7 +173,7 @@ public class Robot extends SampleRobot {
 			case OPERATORCONTROL:
 				// Drive the robot via controller
 				// drive2017.rampedDriveListener();
-				// gearIntake.Listener();
+				gearIntake.Listener();
 				// shooter.shootListener();
 
 				break;
@@ -231,6 +231,8 @@ public class Robot extends SampleRobot {
 
 		// pot
 		SmartDashboard.putNumber("Potentiometer value", digitBoard.getPot());
+		
+		SmartDashboard.putBoolean("Button B", thisStick.getButton(Button.B));
 
 	}
 }

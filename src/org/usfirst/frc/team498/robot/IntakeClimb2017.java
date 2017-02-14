@@ -8,9 +8,10 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Talon;
 
-public class IntakeClimb2017 { //TODO add belt victor for feeder
+public class IntakeClimb2017 { 
 
 	Spark sparkBall;
+	Talon talonClimb;
 	CANTalon climb1; 
 	CANTalon climb0;
 	FancyJoystick thisStick;
@@ -70,8 +71,8 @@ public class IntakeClimb2017 { //TODO add belt victor for feeder
 	//climb
 	public void ClimbOn() {
 		//For some reason, the motors are calibrated in reverse?
-		climb0.set(.8);
-		climb1.set(.8);
+		climb0.set(0.8);
+		climb1.set(0.8);
 	}
 	
 	public void ClimbOff() {
@@ -80,8 +81,8 @@ public class IntakeClimb2017 { //TODO add belt victor for feeder
 	}
 	
 	public void ClimbReverse() {
-		climb0.set(-.8);
-		climb1.set(-.8);
+		climb0.set(-0.8);
+		climb1.set(-0.8);
 	}
 	
 	public void Listener() {

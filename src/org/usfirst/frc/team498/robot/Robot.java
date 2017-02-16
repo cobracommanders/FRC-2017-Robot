@@ -20,6 +20,7 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
@@ -35,10 +36,11 @@ public class Robot extends SampleRobot {
 	FancyJoystick thisStick = new FancyJoystick(0);
 	Drive2017 drive2017 = new Drive2017(thisStick, ports);
 	REVImprovedDigitBoard digitBoard = new REVImprovedDigitBoard();
+	Solenoid sol = new Solenoid(ports.ULTRASONIC_SENSOR_PCM_PORT);
 	public boolean hasDigitStarted = false;
 
 	PewPew2017 shooter = new PewPew2017(digitBoard, thisStick, ports);
-	AnalogUltrasonicSensor2017 ultra = new AnalogUltrasonicSensor2017(thisStick, ports);
+	AnalogUltrasonicSensor2017 ultra = new AnalogUltrasonicSensor2017(thisStick, ports, sol);
 	AutonmousController auto = new AutonmousController(drive2017, shooter, digitBoard, thisStick, ports, ultra, clock);
 
 	IntakeClimb2017 gearIntake = new IntakeClimb2017(thisStick, ports);
@@ -63,7 +65,11 @@ public class Robot extends SampleRobot {
 
 	@Override
 	public void robotInit() {
-
+		/*if (!sol.get()) {
+			sol.set(true);
+		}*/
+		
+		
 		/*
 		 * NetworkTable.setClientMode(); NetworkTable.setTeam(498);
 		 * NetworkTable.setIPAddress("roborio-498-frc.local");
@@ -78,22 +84,9 @@ public class Robot extends SampleRobot {
 		while (isAutonomous() && isEnabled()) {
 			print();
 			// Start Auto Phases
-			auto.Auto();
+			//auto.Auto();
 
-			/*
-			 * double distanceFromTarget =
-			 * table.getDouble("distanceFromTarget"); double angleFromGoal =
-			 * table.getDouble("angleFromGoal"); double[] centerX =
-			 * table.getNumberArray("centerX");
-			 * System.out.println("====Other====");
-			 * System.out.println(distanceFromTarget);
-			 * System.out.println(angleFromGoal);
-			 * System.out.println("====CenterX===="); if (centerX != null) { try
-			 * { System.out.println(centerX[0]); System.out.println(centerX[1]);
-			 * } catch (Exception e) {
-			 * System.out.println("One of the center x values didn't exist"); }
-			 * }
-			 */
+		
 
 		}
 
@@ -104,7 +97,7 @@ public class Robot extends SampleRobot {
 	}
 
 	int count = 0;
-	int count2 = 0; 
+	int count2 = 0;
 
 	public char[] DisplayVoltageConversion() {
 		double voltage = pdp.getVoltage();
@@ -172,7 +165,7 @@ public class Robot extends SampleRobot {
 			switch (teleMode) {
 			case OPERATORCONTROL:
 				// Drive the robot via controller
-				// drive2017.rampedDriveListener();
+				drive2017.rampedDriveListener();
 				gearIntake.Listener();
 				// shooter.shootListener();
 
@@ -183,11 +176,11 @@ public class Robot extends SampleRobot {
 			case HIGHGOALALIGNMENT:
 				// teleMode = auto.AlignHighGoal();
 				break;
-			case TEST:
+			/*case TEST:
 				auto.autoDriveForward();
 				drive2017.moveValue = 0;
 				drive2017.turnValue = 0;
-				break;
+				break;*/
 			}
 
 			// Send stats to the driver
@@ -211,7 +204,7 @@ public class Robot extends SampleRobot {
 				 * digitBoard.UpdateDisplay('8', '-', '-', 'D');
 				 */
 			}
-
+			print();
 		}
 
 	}
@@ -222,17 +215,35 @@ public class Robot extends SampleRobot {
 		// The ultimate bonding moment
 		SmartDashboard.putNumber("Center X table", table.getNumber("centerX", 0));
 		SmartDashboard.putNumber("AutoPhase", auto.phase);
-		SmartDashboard.putNumber("UltraInches", ultra.GetRangeInches());
+		SmartDashboard.putNumber("", auto.phase);
+		
+		SmartDashboard.putNumber("Move value", drive2017.moveValue);
 
 		// ultrasonic
-		SmartDashboard.putNumber("Ultrasonic value", ultra.getValue());
-		SmartDashboard.putNumber("Ultrasonic Inches", ultra.GetRangeInches());
+		SmartDashboard.putNumber("Ultrasonic Value", ultra.getValue());
+		SmartDashboard.putNumber("UltraInches Value", ultra.GetRangeInches(false));
 		SmartDashboard.putNumber("Ultrasonic Voltage", ultra.GetVoltage());
-
+		SmartDashboard.putNumber("UltraInches Voltage", ultra.GetRangeInches(true));
+		//net table prints
+		/*double distanceFromTarget = table.getDouble("distanceFromTarget");
+		double angleFromGoal = table.getDouble("angleFromGoal");
+		//double[] centerX = table.getNumberArray("centerX");
+		System.out.println("====Other====");
+		System.out.println(distanceFromTarget);
+		System.out.println(angleFromGoal);
+		System.out.println("====CenterX====");*/
+		/*if (centerX != null) {
+			try {
+				System.out.println(centerX[0]);
+				System.out.println(centerX[1]);
+			} catch (Exception e) {
+				System.out.println("One of the center x values didn't exist");
+			}
+		}*/
+		
+		
 		// pot
 		SmartDashboard.putNumber("Potentiometer value", digitBoard.getPot());
-		
-		SmartDashboard.putBoolean("Button B", thisStick.getButton(Button.B));
 
 	}
 }

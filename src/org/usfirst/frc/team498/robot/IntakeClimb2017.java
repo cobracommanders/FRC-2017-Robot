@@ -39,16 +39,16 @@ public class IntakeClimb2017 {
 
 	}
 
-	/*public boolean ADown() {
+	public boolean ADown() {
 		boolean localTemp = false;
 		if (!aOldState && thisStick.getButton(Button.A))
 			localTemp = true;
 		aOldState = thisStick.getButton(Button.A);
 		return localTemp;
-	}*/
+	}
 	
 	//ball
-	/*public void IntakeOn() {
+	public void IntakeOn() {
 		sparkBall.set(1);
 	}
 
@@ -58,7 +58,7 @@ public class IntakeClimb2017 {
 
 	public void IntakeReverse() {
 		sparkBall.set(-1);
-	}*/
+	}
 	
 	//conveyor
 	/*public void ConveyorOn() {
@@ -110,9 +110,6 @@ public class IntakeClimb2017 {
 		if (thisStick.getButton(Button.X)) {
 			ClimbOff();
 		}
-		if (thisStick.getButton(Button.A)) {
-			ClimbReverse();
-		}
 		
 		/*if (thisStick.getButton(Button.B) && wasClimbPressed == false) {
 			isClimbRunning = !isClimbRunning;
@@ -139,7 +136,7 @@ public class IntakeClimb2017 {
 			ClimbOff();
 		}*/
 
-		/*if (thisStick.getButton(Button.X) && wasIntakePressed == false) {
+		if (thisStick.getButton(Button.X) && wasIntakePressed == false) {
 			isIntakeRunning = !isIntakeRunning;
 			wasIntakePressed = true;
 			if (thisStick.getButton(Button.LeftBumper))
@@ -176,7 +173,6 @@ public class IntakeClimb2017 {
 
 	public void CloseFlap() {
 		ds.set(Value.kForward);
-	}*/
+	}
 
 	}
-}

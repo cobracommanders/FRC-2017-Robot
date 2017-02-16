@@ -75,12 +75,13 @@ public class AutonmousController {
 	}
 
 	public void Auto() {
+		double ultraInches = ultra.GetRangeInches(true);
 		switch (AutoMode.currentValue) {
 		case AutoMode.RED_LEFT:
 			autoLeftPeg(false);
 			break;
 		case AutoMode.RED_MIDDLE:
-			autoMidPeg(false);
+			autoMidPeg(false, ultraInches);
 			break;
 		case AutoMode.RED_RIGHT:
 			autoRightPeg(false);
@@ -89,7 +90,7 @@ public class AutonmousController {
 			autoLeftPeg(true);
 			break;
 		case AutoMode.BLUE_MIDDLE:
-			autoMidPeg(true);
+			autoMidPeg(true, ultraInches);
 			break;
 		case AutoMode.BLUE_RIGHT:
 			autoRightPeg(true);
@@ -151,6 +152,8 @@ public class AutonmousController {
 		 * drive.manualDrive(0, .5 * blueToggle); AlignGearPeg();
 		 */
 		int blueToggle = blue ? -1 : 1;
+		double angle = netTable.getDouble("angleFromGoal");
+		double distance = netTable.getDouble("distanceFromTarget");
 		switch (phase) {
 		case 0:
 			clock.start();
@@ -166,42 +169,57 @@ public class AutonmousController {
 		case 2:
 			drive.manualDrive(0, -0.8);
 			if (clock.get() > 0.2) {
-				clock.start();
-				phase++;
-			}
-			break;
-		case 3:
-			drive.manualDrive(-0.5, 0);
-			if (clock.get() > 2) {
 				clock.stop();
 				clock.reset();
 				phase++;
 			}
 			break;
+		case 3:
+			if(angle > 0.2) {
+				drive.manualDrive(0, -0.65);
+			}
+			if(angle < -0.2) {
+				drive.manualDrive(0, 0.65);
+			}
+			if(angle <= 0.2 && angle >= -0.2) {
+				drive.manualDrive(0, 0);
+				phase++;
+			}
+			//drive.manualDrive(-0.5, 0);
+			//if (clock.get() > 2) {
+			//	clock.stop();
+			//	clock.reset();
+			//	phase++;
+			//}
+			break;
 		case 4:
-			drive.manualDrive(0, 0);
+			if(distance > 10) {
+				drive.manualDrive(0.5, 0);
+			} else {
+				drive.manualDrive(0, 0);
+				phase++;
+			}
 			break;
 		}
 	}
 
-	public void autoMidPeg(boolean blue) {
+	public void autoMidPeg(boolean blue, double ultraInches) {
 		// TODO: TEST
 		int blueToggle = blue ? -1 : 1;
-		double ultraInches = ultra.GetRangeInches();
 		switch (phase) {
 		case 0:
-			drive.manualDrive(0, 0);
+			drive.manualDrive(-0.5, 0);
 			if (ultraInches > 11) {
 				phase++;
 			}
 			break;
 		case 1:
-			drive.manualDrive(-.4, 0); // moves forward
-			if (ultraInches < 2.5) {
+			drive.manualDrive(-0.5, 0); // moves forward
+			if (ultraInches < 2.3) {
 				phase--;
 				break;
 			}
-			if (ultraInches < 5) {
+			if (ultraInches < 6) {
 				phase++;
 			}
 			break;

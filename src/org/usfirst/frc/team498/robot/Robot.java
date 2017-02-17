@@ -173,7 +173,7 @@ public class Robot extends SampleRobot {
 			switch (teleMode) {
 			case OPERATORCONTROL:
 				// Drive the robot via controller
-				drive2017.rampedDriveListener(); //drives
+				drive2017.rampedDriveListener(); //drive
 				buttonPress.Listener(); //shoots, intake, climb, does EVERYTHING!
 				//gearIntake.Listener();
 				//shooter.shootListener();

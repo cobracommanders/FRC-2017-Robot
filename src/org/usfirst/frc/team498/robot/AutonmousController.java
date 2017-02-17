@@ -10,14 +10,11 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 
 public class AutonmousController {
-	// Vision
-	// public Vision2017 vision = new Vision2017(0);
 	public DriverStation driveStation = DriverStation.getInstance();
 	private Timer clock;
 	private Drive2017 drive;
 	private PewPew2017 shooter;
 	public AnalogUltrasonicSensor2017 ultra;
-	// public ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 
 	double currentContourHeight = 0.0;
 	double leftContour = 0.0;

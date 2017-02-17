@@ -156,18 +156,24 @@ public class Robot extends SampleRobot {
 				digitClock.start();
 				digitBoard.UpdateDisplay(DisplayVoltageConversion(), true);
 			}
-
+			//Button Mapping
+				//Semi-Auto mode selection
 			if (thisStick.getButton(Button.START)) {
 				teleMode = TeleOpMode.OPERATORCONTROL; // makes robot go back to
 														// TeleOp
 			}
-
+			if (thisStick.getButton(Button.A) && teleMode == TeleOpMode.OPERATORCONTROL) {
+				teleMode = TeleOpMode.GEARALIGNMENT; //Aligns the robot to the gear peg
+			}
+			if (thisStick.getButton(Button.Y) && teleMode == TeleOpMode.OPERATORCONTROL) {
+				teleMode = TeleOpMode.HIGHGOALALIGNMENT; //Aligns the robot to the shooter
+			}
 			switch (teleMode) {
 			case OPERATORCONTROL:
 				// Drive the robot via controller
 				drive2017.rampedDriveListener();
 				gearIntake.Listener();
-				// shooter.shootListener();
+				shooter.shootListener();
 
 				break;
 			case GEARALIGNMENT:
@@ -224,6 +230,8 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("UltraInches Value", ultra.GetRangeInches(false));
 		SmartDashboard.putNumber("Ultrasonic Voltage", ultra.GetVoltage());
 		SmartDashboard.putNumber("UltraInches Voltage", ultra.GetRangeInches(true));
+		SmartDashboard.putNumber("Turn Value After Cap", drive2017.turnValue_f);
+		SmartDashboard.putNumber("Turn Value Before Cap", drive2017.turnValue);
 		//net table prints
 		/*double distanceFromTarget = table.getDouble("distanceFromTarget");
 		double angleFromGoal = table.getDouble("angleFromGoal");

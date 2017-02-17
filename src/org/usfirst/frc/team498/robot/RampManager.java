@@ -18,6 +18,7 @@ public class RampManager {
 	 * RampTo(Joystick.getValue(axis));
 	 * Motor.set(getCurrentValue());
 	 * 
+	 * 
 	 */
 	
 	RampManager (double percentIncreasePerSecond) {

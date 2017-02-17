@@ -10,11 +10,15 @@ public class Drive2017 {
 	private boolean isGoingForward = true;
 	private boolean isSpeedReduced = true;
 	private boolean wasTransmitionPressed = false;
-	double speedCap;
+	double turnCap = 0.66;
+	double moveCap = 0.7;
 
 	RampManager turningDriveRamp;
 	public double moveValue;
 	public double turnValue;
+
+	double moveValue_f;
+	double turnValue_f;
 
 	Drive2017(FancyJoystick joystick, Ports ports) {
 		this.thisStick = joystick;
@@ -29,10 +33,10 @@ public class Drive2017 {
 	// The robot's speed slowly increases over time.
 	public void rampedDriveListener() {
 		// Axis 3 is RT Axis 2 is LT
-		forwardDriveRamp.rampTo(thisStick.getAxis(Axis.RightTrigger) - thisStick.getAxis(Axis.LeftTrigger));
+		forwardDriveRamp.rampTo((thisStick.getAxis(Axis.RightTrigger) - thisStick.getAxis(Axis.LeftTrigger)) * moveCap);
 		moveValue = forwardDriveRamp.getCurrentValue();
 		// Axis 0 is X Value of Left Stick
-		turningDriveRamp.rampTo(-thisStick.getAxis(Axis.LeftX));
+		turningDriveRamp.rampTo(-thisStick.getAxis(Axis.LeftX)*turnCap);
 		turnValue = turningDriveRamp.getCurrentValue();
 		// turnValue = -thisStick.getAxis(Axis.LeftX);
 		transmitionListener();
@@ -68,15 +72,8 @@ public class Drive2017 {
 	}
 
 	private void drive() {
-		double moveValue_f;
-		double turnValue_f;
-		if (false) {//false
-			moveValue_f = moveValue * speedCap;
-			turnValue_f = turnValue * speedCap;
-		} else {
-			moveValue_f = moveValue;
-			turnValue_f = turnValue;
-		}
+		moveValue_f = moveValue;
+		turnValue_f = turnValue;
 		if (isGoingForward) {
 			drive.arcadeDrive(moveValue_f, turnValue_f);
 		} else {

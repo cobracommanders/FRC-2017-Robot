@@ -29,11 +29,11 @@ public class PewPew2017 {
 	}
 
 	public void shootListener() {
-		if (thisStick.getButton(Button.A) && wasShootPressed == false) {
+		if (thisStick.getButton(Button.RightBumper) && wasShootPressed == false) {
 			isShootRunning = !isShootRunning;
 			wasShootPressed = true;
 		}
-		if (wasShootPressed == true && thisStick.getButton(Button.A) == false) {
+		if (wasShootPressed == true && thisStick.getButton(Button.RightBumper) == false) {
 			wasShootPressed = false;
 		}
 

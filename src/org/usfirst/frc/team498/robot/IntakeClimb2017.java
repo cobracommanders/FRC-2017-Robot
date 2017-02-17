@@ -17,7 +17,6 @@ public class IntakeClimb2017 {
 	FancyJoystick thisStick;
 	DoubleSolenoid ds;
 	boolean aOldState = false;
-	//Talon talonConveyor;
 
 	boolean wasIntakePressed = false;
 	boolean isIntakeRunning = false;
@@ -71,8 +70,8 @@ public class IntakeClimb2017 {
 	//climb
 	public void ClimbOn() {
 		//For some reason, the motors are calibrated in reverse?
-		climb0.set(0.8);
-		climb1.set(0.8);
+		climb0.set(-1.0);
+		climb1.set(-1.0);
 	}
 	
 	public void ClimbOff() {
@@ -81,8 +80,8 @@ public class IntakeClimb2017 {
 	}
 	
 	public void ClimbReverse() {
-		climb0.set(-0.8);
-		climb1.set(-0.8);
+		climb0.set(1.0);
+		climb1.set(1.0);
 	}
 	
 	public void Listener() {
@@ -104,12 +103,22 @@ public class IntakeClimb2017 {
 			ConveyorOff();
 		}*/
 		
-		if (thisStick.getButton(Button.B)) {
-			ClimbOn();
+		if (thisStick.getButton(Button.BACK) && wasClimbPressed == false) {
+			isClimbRunning = !isClimbRunning;
+			wasClimbPressed = true;
 		}
-		if (thisStick.getButton(Button.X)) {
+		if (wasClimbPressed == true && thisStick.getButton(Button.BACK) == false) {
+			wasClimbPressed = false;
+		}
+
+		if (isClimbRunning) {
+			ClimbOn();
+		} else {
 			ClimbOff();
 		}
+		//if (thisStick.getButton(Button.X)) {
+		//	ClimbOff();
+		//}
 		
 		/*if (thisStick.getButton(Button.B) && wasClimbPressed == false) {
 			isClimbRunning = !isClimbRunning;

@@ -35,18 +35,17 @@ public class Robot extends SampleRobot {
 	private Timer digitClock = new Timer();
 	FancyJoystick thisStick = new FancyJoystick(0);
 	Drive2017 drive2017 = new Drive2017(thisStick, ports);
+	ButtonPress buttonPress = new ButtonPress(thisStick, ports);
 	REVImprovedDigitBoard digitBoard = new REVImprovedDigitBoard();
+	PowerDistributionPanel pdp = new PowerDistributionPanel();
 	Solenoid sol = new Solenoid(ports.ULTRASONIC_SENSOR_PCM_PORT);
 	public boolean hasDigitStarted = false;
 
-	PewPew2017 shooter = new PewPew2017(digitBoard, thisStick, ports);
-	AnalogUltrasonicSensor2017 ultra = new AnalogUltrasonicSensor2017(thisStick, ports, sol);
-	AutonmousController auto = new AutonmousController(drive2017, shooter, digitBoard, thisStick, ports, ultra, clock);
-
 	//IntakeClimb2017 gearIntake = new IntakeClimb2017(thisStick, ports);
-	
-	ButtonPress buttonPress = new ButtonPress(thisStick, ports);
-	PowerDistributionPanel pdp = new PowerDistributionPanel();
+	//PewPew2017 shooter = new PewPew2017(digitBoard, thisStick, ports);
+	AnalogUltrasonicSensor2017 ultra = new AnalogUltrasonicSensor2017(thisStick, ports, sol);
+	AutonmousController auto = new AutonmousController(drive2017, buttonPress, digitBoard, thisStick, ports, ultra, clock);
+
 
 	// Camera Code
 	// private static final int IMG_WIDTH = 320;

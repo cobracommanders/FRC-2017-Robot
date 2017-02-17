@@ -1,14 +1,13 @@
 package org.usfirst.frc.team498.robot;
 
 import com.ctre.CANTalon;
-
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
-public class ButtonPress {
-	public FancyJoystick thisStick;
+public class ButtonPress { //x, a, back, rightBumper being used
+	FancyJoystick thisStick;
 	Talon talon;
 	Spark sparkBall;
 	CANTalon climb1;

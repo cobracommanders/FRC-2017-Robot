@@ -13,8 +13,8 @@ public class AutonmousController {
 	public DriverStation driveStation = DriverStation.getInstance();
 	private Timer clock;
 	private Drive2017 drive;
-	private PewPew2017 shooter;
 	public AnalogUltrasonicSensor2017 ultra;
+	ButtonPress buttonPress;
 
 	double currentContourHeight = 0.0;
 	double leftContour = 0.0;
@@ -39,10 +39,10 @@ public class AutonmousController {
 
 	REVImprovedDigitBoard digitBoard;
 
-	AutonmousController(Drive2017 drive, PewPew2017 shooter, REVImprovedDigitBoard digitBoard, FancyJoystick thisStick,
+	AutonmousController(Drive2017 drive, ButtonPress buttonPress, REVImprovedDigitBoard digitBoard, FancyJoystick thisStick,
 			Ports ports, AnalogUltrasonicSensor2017 ultra, Timer clock) {
 		this.drive = drive;
-		this.shooter = shooter;
+		this.buttonPress = buttonPress;
 		this.ultra = ultra;
 		this.clock = clock;
 		this.digitBoard = digitBoard;
@@ -91,52 +91,6 @@ public class AutonmousController {
 			break;
 		case AutoMode.BLUE_RIGHT:
 			autoRightPeg(true);
-			break;
-		}
-	}
-
-	public void autoDriveForward() { // This is our test auto
-		switch (phase) {
-		case 0:
-			clock.reset();
-			// gyro.reset();
-			// gyro.calibrate();
-			phase++;
-
-			break;
-
-		case 1: // 153 far, 13 1/4 off, wasn't for 2 seconds however(.4, .2)
-			// 116 1/2 far, for 2 seconds (.6, .217)
-
-			/*
-			 * conclusion (January 16): .217 is really close to the ideal turn
-			 * value, however there is a better alternative, especially if
-			 * gyro.getAngle() works
-			 */
-
-			/*
-			 * goal is to get (1, *and some number that will get the robot to
-			 * drive STRAIGHT!!!* (internal screaming, KMP)
-			 */
-
-			// drive.manualDrive(.6, ConvertGyroStuff(gyro.getAngle()) * -0.03);
-			// // moves
-			// forward
-			// for
-			// two
-			// seconds.
-			// convertGyroStuff is supposed to work. If it doesn't, ask Micah
-
-			/*
-			 * I want to use the gyro.getAngle() method, but all it does make
-			 * the robot turn really fast. Previously, it was -gyro.getAngle() *
-			 * 0.03. Curt help me pls
-			 */
-
-			// Cody, why you cucking Aaron? (See classmate secret message)
-			if (clock.get() > clockTime) {
-				clock.reset();
-			}
 			break;
 		}
 	}
@@ -265,13 +219,6 @@ public class AutonmousController {
 			break;
 		}
 	}
-
-	/*
-	 * 
-	 * Below is the Alignment code for both the high goal on the boiler and the
-	 * peg alignment for the gear!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	 * 
-	 */
 
 	/*
 	 * public TeleOpMode AlignHighGoal() { // Checks if we are within horizontal

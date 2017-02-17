@@ -43,7 +43,9 @@ public class Robot extends SampleRobot {
 	AnalogUltrasonicSensor2017 ultra = new AnalogUltrasonicSensor2017(thisStick, ports, sol);
 	AutonmousController auto = new AutonmousController(drive2017, shooter, digitBoard, thisStick, ports, ultra, clock);
 
-	IntakeClimb2017 gearIntake = new IntakeClimb2017(thisStick, ports);
+	//IntakeClimb2017 gearIntake = new IntakeClimb2017(thisStick, ports);
+	
+	ButtonPress buttonPress = new ButtonPress(thisStick, ports);
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 
 	// Camera Code
@@ -171,9 +173,10 @@ public class Robot extends SampleRobot {
 			switch (teleMode) {
 			case OPERATORCONTROL:
 				// Drive the robot via controller
-				drive2017.rampedDriveListener();
-				gearIntake.Listener();
-				shooter.shootListener();
+				drive2017.rampedDriveListener(); //drives
+				buttonPress.Listener(); //shoots, intake, climb, does EVERYTHING!
+				//gearIntake.Listener();
+				//shooter.shootListener();
 
 				break;
 			case GEARALIGNMENT:

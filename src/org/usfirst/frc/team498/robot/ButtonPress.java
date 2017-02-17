@@ -10,26 +10,24 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 public class ButtonPress {
 	public FancyJoystick thisStick;
 	Talon talon;
-	REVImprovedDigitBoard digitBoard;
 	Spark sparkBall;
 	CANTalon climb1;
 	CANTalon climb0;
 	DoubleSolenoid ds;
 
-	boolean wasShootPressed = false;
+	boolean wasShootPressed = false;// shoot
 	boolean isShootRunning = false;
-	boolean wasIntakePressed = false;
+	boolean wasIntakePressed = false;// intake
 	boolean isIntakeRunning = false;
 	boolean intakeReverse = false;
-	boolean wasClimbPressed = false;
+	boolean wasClimbPressed = false;// climb
 	boolean isClimbRunning = false;
 	boolean climbReverse = false;
-	boolean wasFlapPressed = false;
+	boolean wasFlapPressed = false;// flaps
 	boolean isFlapRunning = false;
 
-	public ButtonPress(FancyJoystick thisStick, Ports ports, REVImprovedDigitBoard board) {
+	public ButtonPress(FancyJoystick thisStick, Ports ports) {
 		talon = new Talon(ports.SHOOTER_PWM_PORT);
-		digitBoard = board;
 		this.thisStick = thisStick;
 		sparkBall = new Spark(ports.SPARK_BALL_INTAKE_PWM_CHANNEL);
 		climb0 = new CANTalon(ports.CANTALON_CLIMBER_0);
@@ -37,7 +35,7 @@ public class ButtonPress {
 		ds = new DoubleSolenoid(ports.GEAR_INTAKE_FORWARD_CHANNEL, ports.GEAR_INTAKE_REVERSE_CHANNEL);
 	}
 
-	// ball
+	// ball intake
 	public void IntakeOn() {
 		sparkBall.set(1);
 	}
@@ -77,8 +75,8 @@ public class ButtonPress {
 		climb0.set(1.0);
 		climb1.set(1.0);
 	}
-	
-	//Flaps for GearIntake
+
+	// Flaps for GearIntake
 	public void OpenFlap() {
 		ds.set(Value.kReverse);
 	}
@@ -104,22 +102,24 @@ public class ButtonPress {
 		} else {
 			StopShoot();
 		} // End of Shooter
-		
+
+		// Gear Flap
 		if (thisStick.getButton(Button.A) && wasFlapPressed == false) {
 			isFlapRunning = !isFlapRunning;
 			wasFlapPressed = true;
 		}
-		
+
 		if (wasFlapPressed == true && thisStick.getButton(Button.A) == false) {
 			wasFlapPressed = false;
 		}
-		
+
 		if (isFlapRunning) {
 			OpenFlap();
 		} else {
 			CloseFlap();
-		}
-		//Climber
+		} // End of Gear Flap
+
+		// Climber
 		if (thisStick.getButton(Button.BACK) && wasClimbPressed == false) {
 			isClimbRunning = !isClimbRunning;
 			wasClimbPressed = true;
@@ -132,18 +132,20 @@ public class ButtonPress {
 			ClimbOn();
 		} else {
 			ClimbOff();
-		}//End of Climber
-		
-		//Intake
+		} // End of Climber
+
+		// Intake
 		if (thisStick.getButton(Button.X) && wasIntakePressed == false) {
 			isIntakeRunning = !isIntakeRunning;
 			wasIntakePressed = true;
-			if (thisStick.getButton(Button.LeftBumper))
-				intakeReverse = true;
-			else
-				intakeReverse = false;
 
+			if (thisStick.getButton(Button.LeftBumper)) {
+				intakeReverse = true;
+			} else {
+				intakeReverse = false;
+			}
 		}
+		
 		if (wasIntakePressed == true && thisStick.getButton(Button.X) == false) {
 			wasIntakePressed = false;
 		}
@@ -155,9 +157,7 @@ public class ButtonPress {
 				IntakeOn();
 		} else {
 			IntakeOff();
-		}//End of Intake
-		
-		
+		} // End of Intake
 
 	}
 

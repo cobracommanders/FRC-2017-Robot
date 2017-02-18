@@ -123,8 +123,8 @@ public class AutonmousController {
 		 * drive.manualDrive(0, .5 * blueToggle); AlignGearPeg();
 		 */
 		int blueToggle = blue ? -1 : 1;
-		//double angle = netTable.getDouble("angleFromGoal");
-		//double distance = netTable.getDouble("distanceFromTarget");
+		// double angle = netTable.getDouble("angleFromGoal");
+		// double distance = netTable.getDouble("distanceFromTarget");
 		switch (phase) {
 		case 0:
 			clock.start();
@@ -132,21 +132,21 @@ public class AutonmousController {
 			break;
 		case 1:
 			drive.manualDrive(-0.5, 0);
-			if(clock.get() > 3 + 27/99) {
+			if (clock.get() > 2.3) {
 				clock.start();
 				phase++;
 			}
 			break;
 		case 2:
-			drive.manualDrive(0, -0.8);
-			if(clock.get() > 12/45) {
+			drive.manualDrive(0, -0.8); // Perfect 60 degrees
+			if (clock.get() > 0.27) {
 				clock.start();
 				phase++;
 			}
 			break;
 		case 3:
 			drive.manualDrive(-0.5, 0);
-			if(clock.get() > 3 + 81/99) {
+			if (clock.get() > 2.9) {
 				clock.start();
 				phase++;
 			}
@@ -168,51 +168,50 @@ public class AutonmousController {
 			clock.start();
 			phase++;
 			break;
-			
 		case 1:
 			drive.manualDrive(-0.5, 0);
-			if (clock.get() > 1 + 9/99) {
-				clock.start();
+			if(clock.get() > 2.8) {
+				clock.stop();
+				clock.reset();
 				phase++;
 			}
-			break;
-			
-		case 2:
-			drive.manualDrive(0, -0.8);
-			if (clock.get() > 0.2) {
-				clock.start();
-				phase++;
-			}
-			break;
-		
-		case 3:
-			drive.manualDrive(-0.5, 0);
-			if (clock.get() > 63/99) {
-				clock.start();
-				phase++;
-			}
-			break;
-			
-		case 4:
-			drive.manualDrive(0, 0.8);
-			if (clock.get() > 0.2) {
-				clock.start();
-				phase++;
-			}
-			break;
-			
-		case 5:
-			drive.manualDrive(-0.5, 0);
-			if (clock.get() > 2 + 54/99) {
-				clock.start();
-				phase++;
-			}
-			break;
-			
-		case 6:
-			drive.manualDrive(0, 0);
 			break;
 		}
+		/*switch (phase) {
+		case 0:
+			clock.start();
+			phase++;
+			break;
+		case 1:
+			drive.manualDrive(0, 0.8);
+			if (clock.get() > 2) {
+				phase++;
+			}
+			break;
+		case 2:
+			drive.manualDrive(0, 0);
+			break;
+		}*/
+		/*
+		 * case 0: clock.start(); phase++; break;
+		 * 
+		 * case 1: drive.manualDrive(-0.5, 0); if (clock.get() > 1 + (9/99)) {
+		 * //clock.stop(); clock.reset(); clock.start(); phase++; } break;
+		 * 
+		 * case 2: drive.manualDrive(0, -0.8); if (clock.get() > 1) {
+		 * clock.reset(); clock.start(); phase++; } break;
+		 * 
+		 * case 3: drive.manualDrive(-0.5, 0); if (clock.get() > 1) {
+		 * clock.reset(); clock.start(); phase++; } break;
+		 * 
+		 * case 4: drive.manualDrive(0, 0.8); if (clock.get() > 1) {
+		 * clock.reset(); clock.start(); phase++; } break;
+		 * 
+		 * case 5: drive.manualDrive(-0.5, 0); if (clock.get() > 2 + (54/99)) {
+		 * clock.reset(); clock.start(); phase++; } break;
+		 * 
+		 * case 6: drive.manualDrive(0, 0); break; }
+		 */
 		/*
 		 * switch (phase) {
 		 * 
@@ -227,38 +226,38 @@ public class AutonmousController {
 		// TODO: TEST
 		int blueToggle = blue ? -1 : 1;
 		switch (phase) {
-		
 		case 0:
 			clock.start();
 			phase++;
 			break;
-		case  1:
+		case 1:
 			drive.manualDrive(-0.5, 0);
-			if (clock.get() > 3 + 63/99) {
+			if (clock.get() > 2.4) {
 				clock.start();
 				phase++;
 			}
 			break;
 		case 2:
-			drive.manualDrive(0, 0.8);
-			if (clock.get() > 12/45) {
+			drive.manualDrive(0, 0.8); // Perfect 60 degrees
+			if (clock.get() > 0.24) {
 				clock.start();
 				phase++;
 			}
 			break;
-
 		case 3:
 			drive.manualDrive(-0.5, 0);
-			if (clock.get() > 3 + 27/99) {
+			if (clock.get() > 2.3) {
 				clock.start();
 				phase++;
 			}
 			break;
 		case 4:
-		drive.manualDrive(0, 0);				
+			drive.manualDrive(0, 0);
+			clock.stop();
+			clock.reset();
+			break;
 		}
-		
-		}
+	}
 
 	/*
 	 * public TeleOpMode AlignHighGoal() { // Checks if we are within horizontal
@@ -280,6 +279,10 @@ public class AutonmousController {
 	 * return TeleOpMode.OPERATORCONTROL; } return TeleOpMode.HIGHGOALALIGNMENT;
 	 * }
 	 */
+
+	public double AngleComp() {
+		return ConvertGyroStuff(gyro.getAngle()) * -0.3;
+	}
 
 	public TeleOpMode AlignGearPeg() {
 		// Checks if we are in the gear Deadzone

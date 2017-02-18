@@ -4,12 +4,14 @@ import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 public class ButtonPress { //x, a, back, rightBumper being used
 	FancyJoystick thisStick;
-	Talon talon;
+	Victor intakeConveyor;
 	Spark sparkBall;
+	Spark sparkShoot;
 	CANTalon climb1;
 	CANTalon climb0;
 	DoubleSolenoid ds;
@@ -26,9 +28,10 @@ public class ButtonPress { //x, a, back, rightBumper being used
 	boolean isFlapRunning = false;
 
 	public ButtonPress(FancyJoystick thisStick, Ports ports) {
-		talon = new Talon(ports.SHOOTER_PWM_PORT);
+		intakeConveyor = new Victor(ports.SHOOTER_INTAKE_CONVEYOR_PWM_VICTOR);
 		this.thisStick = thisStick;
 		sparkBall = new Spark(ports.SPARK_BALL_INTAKE_PWM_CHANNEL);
+		sparkShoot = new Spark(ports.SHOOTER_SPARK_PORT);
 		climb0 = new CANTalon(ports.CANTALON_CLIMBER_0);
 		climb1 = new CANTalon(ports.CANTALON_CLIMBER_1);
 		ds = new DoubleSolenoid(ports.GEAR_INTAKE_FORWARD_CHANNEL, ports.GEAR_INTAKE_REVERSE_CHANNEL);
@@ -51,11 +54,20 @@ public class ButtonPress { //x, a, back, rightBumper being used
 	public void Shoot() {
 		// double voltage = digitBoard.getPot();
 		// double motorValue = voltage; // voltage / 5
-		talon.set(4.85); // motorValue works
+		//talon.set(4.85); // motorValue works
+		sparkShoot.set(1);
 	}
 
 	public void StopShoot() {
-		talon.set(0);
+		sparkShoot.set(0);
+	}
+	
+	public void intakeConveyorOn() {
+		intakeConveyor.set(1);
+	}
+	
+	public void intakeConveyorOff() {
+		intakeConveyor.set(0);
 	}
 
 	// climb

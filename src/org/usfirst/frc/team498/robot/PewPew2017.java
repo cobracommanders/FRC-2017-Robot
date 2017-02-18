@@ -14,7 +14,7 @@ public class PewPew2017 {
 	public PewPew2017(REVImprovedDigitBoard board, FancyJoystick joystick, Ports ports) {
 
 		thisStick = joystick;
-		talon = new Talon(ports.SHOOTER_PWM_PORT);
+		talon = new Talon(ports.SHOOTER_INTAKE_CONVEYOR_PWM_VICTOR);
 		digitBoard = board;
 	}
 

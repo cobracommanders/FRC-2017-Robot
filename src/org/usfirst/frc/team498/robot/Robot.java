@@ -238,6 +238,7 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("UltraInches Voltage", ultra.GetRangeInches(true));
 		SmartDashboard.putNumber("Turn Value After Cap", drive2017.turnValue_f);
 		SmartDashboard.putNumber("Turn Value Before Cap", drive2017.turnValue);
+		SmartDashboard.putNumber("Clock Seconds", clock.get());
 		
 		//net table prints
 		/*double distanceFromTarget = table.getDouble("distanceFromTarget");

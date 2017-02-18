@@ -1,6 +1,7 @@
 //Made in Syria
 package org.usfirst.frc.team498.robot;
 
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.RobotDrive;
 
 public class Drive2017 {
@@ -10,9 +11,12 @@ public class Drive2017 {
 	private boolean isGoingForward = true;
 	private boolean isSpeedReduced = true;
 	private boolean wasTransmitionPressed = false;
-	double turnCap = 0.66;
-	double moveCap = 0.7;
-
+	double turnCap = 0.75; //0.66
+	double moveCap = 0.75;
+	ADXRS450_Gyro gyro;
+	boolean trigDown = false;
+	boolean turning = false;
+	
 	RampManager turningDriveRamp;
 	public double moveValue;
 	public double turnValue;
@@ -20,8 +24,9 @@ public class Drive2017 {
 	double moveValue_f;
 	double turnValue_f;
 
-	Drive2017(FancyJoystick joystick, Ports ports) {
+	Drive2017(FancyJoystick joystick, Ports ports, ADXRS450_Gyro gyro) {
 		this.thisStick = joystick;
+		this.gyro = gyro;
 
 		drive = new RobotDrive(ports.LEFT_FRONT_PWM_PORT, ports.LEFT_BACK_PWM_PORT, ports.RIGHT_FRONT_PWM_PORT,
 				ports.RIGHT_BACK_PWM_PORT);
@@ -30,13 +35,49 @@ public class Drive2017 {
 		turningDriveRamp = new RampManager(ports.turningRampIncreaseValue);
 	}
 
+	public double AngleComp() {
+		return ConvertGyroStuff(gyro.getAngle()) * -0.3;
+	}
+	
+	public double ConvertGyroStuff(double currentAngle) {
+		// If negative, return 0
+		if (currentAngle != Math.abs(currentAngle))
+			return 0.0;
+		// Gets rid of excess angles that we don't want
+		currentAngle = currentAngle % 360.0;
+		// Converts it so that 270 is -90 and 90 is 90 etc.
+		if (currentAngle < 360.0 && currentAngle > 180.0) {
+			// 270 = -90
+			return currentAngle - 360.0;
+		} else {
+			// 90 = 90
+			return currentAngle;
+		}
+	}
+	
 	// The robot's speed slowly increases over time.
 	public void rampedDriveListener() {
 		// Axis 3 is RT Axis 2 is LT
 		forwardDriveRamp.rampTo((thisStick.getAxis(Axis.RightTrigger) - thisStick.getAxis(Axis.LeftTrigger)) * moveCap);
 		moveValue = forwardDriveRamp.getCurrentValue();
 		// Axis 0 is X Value of Left Stick
-		turningDriveRamp.rampTo(-thisStick.getAxis(Axis.LeftX)*turnCap);
+		if(Math.abs(thisStick.getAxis(Axis.RightTrigger) - thisStick.getAxis(Axis.LeftTrigger)) > 0.2 && !trigDown) {
+			trigDown = true;
+			gyro.reset();
+		} else {
+			trigDown = false;
+		}
+		if(Math.abs(thisStick.getAxis(Axis.LeftX)) <= 0.2 && turning) {
+			turning = false;
+			gyro.reset();
+		} else {
+			turning = true;
+		}
+		if(Math.abs(thisStick.getAxis(Axis.LeftX)) <= 0.2 ){
+			turningDriveRamp.rampTo(AngleComp());
+		}else{
+			turningDriveRamp.rampTo(-thisStick.getAxis(Axis.LeftX)*turnCap);
+		}
 		turnValue = turningDriveRamp.getCurrentValue();
 		// turnValue = -thisStick.getAxis(Axis.LeftX);
 		transmitionListener();

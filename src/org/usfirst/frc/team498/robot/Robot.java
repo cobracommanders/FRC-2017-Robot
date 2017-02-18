@@ -34,8 +34,8 @@ public class Robot extends SampleRobot {
 	private Timer clock = new Timer();
 	private Timer digitClock = new Timer();
 	FancyJoystick thisStick = new FancyJoystick(0);
-	Drive2017 drive2017 = new Drive2017(thisStick, ports);
 	ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+	Drive2017 drive2017 = new Drive2017(thisStick, ports, gyro);
 	ButtonPress buttonPress = new ButtonPress(thisStick, ports);
 	REVImprovedDigitBoard digitBoard = new REVImprovedDigitBoard();
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
@@ -72,7 +72,7 @@ public class Robot extends SampleRobot {
 			sol.set(true);
 		}
 		
-		
+		UsbCamera camera0 = CameraServer.getInstance().startAutomaticCapture("cam0", 0);
 		/*
 		 * NetworkTable.setClientMode(); NetworkTable.setTeam(498);
 		 * NetworkTable.setIPAddress("roborio-498-frc.local");
@@ -141,6 +141,10 @@ public class Robot extends SampleRobot {
 		return '0';
 	}
 
+	public double AngleComp() {
+		return auto.ConvertGyroStuff(gyro.getAngle()) * -0.3;
+	}
+	
 	public void operatorControl() {
 
 		drive2017.moveValue = 0;

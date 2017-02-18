@@ -128,30 +128,38 @@ public class AutonmousController {
 		switch (phase) {
 		case 0:
 			clock.start();
+			gyro.reset();
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(-0.5, 0);
-			if (clock.get() > 2.3) {
+			drive.manualDrive(-0.5, AngleComp());
+			if (clock.get() > 4) {
+				gyro.reset();
 				clock.start();
 				phase++;
 			}
 			break;
 		case 2:
-			drive.manualDrive(0, -0.8); // Perfect 60 degrees
-			if (clock.get() > 0.27) {
-				clock.start();
+			//drive.manualDrive(0, -0.7); // Perfect 60 degrees
+			//if (gyro.getAngle() <= -60) {
+			//	gyro.calibrate();
+			//	clock.start();
+			//	phase++;
+			//}
+			//if (clock.get() > 0.27) {
+				//clock.start();
 				phase++;
-			}
+			//}
 			break;
 		case 3:
-			drive.manualDrive(-0.5, 0);
-			if (clock.get() > 2.9) {
-				clock.start();
+			//drive.manualDrive(-0.5, AngleComp());
+			//if (clock.get() > 5) {
+			//	clock.start();
 				phase++;
-			}
+			//}
 			break;
 		case 4:
+			gyro.reset();
 			drive.manualDrive(0, 0);
 			clock.stop();
 			clock.reset();
@@ -166,14 +174,16 @@ public class AutonmousController {
 		switch (phase) {
 		case 0:
 			clock.start();
+			gyro.reset();
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(-0.5, 0);
+			drive.manualDrive(-0.5, AngleComp());
 			if(clock.get() > 2.8) {
 				clock.stop();
 				clock.reset();
 				phase++;
+				drive.manualDrive(0,0);
 			}
 			break;
 		}
@@ -227,26 +237,30 @@ public class AutonmousController {
 		int blueToggle = blue ? -1 : 1;
 		switch (phase) {
 		case 0:
+			gyro.reset();
 			clock.start();
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(-0.5, 0);
-			if (clock.get() > 2.4) {
+			drive.manualDrive(-0.5, AngleComp());
+			if (clock.get() > 4.2) {
+				gyro.reset();
 				clock.start();
 				phase++;
 			}
 			break;
 		case 2:
 			drive.manualDrive(0, 0.8); // Perfect 60 degrees
-			if (clock.get() > 0.24) {
+			//drive.manualDrive(0, -0.7); // Perfect 60 degrees
+			if (gyro.getAngle() >= 60) {
+				gyro.reset();
 				clock.start();
 				phase++;
 			}
 			break;
 		case 3:
-			drive.manualDrive(-0.5, 0);
-			if (clock.get() > 2.3) {
+			drive.manualDrive(-0.5, AngleComp());
+			if (clock.get() > 4) {
 				clock.start();
 				phase++;
 			}

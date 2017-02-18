@@ -18,9 +18,13 @@ public class ButtonPress { //x, a, back, rightBumper being used
 
 	boolean wasShootPressed = false;// shoot
 	boolean isShootRunning = false;
+	//boolean wasConveyorPressed = false;
+	boolean isConveyorRunning = false;
 	boolean wasIntakePressed = false;// intake
 	boolean isIntakeRunning = false;
-	boolean intakeReverse = false;
+	boolean wasIntakeReversed = false;
+	boolean isIntakeReversed = false;
+	//boolean intakeReverse = false;
 	boolean wasClimbPressed = false;// climb
 	boolean isClimbRunning = false;
 	boolean climbReverse = false;
@@ -63,7 +67,7 @@ public class ButtonPress { //x, a, back, rightBumper being used
 	}
 	
 	public void intakeConveyorOn() {
-		intakeConveyor.set(1);
+		intakeConveyor.set(-1);
 	}
 	
 	public void intakeConveyorOff() {
@@ -102,6 +106,7 @@ public class ButtonPress { //x, a, back, rightBumper being used
 		// Shooter
 		if (thisStick.getButton(Button.RightBumper) && wasShootPressed == false) {
 			isShootRunning = !isShootRunning;
+			isConveyorRunning = !isConveyorRunning;
 			wasShootPressed = true;
 		}
 		if (wasShootPressed == true && thisStick.getButton(Button.RightBumper) == false) {
@@ -110,17 +115,33 @@ public class ButtonPress { //x, a, back, rightBumper being used
 
 		if (isShootRunning) {
 			Shoot();
+			intakeConveyorOn();
 		} else {
 			StopShoot();
+			intakeConveyorOff();
 		} // End of Shooter
-
+		
+		/*if (thisStick.getButton(Button.Y) && wasConveyorPressed == false) {
+			isConveyorRunning = !isConveyorRunning;
+			wasConveyorPressed = true;
+		}
+		
+		if (wasConveyorPressed == true && thisStick.getButton(Button.Y) == false) {
+			wasConveyorPressed = false;
+		}
+		
+		if (isConveyorRunning) {
+			intakeConveyorOn();
+		} else {
+			intakeConveyorOff();
+		}*/
 		// Gear Flap
-		if (thisStick.getButton(Button.A) && wasFlapPressed == false) {
+		if (thisStick.getButton(Button.B) && wasFlapPressed == false) {
 			isFlapRunning = !isFlapRunning;
 			wasFlapPressed = true;
 		}
 
-		if (wasFlapPressed == true && thisStick.getButton(Button.A) == false) {
+		if (wasFlapPressed == true && thisStick.getButton(Button.B) == false) {
 			wasFlapPressed = false;
 		}
 
@@ -149,23 +170,24 @@ public class ButtonPress { //x, a, back, rightBumper being used
 		if (thisStick.getButton(Button.X) && wasIntakePressed == false) {
 			isIntakeRunning = !isIntakeRunning;
 			wasIntakePressed = true;
-
-			if (thisStick.getButton(Button.LeftBumper)) {
-				intakeReverse = true;
-			} else {
-				intakeReverse = false;
-			}
+		}
+		if(thisStick.getButton(Button.LeftBumper) && wasIntakeReversed == false) {
+			isIntakeReversed = !isIntakeReversed;
+			wasIntakeReversed = true;
 		}
 		
 		if (wasIntakePressed == true && thisStick.getButton(Button.X) == false) {
 			wasIntakePressed = false;
 		}
+		
+		if (wasIntakeReversed == true && thisStick.getButton(Button.LeftBumper) == false) {
+			wasIntakeReversed = false;
+		}
 
 		if (isIntakeRunning) {
-			if (intakeReverse)
-				IntakeReverse();
-			else
-				IntakeOn();
+			IntakeOn();
+		} else if (isIntakeReversed) {
+			IntakeReverse();
 		} else {
 			IntakeOff();
 		} // End of Intake

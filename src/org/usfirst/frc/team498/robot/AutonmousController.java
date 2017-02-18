@@ -14,12 +14,15 @@ public class AutonmousController {
 	private Timer clock;
 	private Drive2017 drive;
 	public AnalogUltrasonicSensor2017 ultra;
+
 	ButtonPress buttonPress;
 
 	double currentContourHeight = 0.0;
 	double leftContour = 0.0;
 	double rightContour = 0.0;
 	double rangeInches = 2.5;
+
+	ADXRS450_Gyro gyro;
 
 	double driveAngle;
 
@@ -39,13 +42,14 @@ public class AutonmousController {
 
 	REVImprovedDigitBoard digitBoard;
 
-	AutonmousController(Drive2017 drive, ButtonPress buttonPress, REVImprovedDigitBoard digitBoard, FancyJoystick thisStick,
-			Ports ports, AnalogUltrasonicSensor2017 ultra, Timer clock) {
+	AutonmousController(Drive2017 drive, ButtonPress buttonPress, REVImprovedDigitBoard digitBoard,
+			FancyJoystick thisStick, Ports ports, AnalogUltrasonicSensor2017 ultra, ADXRS450_Gyro gyro, Timer clock) {
 		this.drive = drive;
 		this.buttonPress = buttonPress;
 		this.ultra = ultra;
 		this.clock = clock;
 		this.digitBoard = digitBoard;
+		this.gyro = gyro;
 		digitBoard.UpdateDisplay(' ', 'R', ' ', 'L', false);
 	}
 
@@ -71,8 +75,24 @@ public class AutonmousController {
 		clock.start();
 	}
 
+	public double ConvertGyroStuff(double currentAngle) {
+		// If negative, return 0
+		if (currentAngle != Math.abs(currentAngle))
+			return 0.0;
+		// Gets rid of excess angles that we don't want
+		currentAngle = currentAngle % 360.0;
+		// Converts it so that 270 is -90 and 90 is 90 etc.
+		if (currentAngle < 360.0 && currentAngle > 180.0) {
+			// 270 = -90
+			return currentAngle - 360.0;
+		} else {
+			// 90 = 90
+			return currentAngle;
+		}
+	}
+
 	public void Auto() {
-		double ultraInches = ultra.GetRangeInches(true);
+		double ultraInches = ultra.GetRangeInches(false);
 		switch (AutoMode.currentValue) {
 		case AutoMode.RED_LEFT:
 			autoLeftPeg(false);
@@ -103,88 +123,44 @@ public class AutonmousController {
 		 * drive.manualDrive(0, .5 * blueToggle); AlignGearPeg();
 		 */
 		int blueToggle = blue ? -1 : 1;
-		double angle = netTable.getDouble("angleFromGoal");
-		double distance = netTable.getDouble("distanceFromTarget");
+		//double angle = netTable.getDouble("angleFromGoal");
+		//double distance = netTable.getDouble("distanceFromTarget");
 		switch (phase) {
 		case 0:
 			clock.start();
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(-0.5, 0); // TODO: Set this back to + for real bot
-			if (clock.get() > 3) {
+			drive.manualDrive(-0.5, 0);
+			if(clock.get() > 3 + 27/99) {
 				clock.start();
 				phase++;
 			}
 			break;
 		case 2:
 			drive.manualDrive(0, -0.8);
-			if (clock.get() > 0.2) {
-				clock.stop();
-				clock.reset();
+			if(clock.get() > 12/45) {
+				clock.start();
 				phase++;
 			}
 			break;
 		case 3:
-			if(angle > 0.2) {
-				drive.manualDrive(0, -0.65);
-			}
-			if(angle < -0.2) {
-				drive.manualDrive(0, 0.65);
-			}
-			if(angle <= 0.2 && angle >= -0.2) {
-				drive.manualDrive(0, 0);
+			drive.manualDrive(-0.5, 0);
+			if(clock.get() > 3 + 81/99) {
+				clock.start();
 				phase++;
 			}
-			//drive.manualDrive(-0.5, 0);
-			//if (clock.get() > 2) {
-			//	clock.stop();
-			//	clock.reset();
-			//	phase++;
-			//}
 			break;
 		case 4:
-			if(distance > 10) {
-				drive.manualDrive(0.5, 0);
-			} else {
-				drive.manualDrive(0, 0);
-				phase++;
-			}
+			drive.manualDrive(0, 0);
+			clock.stop();
+			clock.reset();
 			break;
 		}
 	}
 
 	public void autoMidPeg(boolean blue, double ultraInches) {
-		// TODO: TEST
-		int blueToggle = blue ? -1 : 1;
-		switch (phase) {
-		case 0:
-			drive.manualDrive(-0.5, 0);
-			if (ultraInches > 11) {
-				phase++;
-			}
-			break;
-		case 1:
-			drive.manualDrive(-0.5, 0); // moves forward
-			if (ultraInches < 2.3) {
-				phase--;
-				break;
-			}
-			if (ultraInches < 6) {
-				phase++;
-			}
-			break;
-		case 2:
-			drive.manualDrive(0, 0);
-			// AlignGearPeg(); // aligns gear peg
-			phase++;
-			break;
-		case 40:
-			break;
-		}
-	}
 
-	public void autoRightPeg(boolean blue) { // inverse of autoleftPeg
 		// TODO: TEST
 		int blueToggle = blue ? -1 : 1;
 		switch (phase) {
@@ -192,33 +168,97 @@ public class AutonmousController {
 			clock.start();
 			phase++;
 			break;
+			
 		case 1:
-			drive.manualDrive(-0.5, 0); // TODO: Set this back to + for real bot
-			if (clock.get() > 3) {
+			drive.manualDrive(-0.5, 0);
+			if (clock.get() > 1 + 9/99) {
 				clock.start();
 				phase++;
 			}
 			break;
+			
 		case 2:
+			drive.manualDrive(0, -0.8);
+			if (clock.get() > 0.2) {
+				clock.start();
+				phase++;
+			}
+			break;
+		
+		case 3:
+			drive.manualDrive(-0.5, 0);
+			if (clock.get() > 63/99) {
+				clock.start();
+				phase++;
+			}
+			break;
+			
+		case 4:
 			drive.manualDrive(0, 0.8);
 			if (clock.get() > 0.2) {
 				clock.start();
 				phase++;
 			}
 			break;
+			
+		case 5:
+			drive.manualDrive(-0.5, 0);
+			if (clock.get() > 2 + 54/99) {
+				clock.start();
+				phase++;
+			}
+			break;
+			
+		case 6:
+			drive.manualDrive(0, 0);
+			break;
+		}
+		/*
+		 * switch (phase) {
+		 * 
+		 * case 0: gyro.reset(); gyro.calibrate(); clock.start(); phase++;
+		 * break; case 1: drive.manualDrive(-.5,
+		 * ConvertGyroStuff(gyro.getAngle() * 0.03)); if (clock.get() > 2) {
+		 * phase++; } break; case 2: drive.manualDrive(0, 0); break; }
+		 */
+	}
+
+	public void autoRightPeg(boolean blue) { // inverse of autoleftPeg
+		// TODO: TEST
+		int blueToggle = blue ? -1 : 1;
+		switch (phase) {
+		
+		case 0:
+			clock.start();
+			phase++;
+			break;
+		case  1:
+			drive.manualDrive(-0.5, 0);
+			if (clock.get() > 3 + 63/99) {
+				clock.start();
+				phase++;
+			}
+			break;
+		case 2:
+			drive.manualDrive(0, 0.8);
+			if (clock.get() > 12/45) {
+				clock.start();
+				phase++;
+			}
+			break;
+
 		case 3:
 			drive.manualDrive(-0.5, 0);
-			if (clock.get() > 2) {
-				clock.stop();
-				clock.reset();
+			if (clock.get() > 3 + 27/99) {
+				clock.start();
 				phase++;
 			}
 			break;
 		case 4:
-			drive.manualDrive(0, 0);
-			break;
+		drive.manualDrive(0, 0);				
 		}
-	}
+		
+		}
 
 	/*
 	 * public TeleOpMode AlignHighGoal() { // Checks if we are within horizontal

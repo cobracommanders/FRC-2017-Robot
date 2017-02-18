@@ -10,13 +10,13 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
 //import edu.wpi.first.wpilibj.vision.VisionRunner;
 //import edu.wpi.first.wpilibj.vision.VisionThread;
-
 import org.opencv.core.Mat;
 //import org.opencv.imgproc.Imgproc;
 
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -35,17 +35,19 @@ public class Robot extends SampleRobot {
 	private Timer digitClock = new Timer();
 	FancyJoystick thisStick = new FancyJoystick(0);
 	Drive2017 drive2017 = new Drive2017(thisStick, ports);
+	ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 	ButtonPress buttonPress = new ButtonPress(thisStick, ports);
 	REVImprovedDigitBoard digitBoard = new REVImprovedDigitBoard();
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 	Solenoid sol = new Solenoid(ports.ULTRASONIC_SENSOR_PCM_PORT);
+	
+
 	public boolean hasDigitStarted = false;
 
 	//IntakeClimb2017 gearIntake = new IntakeClimb2017(thisStick, ports);
 	//PewPew2017 shooter = new PewPew2017(digitBoard, thisStick, ports);
 	AnalogUltrasonicSensor2017 ultra = new AnalogUltrasonicSensor2017(thisStick, ports, sol);
-	AutonmousController auto = new AutonmousController(drive2017, buttonPress, digitBoard, thisStick, ports, ultra, clock);
-
+	AutonmousController auto = new AutonmousController(drive2017, buttonPress, digitBoard, thisStick, ports, ultra, gyro, clock);
 
 	// Camera Code
 	// private static final int IMG_WIDTH = 320;
@@ -66,9 +68,9 @@ public class Robot extends SampleRobot {
 
 	@Override
 	public void robotInit() {
-		/*if (!sol.get()) {
+		if (!sol.get()) {
 			sol.set(true);
-		}*/
+		}
 		
 		
 		/*
@@ -85,7 +87,7 @@ public class Robot extends SampleRobot {
 		while (isAutonomous() && isEnabled()) {
 			print();
 			// Start Auto Phases
-			//auto.Auto();
+			auto.Auto();
 
 		
 
@@ -163,12 +165,12 @@ public class Robot extends SampleRobot {
 				teleMode = TeleOpMode.OPERATORCONTROL; // makes robot go back to
 														// TeleOp
 			}
-			if (thisStick.getButton(Button.A) && teleMode == TeleOpMode.OPERATORCONTROL) {
+			/*if (thisStick.getButton(Button.A) && teleMode == TeleOpMode.OPERATORCONTROL) {
 				teleMode = TeleOpMode.GEARALIGNMENT; //Aligns the robot to the gear peg
-			}
-			if (thisStick.getButton(Button.Y) && teleMode == TeleOpMode.OPERATORCONTROL) {
+			}*/
+			/*if (thisStick.getButton(Button.Y) && teleMode == TeleOpMode.OPERATORCONTROL) {
 				teleMode = TeleOpMode.HIGHGOALALIGNMENT; //Aligns the robot to the shooter
-			}
+			}*/
 			switch (teleMode) {
 			case OPERATORCONTROL:
 				// Drive the robot via controller
@@ -223,10 +225,12 @@ public class Robot extends SampleRobot {
 		// The ultimate bonding moment
 		SmartDashboard.putNumber("Center X table", table.getNumber("centerX", 0));
 		SmartDashboard.putNumber("AutoPhase", auto.phase);
-		SmartDashboard.putNumber("", auto.phase);
+		SmartDashboard.putNumber("phase", auto.phase);
 		
 		SmartDashboard.putNumber("Move value", drive2017.moveValue);
-
+		SmartDashboard.putNumber("Turn value", drive2017.turnValue);
+		
+		SmartDashboard.putNumber("Gyro Value", auto.ConvertGyroStuff(gyro.getAngle()));
 		// ultrasonic
 		SmartDashboard.putNumber("Ultrasonic Value", ultra.getValue());
 		SmartDashboard.putNumber("UltraInches Value", ultra.GetRangeInches(false));
@@ -234,6 +238,7 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("UltraInches Voltage", ultra.GetRangeInches(true));
 		SmartDashboard.putNumber("Turn Value After Cap", drive2017.turnValue_f);
 		SmartDashboard.putNumber("Turn Value Before Cap", drive2017.turnValue);
+		
 		//net table prints
 		/*double distanceFromTarget = table.getDouble("distanceFromTarget");
 		double angleFromGoal = table.getDouble("angleFromGoal");

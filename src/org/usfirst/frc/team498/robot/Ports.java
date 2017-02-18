@@ -29,6 +29,5 @@ public class Ports {
 	final int ULTRASONIC_SENSOR_PCM_PORT = 0; //0
 	// ramp code
 	final double forwardRampIncreaseValue = 2.0; //used
-	final double reverseRampIncreaseValue = .1; //not used?
-	final double turningRampIncreaseValue = 1.0; //used
+	final double turningRampIncreaseValue = 2.0; //used
 }

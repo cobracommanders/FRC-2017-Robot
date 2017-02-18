@@ -42,7 +42,6 @@ public class Drive2017 {
 		transmitionListener();
 		reverseListener();
 		drive();
-
 	}
 
 	public void ramplessDriveListener() {

@@ -75,21 +75,7 @@ public class AutonmousController {
 		clock.start();
 	}
 
-	public double ConvertGyroStuff(double currentAngle) {
-		// If negative, return 0
-		if (currentAngle != Math.abs(currentAngle))
-			return 0.0;
-		// Gets rid of excess angles that we don't want
-		currentAngle = currentAngle % 360.0;
-		// Converts it so that 270 is -90 and 90 is 90 etc.
-		if (currentAngle < 360.0 && currentAngle > 180.0) {
-			// 270 = -90
-			return currentAngle - 360.0;
-		} else {
-			// 90 = 90
-			return currentAngle;
-		}
-	}
+
 
 	public void Auto() {
 		double ultraInches = ultra.GetRangeInches(false);
@@ -140,16 +126,16 @@ public class AutonmousController {
 			}
 			break;
 		case 2:
-			//drive.manualDrive(0, -0.7); // Perfect 60 degrees
-			//if (gyro.getAngle() <= -60) {
-			//	gyro.calibrate();
-			//	clock.start();
-			//	phase++;
-			//}
-			//if (clock.get() > 0.27) {
-				//clock.start();
+			drive.manualDrive(0, -0.7); // Perfect 60 degrees
+			if (gyro.getAngle() <= -60) {
+				gyro.calibrate();
+				clock.start();
 				phase++;
-			//}
+			}
+			if (clock.get() > 0.27) {
+				clock.start();
+				phase++;
+			}
 			break;
 		case 3:
 			//drive.manualDrive(-0.5, AngleComp());
@@ -178,7 +164,7 @@ public class AutonmousController {
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(-0.5, AngleComp());
+			drive.manualDrive(-0.5, -AngleComp());
 			if(clock.get() > 2.8) {
 				clock.stop();
 				clock.reset();
@@ -295,7 +281,7 @@ public class AutonmousController {
 	 */
 
 	public double AngleComp() {
-		return ConvertGyroStuff(gyro.getAngle()) * -0.3;
+		
 	}
 
 	public TeleOpMode AlignGearPeg() {

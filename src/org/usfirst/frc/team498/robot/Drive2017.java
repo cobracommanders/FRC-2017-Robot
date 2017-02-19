@@ -38,25 +38,9 @@ public class Drive2017 {
 
 	public double AngleComp() {
 		if(thisStick.getAxis(Axis.RightTrigger) >= 0.2)
-		return -ConvertGyroStuff(gyro.getAngle()) * -0.3;
+			return -gyro.getAngle() * -0.3;
 		else
-		return ConvertGyroStuff(gyro.getAngle()) * -0.3;
-	}
-	
-	public double ConvertGyroStuff(double currentAngle) {
-		// If negative, return 0
-		if (currentAngle != Math.abs(currentAngle))
-			return 0.0;
-		// Gets rid of excess angles that we don't want
-		currentAngle = currentAngle % 360.0;
-		// Converts it so that 270 is -90 and 90 is 90 etc.
-		if (currentAngle < 360.0 && currentAngle > 180.0) {
-			// 270 = -90
-			return currentAngle - 360.0;
-		} else {
-			// 90 = 90
-			return currentAngle;
-		}
+			return gyro.getAngle() * -0.3;
 	}
 	
 	public double MoveCap() {

@@ -142,7 +142,7 @@ public class Robot extends SampleRobot {
 	}
 
 	public double AngleComp() {
-		return auto.ConvertGyroStuff(gyro.getAngle()) * -0.3;
+		return gyro.getAngle() * -0.3;
 	}
 	
 	public void operatorControl() {
@@ -234,7 +234,7 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("Move value", drive2017.moveValue);
 		SmartDashboard.putNumber("Turn value", drive2017.turnValue);
 		
-		SmartDashboard.putNumber("Gyro Value", auto.ConvertGyroStuff(gyro.getAngle()));
+		SmartDashboard.putNumber("Gyro Value", gyro.getAngle());
 		// ultrasonic
 		SmartDashboard.putNumber("Ultrasonic Value", ultra.getValue());
 		SmartDashboard.putNumber("UltraInches Value", ultra.GetRangeInches(false));

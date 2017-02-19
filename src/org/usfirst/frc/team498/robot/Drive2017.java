@@ -12,10 +12,11 @@ public class Drive2017 {
 	private boolean isSpeedReduced = true;
 	private boolean wasTransmitionPressed = false;
 	double turnCap = 0.75; //0.66
-	double moveCap = 0.75;
+	double moveCap = 0.8; //don't increase above 0.8
 	ADXRS450_Gyro gyro;
 	boolean trigDown = false;
 	boolean turning = false;
+	static boolean turbo = false;
 	
 	RampManager turningDriveRamp;
 	public double moveValue;
@@ -36,29 +37,21 @@ public class Drive2017 {
 	}
 
 	public double AngleComp() {
-		return ConvertGyroStuff(gyro.getAngle()) * -0.3;
+		return gyro.getAngle() * -0.3;
 	}
 	
-	public double ConvertGyroStuff(double currentAngle) {
-		// If negative, return 0
-		if (currentAngle != Math.abs(currentAngle))
-			return 0.0;
-		// Gets rid of excess angles that we don't want
-		currentAngle = currentAngle % 360.0;
-		// Converts it so that 270 is -90 and 90 is 90 etc.
-		if (currentAngle < 360.0 && currentAngle > 180.0) {
-			// 270 = -90
-			return currentAngle - 360.0;
+	public double Speed() {
+		if(turbo) {
+			return 1;
 		} else {
-			// 90 = 90
-			return currentAngle;
+			return moveCap;
 		}
 	}
 	
 	// The robot's speed slowly increases over time.
 	public void rampedDriveListener() {
 		// Axis 3 is RT Axis 2 is LT
-		forwardDriveRamp.rampTo((thisStick.getAxis(Axis.RightTrigger) - thisStick.getAxis(Axis.LeftTrigger)) * moveCap);
+		forwardDriveRamp.rampTo((thisStick.getAxis(Axis.RightTrigger) - thisStick.getAxis(Axis.LeftTrigger)) * Speed());
 		moveValue = forwardDriveRamp.getCurrentValue();
 		// Axis 0 is X Value of Left Stick
 		if(Math.abs(thisStick.getAxis(Axis.RightTrigger) - thisStick.getAxis(Axis.LeftTrigger)) > 0.2 && !trigDown) {

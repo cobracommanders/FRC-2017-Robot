@@ -6,10 +6,12 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.Relay;
 
 public class ButtonPress { //x, a, back, rightBumper being used
 	FancyJoystick thisStick;
-	Victor intakeConveyor;
+	Victor popcorn;
+	Relay conveyor;
 	Spark sparkBall;
 	Spark sparkShoot;
 	CANTalon climb1;
@@ -18,8 +20,6 @@ public class ButtonPress { //x, a, back, rightBumper being used
 
 	boolean wasShootPressed = false;// shoot
 	boolean isShootRunning = false;
-	//boolean wasConveyorPressed = false;
-	boolean isConveyorRunning = false;
 	boolean wasIntakePressed = false;// intake
 	boolean isIntakeRunning = false;
 	boolean wasIntakeReversed = false;
@@ -30,10 +30,14 @@ public class ButtonPress { //x, a, back, rightBumper being used
 	boolean climbReverse = false;
 	boolean wasFlapPressed = false;// flaps
 	boolean isFlapRunning = false;
-
+	boolean dPadDownDown = false;
+	boolean isTurboRunning = false;
+	boolean wasTurboPressed = false;
+	
 	public ButtonPress(FancyJoystick thisStick, Ports ports) {
-		intakeConveyor = new Victor(ports.SHOOTER_INTAKE_CONVEYOR_PWM_VICTOR);
 		this.thisStick = thisStick;
+		conveyor = new Relay(ports.SHOOTER_INTAKE_CONVEYOR_RELAY_SPIKE);
+		popcorn = new Victor(ports.SHOOTER_POPCORN_PWM_VICTOR);
 		sparkBall = new Spark(ports.SPARK_BALL_INTAKE_PWM_CHANNEL);
 		sparkShoot = new Spark(ports.SHOOTER_SPARK_PORT);
 		climb0 = new CANTalon(ports.CANTALON_CLIMBER_0);
@@ -41,6 +45,17 @@ public class ButtonPress { //x, a, back, rightBumper being used
 		ds = new DoubleSolenoid(ports.GEAR_INTAKE_FORWARD_CHANNEL, ports.GEAR_INTAKE_REVERSE_CHANNEL);
 	}
 
+	public boolean DPadDownDown() {
+		if(thisStick.getButton(Button.DPadDown) && !dPadDownDown) {
+			dPadDownDown = thisStick.getButton(Button.DPadDown);
+			return true;
+		} else {
+			dPadDownDown = thisStick.getButton(Button.DPadDown);
+			return false;
+		}
+		
+	}
+	
 	// ball intake
 	public void IntakeOn() {
 		sparkBall.set(1);
@@ -52,6 +67,18 @@ public class ButtonPress { //x, a, back, rightBumper being used
 
 	public void IntakeReverse() {
 		sparkBall.set(-1);
+	}
+	
+	public void PopcornOn() {
+		popcorn.set(-0.8);
+	}
+	
+	public void PopcornOff() {
+		popcorn.set(0);
+	}
+	
+	public void PopcornReverse() {
+		popcorn.set(0.8);
 	}
 
 	// shooter
@@ -67,11 +94,11 @@ public class ButtonPress { //x, a, back, rightBumper being used
 	}
 	
 	public void intakeConveyorOn() {
-		intakeConveyor.set(-1);
+		conveyor.set(Relay.Value.kReverse);
 	}
 	
 	public void intakeConveyorOff() {
-		intakeConveyor.set(0);
+		conveyor.set(Relay.Value.kOff);
 	}
 
 	// climb
@@ -106,7 +133,6 @@ public class ButtonPress { //x, a, back, rightBumper being used
 		// Shooter
 		if (thisStick.getButton(Button.RightBumper) && wasShootPressed == false) {
 			isShootRunning = !isShootRunning;
-			isConveyorRunning = !isConveyorRunning;
 			wasShootPressed = true;
 		}
 		if (wasShootPressed == true && thisStick.getButton(Button.RightBumper) == false) {
@@ -186,12 +212,24 @@ public class ButtonPress { //x, a, back, rightBumper being used
 
 		if (isIntakeRunning) {
 			IntakeOn();
+			PopcornOn();
 		} else if (isIntakeReversed) {
 			IntakeReverse();
 		} else {
 			IntakeOff();
+			PopcornOff();
 		} // End of Intake
-
+		
+		if (thisStick.getButton(Button.Y) && wasTurboPressed == false) {
+			isTurboRunning = !isTurboRunning;
+		}
+		wasTurboPressed = thisStick.getButton(Button.Y);
+		
+		if(isTurboRunning) {
+			Drive2017.turbo = true;
+		} else {
+			Drive2017.turbo = false;
+		}
 	}
 
 }

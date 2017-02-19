@@ -16,6 +16,7 @@ public class Drive2017 {
 	ADXRS450_Gyro gyro;
 	boolean trigDown = false;
 	boolean turning = false;
+	static boolean turbo;
 	
 	RampManager turningDriveRamp;
 	public double moveValue;
@@ -36,6 +37,9 @@ public class Drive2017 {
 	}
 
 	public double AngleComp() {
+		if(thisStick.getAxis(Axis.RightTrigger) >= 0.2)
+		return -ConvertGyroStuff(gyro.getAngle()) * -0.3;
+		else
 		return ConvertGyroStuff(gyro.getAngle()) * -0.3;
 	}
 	
@@ -55,10 +59,17 @@ public class Drive2017 {
 		}
 	}
 	
+	public double MoveCap() {
+		if(turbo)
+			return 1;
+		else
+			return moveCap;
+	}
+	
 	// The robot's speed slowly increases over time.
 	public void rampedDriveListener() {
 		// Axis 3 is RT Axis 2 is LT
-		forwardDriveRamp.rampTo((thisStick.getAxis(Axis.RightTrigger) - thisStick.getAxis(Axis.LeftTrigger)) * moveCap);
+		forwardDriveRamp.rampTo((thisStick.getAxis(Axis.RightTrigger) - thisStick.getAxis(Axis.LeftTrigger)) * MoveCap());
 		moveValue = forwardDriveRamp.getCurrentValue();
 		// Axis 0 is X Value of Left Stick
 		if(Math.abs(thisStick.getAxis(Axis.RightTrigger) - thisStick.getAxis(Axis.LeftTrigger)) > 0.2 && !trigDown) {
@@ -73,7 +84,7 @@ public class Drive2017 {
 		} else {
 			turning = true;
 		}
-		if(Math.abs(thisStick.getAxis(Axis.LeftX)) <= 0.2 ){
+		if(Math.abs(thisStick.getAxis(Axis.LeftX)) <= 0.2){
 			turningDriveRamp.rampTo(AngleComp());
 		}else{
 			turningDriveRamp.rampTo(-thisStick.getAxis(Axis.LeftX)*turnCap);

@@ -30,6 +30,8 @@ public class ButtonPress { //x, a, back, rightBumper being used
 	boolean climbReverse = false;
 	boolean wasFlapPressed = false;// flaps
 	boolean isFlapRunning = false;
+	boolean wasTurboPressed = false;
+	boolean isTurboRunning = false;
 
 	public ButtonPress(FancyJoystick thisStick, Ports ports) {
 		intakeConveyor = new Victor(ports.SHOOTER_INTAKE_CONVEYOR_PWM_VICTOR);
@@ -192,6 +194,15 @@ public class ButtonPress { //x, a, back, rightBumper being used
 			IntakeOff();
 		} // End of Intake
 
+		if (thisStick.getButton(Button.Y) && wasTurboPressed == false) {
+			isTurboRunning = !isTurboRunning;
+			wasTurboPressed = true;
+		}
+		if (wasTurboPressed == true && thisStick.getButton(Button.Y) == false) {
+			wasTurboPressed = false;
+		}
+		
+		Drive2017.turbo = isTurboRunning;
 	}
 
 }

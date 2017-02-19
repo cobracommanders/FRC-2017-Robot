@@ -128,7 +128,7 @@ public class AutonmousController {
 		case 2:
 			drive.manualDrive(0, -0.7); // Perfect 60 degrees
 			if (gyro.getAngle() <= -60) {
-				gyro.calibrate();
+				gyro.reset();
 				clock.start();
 				phase++;
 			}
@@ -281,7 +281,7 @@ public class AutonmousController {
 	 */
 
 	public double AngleComp() {
-		
+		return gyro.getAngle() * -0.3;
 	}
 
 	public TeleOpMode AlignGearPeg() {

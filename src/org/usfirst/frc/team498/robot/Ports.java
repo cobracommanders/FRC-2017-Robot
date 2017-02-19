@@ -7,8 +7,7 @@ public class Ports {
 	final int RIGHT_FRONT_PWM_PORT = 6;// 6, 
 	final int RIGHT_BACK_PWM_PORT = 7;// 7,  
 	
-	final int SHOOTER_POPCORN_PWM_VICTOR = 3;
-	final int SHOOTER_INTAKE_CONVEYOR_RELAY_SPIKE = 2;
+	final int SHOOTER_INTAKE_CONVEYOR_PWM_VICTOR = 3;
 	final int SHOOTER_SPARK_PORT = 4; //TODO CHANGE
 	
 	final int SPARK_BALL_INTAKE_PWM_CHANNEL = 5; //5 (1st robot), 1

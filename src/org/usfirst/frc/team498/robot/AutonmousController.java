@@ -1,4 +1,5 @@
 //Hmm... what would Curt do... :)
+
 package org.usfirst.frc.team498.robot;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -74,21 +75,6 @@ public class AutonmousController {
 		clock.start();
 	}
 
-	/*public double ConvertGyroStuff(double currentAngle) {
-		// If negative, return 0
-		if (currentAngle != Math.abs(currentAngle))
-			return 0.0;
-		// Gets rid of excess angles that we don't want
-		currentAngle = currentAngle % 360.0;
-		// Converts it so that 270 is -90 and 90 is 90 etc.
-		if (currentAngle < 360.0 && currentAngle > 180.0) {
-			// 270 = -90
-			return currentAngle - 360.0;
-		} else {
-			// 90 = 90
-			return currentAngle;
-		}
-	}*/
 	public double ConvertGyroStuff(double currentAngle) {
 		// If negative, return 0
 		if (currentAngle != Math.abs(currentAngle))
@@ -141,8 +127,8 @@ public class AutonmousController {
 		// double distance = netTable.getDouble("distanceFromTarget");
 		switch (phase) {
 		case 0:
-			gyro.reset();
 			clock.start();
+			gyro.reset();
 			phase++;
 			break;
 		case 1:
@@ -187,24 +173,18 @@ public class AutonmousController {
 		int blueToggle = blue ? -1 : 1;
 		switch (phase) {
 		case 0:
-			gyro.reset();
 			clock.start();
+			gyro.reset();
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(-0.5, -AngleComp());
-			if(clock.get() > 2.5) {
+			drive.manualDrive(-0.5, AngleComp());
+			if(clock.get() > 2.8) {
+				clock.stop();
+				clock.reset();
 				phase++;
+				drive.manualDrive(0,0);
 			}
-			break;
-		case 2:
-			drive.manualDrive(0, 0);
-			clock.stop();
-			clock.reset();
-			phase++;
-			break;
-		case 3:
-			drive.manualDrive(0, 0);
 			break;
 		}
 		/*switch (phase) {
@@ -250,7 +230,6 @@ public class AutonmousController {
 		 * ConvertGyroStuff(gyro.getAngle() * 0.03)); if (clock.get() > 2) {
 		 * phase++; } break; case 2: drive.manualDrive(0, 0); break; }
 		 */
-		
 	}
 
 	public void autoRightPeg(boolean blue) { // inverse of autoleftPeg

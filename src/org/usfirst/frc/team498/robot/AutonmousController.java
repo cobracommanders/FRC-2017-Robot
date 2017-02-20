@@ -118,31 +118,36 @@ public class AutonmousController {
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(-0.5, AngleComp());
-			if (clock.get() > 4) {
+			drive.manualDrive(-0.6, -AngleComp());
+			if (clock.get() > 1.3) {
 				gyro.reset();
 				clock.start();
 				phase++;
 			}
 			break;
-		case 2:
-			drive.manualDrive(0, -0.7); // Perfect 60 degrees
-			if (gyro.getAngle() <= -60) {
+		case 2: // Perfect 60 degrees
+			if (gyro.getAngle() <= 45) {
+				drive.manualDrive(0, -0.5);
+			} else {
+				drive.manualDrive(0, 0.25);
+			}
+			if(Math.abs(gyro.getAngle() - 45) < 0.3) {
 				gyro.reset();
 				clock.start();
 				phase++;
 			}
-			if (clock.get() > 0.27) {
-				clock.start();
-				phase++;
-			}
+			//if (clock.get() > 0.27) {
+			//	clock.start();
+			//	phase++;
+			//}
 			break;
 		case 3:
-			//drive.manualDrive(-0.5, AngleComp());
-			//if (clock.get() > 5) {
-			//	clock.start();
+			drive.manualDrive(-0.6, -AngleComp());
+			if (clock.get() > 2.5) {
+				clock.start();
+				gyro.reset();
 				phase++;
-			//}
+			}
 			break;
 		case 4:
 			gyro.reset();

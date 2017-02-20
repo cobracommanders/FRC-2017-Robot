@@ -38,18 +38,19 @@ public class AutonmousController {
 	char colorAuto;
 	char positionAuto;
 
-	NetworkTable netTable = NetworkTable.getTable("CamTable");
+	NetworkTable netTable;
 
 	REVImprovedDigitBoard digitBoard;
 
 	AutonmousController(Drive2017 drive, ButtonPress buttonPress, REVImprovedDigitBoard digitBoard,
-			FancyJoystick thisStick, Ports ports, AnalogUltrasonicSensor2017 ultra, ADXRS450_Gyro gyro, Timer clock) {
+			FancyJoystick thisStick, Ports ports, AnalogUltrasonicSensor2017 ultra, ADXRS450_Gyro gyro, Timer clock, NetworkTable netTable) {
 		this.drive = drive;
 		this.buttonPress = buttonPress;
 		this.ultra = ultra;
 		this.clock = clock;
 		this.digitBoard = digitBoard;
 		this.gyro = gyro;
+		this.netTable = netTable;
 		digitBoard.UpdateDisplay(' ', 'R', ' ', 'L', false);
 	}
 
@@ -169,14 +170,21 @@ public class AutonmousController {
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(-0.5, -AngleComp());
-			if(clock.get() > 2.8) {
-				clock.stop();
-				clock.reset();
+			drive.manualDrive(-0.5, VisionComp());
+			if(netTable.getNumber("distanceFromTarget") < 165) {
+				clock.start();
 				phase++;
 				drive.manualDrive(0,0);
 			}
 			break;
+		case 2:
+			drive.manualDrive(-0.5,  -AngleComp());
+			if(clock.get() >= 1) {
+				clock.stop();
+				clock.reset();
+				phase++;
+				drive.manualDrive(0, 0);
+			}
 		}
 		/*switch (phase) {
 		case 0:
@@ -287,6 +295,9 @@ public class AutonmousController {
 
 	public double AngleComp() {
 		return gyro.getAngle() * -0.3;
+	}
+	public double VisionAngleComp() {
+		return 
 	}
 
 	public TeleOpMode AlignGearPeg() {

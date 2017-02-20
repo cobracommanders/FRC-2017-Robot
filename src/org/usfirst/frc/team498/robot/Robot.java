@@ -43,11 +43,11 @@ public class Robot extends SampleRobot {
 	
 
 	public boolean hasDigitStarted = false;
-
+	public NetworkTable table;
 	//IntakeClimb2017 gearIntake = new IntakeClimb2017(thisStick, ports);
 	//PewPew2017 shooter = new PewPew2017(digitBoard, thisStick, ports);
 	AnalogUltrasonicSensor2017 ultra = new AnalogUltrasonicSensor2017(thisStick, ports, sol);
-	AutonmousController auto = new AutonmousController(drive2017, buttonPress, digitBoard, thisStick, ports, ultra, gyro, clock);
+	AutonmousController auto = new AutonmousController(drive2017, buttonPress, digitBoard, thisStick, ports, ultra, gyro, clock, table);
 
 	// Camera Code
 	// private static final int IMG_WIDTH = 320;
@@ -59,7 +59,7 @@ public class Robot extends SampleRobot {
 	// private final Object imgLock = new Object();
 	// private RobotDrive drive;
 
-	public NetworkTable table;
+
 
 	// boolean dToggle = false;
 

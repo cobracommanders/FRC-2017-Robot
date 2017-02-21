@@ -212,8 +212,13 @@ public class AutonmousController {
 			phase++;
 			break;
 		case 1:
+<<<<<<< HEAD
 			drive.manualDrive(-0.5, -VisionAngleComp());
 			if (netTable.getDouble("distanceFromTarget") < 165) {
+=======
+			drive.manualDrive(-0.5, VisionAngleComp());
+			if(netTable.getNumber("distanceFromTarget") < 165) {
+>>>>>>> origin/master
 				clock.start();
 				phase++;
 				drive.manualDrive(0, 0);
@@ -221,7 +226,11 @@ public class AutonmousController {
 			break;
 		case 2:
 			drive.manualDrive(-0.5, -AngleComp());
+<<<<<<< HEAD
 			if (clock.get() >= 1) {
+=======
+			if(clock.get() >= 1) {
+>>>>>>> origin/master
 				clock.stop();
 				clock.reset();
 				phase++;
@@ -335,7 +344,11 @@ public class AutonmousController {
 	}
 
 	public double VisionAngleComp() {
+<<<<<<< HEAD
 		return netTable.getDouble("angleFromGoal") * -0.3;
+=======
+		return AngleComp();
+>>>>>>> origin/master
 	}
 
 	public TeleOpMode AlignGearPeg() {

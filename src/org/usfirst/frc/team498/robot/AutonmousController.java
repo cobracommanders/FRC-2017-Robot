@@ -1,4 +1,4 @@
-//Hmm... what would Curt do... :)
+//Hmm... what would Curt do... Go to Syria:)
 
 package org.usfirst.frc.team498.robot;
 
@@ -170,7 +170,7 @@ public class AutonmousController {
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(-0.5, VisionComp());
+			drive.manualDrive(-0.5, VisionAngleComp());
 			if(netTable.getNumber("distanceFromTarget") < 165) {
 				clock.start();
 				phase++;
@@ -178,7 +178,7 @@ public class AutonmousController {
 			}
 			break;
 		case 2:
-			drive.manualDrive(-0.5,  -AngleComp());
+			drive.manualDrive(-0.5, -AngleComp());
 			if(clock.get() >= 1) {
 				clock.stop();
 				clock.reset();
@@ -297,7 +297,7 @@ public class AutonmousController {
 		return gyro.getAngle() * -0.3;
 	}
 	public double VisionAngleComp() {
-		return 
+		return AngleComp();
 	}
 
 	public TeleOpMode AlignGearPeg() {

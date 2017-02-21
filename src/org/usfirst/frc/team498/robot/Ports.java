@@ -15,8 +15,9 @@ public class Ports {
 	final int CANTALON_CLIMBER_1 = 1;
 	//final int TALON_CONVEYOR_CHANNEL = 1;
 	
-	final int SERVO_1_PWM_PORT = 1;
-	final int SERVO_2_PWM_PORT = 2;
+	final int SERVO_1_PWM_PORT = 0;
+	final int SERVO_2_PWM_PORT = 1;
+	final int SERVO_3_PWM_PORT = 2;
 
 	
 	//PCM

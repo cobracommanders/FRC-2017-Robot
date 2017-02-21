@@ -19,6 +19,7 @@ public class ButtonPress { //x, a, back, rightBumper being used
 	
 	Servo servo1;
 	Servo servo2;
+	Servo servo3;
 	//Servo is possibly ports 1 and 2
 
 	boolean wasShootPressed = false;// shoot
@@ -46,10 +47,22 @@ public class ButtonPress { //x, a, back, rightBumper being used
 		climb0 = new CANTalon(ports.CANTALON_CLIMBER_0);
 		climb1 = new CANTalon(ports.CANTALON_CLIMBER_1);
 		ds = new DoubleSolenoid(ports.GEAR_INTAKE_FORWARD_CHANNEL, ports.GEAR_INTAKE_REVERSE_CHANNEL);
-		servo1 = new Servo(ports.SERVO_1_PWM_PORT);
+		servo1 = new Servo(ports.SERVO_1_PWM_PORT);//TODO CHANGE PORTS FOR SERVOS
 		servo2 = new Servo(ports.SERVO_2_PWM_PORT);
+		servo3 = new Servo(ports.SERVO_3_PWM_PORT);
 	}
 
+	public void ServoLeft() {
+		servo1.set(1.0);
+		servo2.set(1.0);
+		servo3.set(1.0);
+	}
+	
+	public void ServoOff() {
+		servo1.set(0.4); //0.5 has it turning slightly
+		servo2.set(0.4);
+		servo3.set(0.4);
+	}
 	// ball intake
 	public void IntakeOn() {
 		sparkBall.set(1);
@@ -125,9 +138,11 @@ public class ButtonPress { //x, a, back, rightBumper being used
 		if (isShootRunning) {
 			Shoot();
 			intakeConveyorOn();
+			ServoLeft();
 		} else {
 			StopShoot();
 			intakeConveyorOff();
+			ServoOff();
 		} // End of Shooter
 		
 		/*if (thisStick.getButton(Button.Y) && wasConveyorPressed == false) {
@@ -200,7 +215,8 @@ public class ButtonPress { //x, a, back, rightBumper being used
 		} else {
 			IntakeOff();
 		} // End of Intake
-
+		
+		//TurboMode
 		if (thisStick.getButton(Button.Y) && wasTurboPressed == false) {
 			isTurboRunning = !isTurboRunning;
 			wasTurboPressed = true;
@@ -208,6 +224,7 @@ public class ButtonPress { //x, a, back, rightBumper being used
 		if (wasTurboPressed == true && thisStick.getButton(Button.Y) == false) {
 			wasTurboPressed = false;
 		}
+		//end of TurboMode
 		
 		Drive2017.turbo = isTurboRunning;
 	}

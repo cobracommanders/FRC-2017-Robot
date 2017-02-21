@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.Servo;
 
 public class ButtonPress { //x, a, back, rightBumper being used
 	FancyJoystick thisStick;
@@ -15,6 +16,10 @@ public class ButtonPress { //x, a, back, rightBumper being used
 	CANTalon climb1;
 	CANTalon climb0;
 	DoubleSolenoid ds;
+	
+	Servo servo1;
+	Servo servo2;
+	//Servo is possibly ports 1 and 2
 
 	boolean wasShootPressed = false;// shoot
 	boolean isShootRunning = false;
@@ -41,6 +46,8 @@ public class ButtonPress { //x, a, back, rightBumper being used
 		climb0 = new CANTalon(ports.CANTALON_CLIMBER_0);
 		climb1 = new CANTalon(ports.CANTALON_CLIMBER_1);
 		ds = new DoubleSolenoid(ports.GEAR_INTAKE_FORWARD_CHANNEL, ports.GEAR_INTAKE_REVERSE_CHANNEL);
+		servo1 = new Servo(ports.SERVO_1_PWM_PORT);
+		servo2 = new Servo(ports.SERVO_2_PWM_PORT);
 	}
 
 	// ball intake

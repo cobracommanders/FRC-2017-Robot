@@ -73,6 +73,7 @@ public class Robot extends SampleRobot {
 		}
 		
 		UsbCamera camera0 = CameraServer.getInstance().startAutomaticCapture("cam0", 0);
+		//camera0.setResolution(320, 320);
 		/*
 		 * NetworkTable.setClientMode(); NetworkTable.setTeam(498);
 		 * NetworkTable.setIPAddress("roborio-498-frc.local");
@@ -244,9 +245,11 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("Turn Value Before Cap", drive2017.turnValue);
 		SmartDashboard.putNumber("Clock Seconds", clock.get());
 		
+		//SmartDashboard.putNumber("AngleFromGoal", table.getDouble("angleFromGoal"));
+		//SmartDashboard.putNumber("DistanceFromTarget", table.getDouble("distanceFromTarget"));
 		//net table prints
 		/*double distanceFromTarget = table.getDouble("distanceFromTarget");
-		double angleFromGoal = table.getDouble("angleFromGoal");
+		
 		//double[] centerX = table.getNumberArray("centerX");
 		System.out.println("====Other====");
 		System.out.println(distanceFromTarget);

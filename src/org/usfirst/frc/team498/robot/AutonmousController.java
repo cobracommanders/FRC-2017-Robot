@@ -1,4 +1,4 @@
-//Hmm... what would Curt do... :)
+//Hmm... what would Curt do... Go to Syria:)
 
 package org.usfirst.frc.team498.robot;
 
@@ -14,6 +14,8 @@ public class AutonmousController {
 	private Timer clock;
 	private Drive2017 drive;
 	public AnalogUltrasonicSensor2017 ultra;
+
+	PewPew2017 shooter;
 
 	ButtonPress buttonPress;
 
@@ -43,7 +45,8 @@ public class AutonmousController {
 	REVImprovedDigitBoard digitBoard;
 
 	AutonmousController(Drive2017 drive, ButtonPress buttonPress, REVImprovedDigitBoard digitBoard,
-			FancyJoystick thisStick, Ports ports, AnalogUltrasonicSensor2017 ultra, ADXRS450_Gyro gyro, Timer clock, NetworkTable netTable) {
+			FancyJoystick thisStick, Ports ports, AnalogUltrasonicSensor2017 ultra, ADXRS450_Gyro gyro, Timer clock,
+			NetworkTable netTable) {
 		this.drive = drive;
 		this.buttonPress = buttonPress;
 		this.ultra = ultra;
@@ -76,8 +79,6 @@ public class AutonmousController {
 		clock.start();
 	}
 
-
-
 	public void Auto() {
 		double ultraInches = ultra.GetRangeInches(false);
 		switch (AutoMode.currentValue) {
@@ -104,14 +105,7 @@ public class AutonmousController {
 
 	public void autoLeftPeg(boolean blue) { // auto for the top peg (Top as in
 											// farthest from
-		// BOILER)
-		/*
-		 * drive.manualDrive(0, -.5 * blueToggle); drive.manualDrive(.5, 0);
-		 * drive.manualDrive(0, .5 * blueToggle); AlignGearPeg();
-		 */
 		int blueToggle = blue ? -1 : 1;
-		// double angle = netTable.getDouble("angleFromGoal");
-		// double distance = netTable.getDouble("distanceFromTarget");
 		switch (phase) {
 		case 0:
 			clock.start();
@@ -120,27 +114,23 @@ public class AutonmousController {
 			break;
 		case 1:
 			drive.manualDrive(-0.6, -AngleComp());
-			if (clock.get() > 1.3) {
+			if (clock.get() > 1.7) {
 				gyro.reset();
 				clock.start();
 				phase++;
 			}
 			break;
-		case 2: // Perfect 60 degrees
-			if (gyro.getAngle() <= 45) {
+		case 2:
+			if (gyro.getAngle() <= 56) {
 				drive.manualDrive(0, -0.5);
 			} else {
-				drive.manualDrive(0, 0.25);
+				drive.manualDrive(0, 0.1);
 			}
-			if(Math.abs(gyro.getAngle() - 45) < 0.3) {
+			if (Math.abs(gyro.getAngle() - 56) < 0.1) {
 				gyro.reset();
 				clock.start();
 				phase++;
 			}
-			//if (clock.get() > 0.27) {
-			//	clock.start();
-			//	phase++;
-			//}
 			break;
 		case 3:
 			drive.manualDrive(-0.6, -AngleComp());
@@ -153,10 +143,62 @@ public class AutonmousController {
 		case 4:
 			gyro.reset();
 			drive.manualDrive(0, 0);
-			clock.stop();
-			clock.reset();
+			if (clock.get() > 2.0) {
+				clock.start();
+				gyro.reset();
+				phase++;
+			}
 			break;
-		}
+		case 5:
+			drive.manualDrive(0.6, -AngleComp());
+			if (clock.get() > 1) {
+				clock.start();
+				gyro.reset();
+				phase++;
+			}
+			break;
+		case 6:
+			if (gyro.getAngle() >= -17) { // changed degree, originally -15
+				drive.manualDrive(0, 0.5);
+			} else {
+				drive.manualDrive(0, -0.1);
+			}
+			if (Math.abs(gyro.getAngle() + 17) < 0.1) { // changed degree,
+														// originally 15
+				gyro.reset();
+				clock.start();
+				phase++;
+			}
+			break;
+		case 7:
+			drive.manualDrive(0.6, -AngleComp());
+			if (clock.get() > 2.5) { // changed time by .5
+				clock.start();
+				gyro.reset();
+				phase++;
+			}
+			break;
+		case 8:
+			drive.manualDrive(0, 0);
+			clock.start();
+			gyro.reset();
+			phase++;
+			break;
+		// New Code
+		case 9:
+			shooter.Shoot();
+			if (clock.get() > 5) {
+				clock.stop();
+				clock.reset();
+				phase++;
+			}
+			break;
+		case 10:
+				shooter.StopShoot();
+				phase++;
+				break;
+			}
+			
 	}
 
 	public void autoMidPeg(boolean blue, double ultraInches) {
@@ -170,37 +212,27 @@ public class AutonmousController {
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(-0.5, VisionComp());
-			if(netTable.getNumber("distanceFromTarget") < 165) {
+			drive.manualDrive(-0.5, -VisionAngleComp());
+			if (netTable.getDouble("distanceFromTarget") < 165) {
 				clock.start();
 				phase++;
-				drive.manualDrive(0,0);
+				drive.manualDrive(0, 0);
 			}
 			break;
 		case 2:
-			drive.manualDrive(-0.5,  -AngleComp());
-			if(clock.get() >= 1) {
+			drive.manualDrive(-0.5, -AngleComp());
+			if (clock.get() >= 1) {
 				clock.stop();
 				clock.reset();
 				phase++;
 				drive.manualDrive(0, 0);
 			}
 		}
-		/*switch (phase) {
-		case 0:
-			clock.start();
-			phase++;
-			break;
-		case 1:
-			drive.manualDrive(0, 0.8);
-			if (clock.get() > 2) {
-				phase++;
-			}
-			break;
-		case 2:
-			drive.manualDrive(0, 0);
-			break;
-		}*/
+		/*
+		 * switch (phase) { case 0: clock.start(); phase++; break; case 1:
+		 * drive.manualDrive(0, 0.8); if (clock.get() > 2) { phase++; } break;
+		 * case 2: drive.manualDrive(0, 0); break; }
+		 */
 		/*
 		 * case 0: clock.start(); phase++; break;
 		 * 
@@ -236,35 +268,40 @@ public class AutonmousController {
 		int blueToggle = blue ? -1 : 1;
 		switch (phase) {
 		case 0:
-			gyro.reset();
 			clock.start();
+			gyro.reset();
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(-0.5, AngleComp());
-			if (clock.get() > 4.2) {
+			drive.manualDrive(-0.6, -AngleComp());
+			if (clock.get() > 2.0) {
 				gyro.reset();
 				clock.start();
 				phase++;
 			}
 			break;
 		case 2:
-			drive.manualDrive(0, 0.8); // Perfect 60 degrees
-			//drive.manualDrive(0, -0.7); // Perfect 60 degrees
-			if (gyro.getAngle() >= 60) {
+			if (gyro.getAngle() >= -57) {
+				drive.manualDrive(0, 0.5);
+			} else {
+				drive.manualDrive(0, 0.1);
+			}
+			if (Math.abs(gyro.getAngle() + 57) < 0.1) {
 				gyro.reset();
 				clock.start();
 				phase++;
 			}
 			break;
 		case 3:
-			drive.manualDrive(-0.5, AngleComp());
-			if (clock.get() > 4) {
+			drive.manualDrive(-0.6, -AngleComp());
+			if (clock.get() > 2.5) {
 				clock.start();
+				gyro.reset();
 				phase++;
 			}
 			break;
 		case 4:
+			gyro.reset();
 			drive.manualDrive(0, 0);
 			clock.stop();
 			clock.reset();
@@ -294,10 +331,11 @@ public class AutonmousController {
 	 */
 
 	public double AngleComp() {
-		return gyro.getAngle() * -0.3;
+		return gyro.getAngle() * -0.25;
 	}
+
 	public double VisionAngleComp() {
-		return 
+		return netTable.getDouble("angleFromGoal") * -0.3;
 	}
 
 	public TeleOpMode AlignGearPeg() {

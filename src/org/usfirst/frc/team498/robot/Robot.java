@@ -1,5 +1,16 @@
 //Made in Japan
-package org.usfirst.frc.team498.robot;
+/*================================================.
+     .-.   .-.     .--.                         |
+    | OO| | OO|   / _.-' .-.   .-.  .-.   .''.  |
+    |   | |   |   \  '-. '-'   '-'  '-'   '..'  |
+    '^^^' '^^^'    '--'                         |
+===============.  .-.  .================.  .-.  |
+               | |   | |                |  '-'  |
+               | |   | |                |       |
+               | ':-:' |                |  .-.  |
+               |  '-'  |                |  '-'  |
+==============='       '================'       |
+*/package org.usfirst.frc.team498.robot;
 
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
@@ -19,7 +30,9 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
@@ -36,18 +49,21 @@ public class Robot extends SampleRobot {
 	FancyJoystick thisStick = new FancyJoystick(0);
 	ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 	Drive2017 drive2017 = new Drive2017(thisStick, ports, gyro);
-	ButtonPress buttonPress = new ButtonPress(thisStick, ports);
+	Servo servo1 = new Servo(ports.SERVO_1_PWM_PORT);
+	Servo servo2 = new Servo(ports.SERVO_2_PWM_PORT);
+	Relay light = new Relay(ports.SPIKE_LIGHT);
+	ButtonPress buttonPress = new ButtonPress(thisStick, ports, servo1, servo2);
 	REVImprovedDigitBoard digitBoard = new REVImprovedDigitBoard();
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 	Solenoid sol = new Solenoid(ports.ULTRASONIC_SENSOR_PCM_PORT);
-	
 
 	public boolean hasDigitStarted = false;
 	public NetworkTable table;
-	//IntakeClimb2017 gearIntake = new IntakeClimb2017(thisStick, ports);
-	//PewPew2017 shooter = new PewPew2017(digitBoard, thisStick, ports);
+	// IntakeClimb2017 gearIntake = new IntakeClimb2017(thisStick, ports);
+	// PewPew2017 shooter = new PewPew2017(digitBoard, thisStick, ports);
 	AnalogUltrasonicSensor2017 ultra = new AnalogUltrasonicSensor2017(thisStick, ports, sol);
-	AutonmousController auto = new AutonmousController(drive2017, buttonPress, digitBoard, thisStick, ports, ultra, gyro, clock, table);
+	AutonmousController auto = new AutonmousController(drive2017, buttonPress, digitBoard, thisStick, ports, ultra,
+			gyro, clock, table);
 
 	// Camera Code
 	// private static final int IMG_WIDTH = 320;
@@ -59,8 +75,6 @@ public class Robot extends SampleRobot {
 	// private final Object imgLock = new Object();
 	// private RobotDrive drive;
 
-
-
 	// boolean dToggle = false;
 
 	// boolean intakeToggle = false;
@@ -71,9 +85,11 @@ public class Robot extends SampleRobot {
 		if (!sol.get()) {
 			sol.set(true);
 		}
-		
+		if (light.get() != Relay.Value.kOn) {
+			light.set(Relay.Value.kOn);
+		}
 		UsbCamera camera0 = CameraServer.getInstance().startAutomaticCapture("cam0", 0);
-		//camera0.setResolution(320, 320);
+		// camera0.setResolution(320, 320);
 		/*
 		 * NetworkTable.setClientMode(); NetworkTable.setTeam(498);
 		 * NetworkTable.setIPAddress("roborio-498-frc.local");
@@ -89,8 +105,6 @@ public class Robot extends SampleRobot {
 			print();
 			// Start Auto Phases
 			auto.Auto();
-
-		
 
 		}
 
@@ -145,7 +159,7 @@ public class Robot extends SampleRobot {
 	public double AngleComp() {
 		return gyro.getAngle() * -0.3;
 	}
-	
+
 	public void operatorControl() {
 
 		drive2017.moveValue = 0;
@@ -164,25 +178,30 @@ public class Robot extends SampleRobot {
 				digitClock.start();
 				digitBoard.UpdateDisplay(DisplayVoltageConversion(), true);
 			}
-			//Button Mapping
-				//Semi-Auto mode selection
+			// Button Mapping
+			// Semi-Auto mode selection
 			if (thisStick.getButton(Button.START)) {
 				teleMode = TeleOpMode.OPERATORCONTROL; // makes robot go back to
 														// TeleOp
 			}
-			/*if (thisStick.getButton(Button.A) && teleMode == TeleOpMode.OPERATORCONTROL) {
-				teleMode = TeleOpMode.GEARALIGNMENT; //Aligns the robot to the gear peg
-			}*/
-			/*if (thisStick.getButton(Button.Y) && teleMode == TeleOpMode.OPERATORCONTROL) {
-				teleMode = TeleOpMode.HIGHGOALALIGNMENT; //Aligns the robot to the shooter
-			}*/
+			/*
+			 * if (thisStick.getButton(Button.A) && teleMode ==
+			 * TeleOpMode.OPERATORCONTROL) { teleMode =
+			 * TeleOpMode.GEARALIGNMENT; //Aligns the robot to the gear peg }
+			 */
+			/*
+			 * if (thisStick.getButton(Button.Y) && teleMode ==
+			 * TeleOpMode.OPERATORCONTROL) { teleMode =
+			 * TeleOpMode.HIGHGOALALIGNMENT; //Aligns the robot to the shooter }
+			 */
 			switch (teleMode) {
 			case OPERATORCONTROL:
 				// Drive the robot via controller
-				drive2017.rampedDriveListener(); //drive
-				buttonPress.Listener(); //shoots, intake, climb, does EVERYTHING!
-				//gearIntake.Listener();
-				//shooter.shootListener();
+				drive2017.rampedDriveListener(); // drive
+				buttonPress.Listener(); // shoots, intake, climb, does
+										// EVERYTHING!
+				// gearIntake.Listener();
+				// shooter.shootListener();
 
 				break;
 			case GEARALIGNMENT:
@@ -191,11 +210,10 @@ public class Robot extends SampleRobot {
 			case HIGHGOALALIGNMENT:
 				// teleMode = auto.AlignHighGoal();
 				break;
-			/*case TEST:
-				auto.autoDriveForward();
-				drive2017.moveValue = 0;
-				drive2017.turnValue = 0;
-				break;*/
+			/*
+			 * case TEST: auto.autoDriveForward(); drive2017.moveValue = 0;
+			 * drive2017.turnValue = 0; break;
+			 */
 			}
 
 			// Send stats to the driver
@@ -231,10 +249,10 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("Center X table", table.getNumber("centerX", 0));
 		SmartDashboard.putNumber("AutoPhase", auto.phase);
 		SmartDashboard.putNumber("phase", auto.phase);
-		
+
 		SmartDashboard.putNumber("Move value", drive2017.moveValue);
 		SmartDashboard.putNumber("Turn value", drive2017.turnValue);
-		
+
 		SmartDashboard.putNumber("Gyro Value", gyro.getAngle());
 		// ultrasonic
 		SmartDashboard.putNumber("Ultrasonic Value", ultra.getValue());
@@ -244,27 +262,27 @@ public class Robot extends SampleRobot {
 		SmartDashboard.putNumber("Turn Value After Cap", drive2017.turnValue_f);
 		SmartDashboard.putNumber("Turn Value Before Cap", drive2017.turnValue);
 		SmartDashboard.putNumber("Clock Seconds", clock.get());
-		
-		//SmartDashboard.putNumber("AngleFromGoal", table.getDouble("angleFromGoal"));
-		//SmartDashboard.putNumber("DistanceFromTarget", table.getDouble("distanceFromTarget"));
-		//net table prints
-		/*double distanceFromTarget = table.getDouble("distanceFromTarget");
-		
-		//double[] centerX = table.getNumberArray("centerX");
-		System.out.println("====Other====");
-		System.out.println(distanceFromTarget);
-		System.out.println(angleFromGoal);
-		System.out.println("====CenterX====");*/
-		/*if (centerX != null) {
-			try {
-				System.out.println(centerX[0]);
-				System.out.println(centerX[1]);
-			} catch (Exception e) {
-				System.out.println("One of the center x values didn't exist");
-			}
-		}*/
-		
-		
+
+		// SmartDashboard.putNumber("AngleFromGoal",
+		// table.getDouble("angleFromGoal"));
+		// SmartDashboard.putNumber("DistanceFromTarget",
+		// table.getDouble("distanceFromTarget"));
+		// net table prints
+		/*
+		 * double distanceFromTarget = table.getDouble("distanceFromTarget");
+		 * 
+		 * //double[] centerX = table.getNumberArray("centerX");
+		 * System.out.println("====Other====");
+		 * System.out.println(distanceFromTarget);
+		 * System.out.println(angleFromGoal);
+		 * System.out.println("====CenterX====");
+		 */
+		/*
+		 * if (centerX != null) { try { System.out.println(centerX[0]);
+		 * System.out.println(centerX[1]); } catch (Exception e) {
+		 * System.out.println("One of the center x values didn't exist"); } }
+		 */
+
 		// pot
 		SmartDashboard.putNumber("Potentiometer value", digitBoard.getPot());
 

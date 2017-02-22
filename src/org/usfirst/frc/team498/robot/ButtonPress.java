@@ -4,11 +4,12 @@ import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Servo;
 
-public class ButtonPress { //x, a, back, rightBumper being used
+public class ButtonPress { // x, a, back, rightBumper being used
 	FancyJoystick thisStick;
 	Victor intakeConveyor;
 	Spark sparkBall;
@@ -16,21 +17,21 @@ public class ButtonPress { //x, a, back, rightBumper being used
 	CANTalon climb1;
 	CANTalon climb0;
 	DoubleSolenoid ds;
-	
+	Timer clock;
+
 	Servo servo1;
 	Servo servo2;
-	Servo servo3;
-	//Servo is possibly ports 1 and 2
+	// Servo is possibly ports 1 and 2
 
 	boolean wasShootPressed = false;// shoot
 	boolean isShootRunning = false;
-	//boolean wasConveyorPressed = false;
+	// boolean wasConveyorPressed = false;
 	boolean isConveyorRunning = false;
 	boolean wasIntakePressed = false;// intake
 	boolean isIntakeRunning = false;
 	boolean wasIntakeReversed = false;
 	boolean isIntakeReversed = false;
-	//boolean intakeReverse = false;
+	// boolean intakeReverse = false;
 	boolean wasClimbPressed = false;// climb
 	boolean isClimbRunning = false;
 	boolean climbReverse = false;
@@ -38,8 +39,10 @@ public class ButtonPress { //x, a, back, rightBumper being used
 	boolean isFlapRunning = false;
 	boolean wasTurboPressed = false;
 	boolean isTurboRunning = false;
+	boolean isServoRunning = false;
+	boolean aDown = false;
 
-	public ButtonPress(FancyJoystick thisStick, Ports ports) {
+	public ButtonPress(FancyJoystick thisStick, Ports ports, Servo servo1, Servo servo2) {
 		intakeConveyor = new Victor(ports.SHOOTER_INTAKE_CONVEYOR_PWM_VICTOR);
 		this.thisStick = thisStick;
 		sparkBall = new Spark(ports.SPARK_BALL_INTAKE_PWM_CHANNEL);
@@ -47,25 +50,37 @@ public class ButtonPress { //x, a, back, rightBumper being used
 		climb0 = new CANTalon(ports.CANTALON_CLIMBER_0);
 		climb1 = new CANTalon(ports.CANTALON_CLIMBER_1);
 		ds = new DoubleSolenoid(ports.GEAR_INTAKE_FORWARD_CHANNEL, ports.GEAR_INTAKE_REVERSE_CHANNEL);
-		servo1 = new Servo(ports.SERVO_1_PWM_PORT);//TODO CHANGE PORTS FOR SERVOS
-		servo2 = new Servo(ports.SERVO_2_PWM_PORT);
-		servo3 = new Servo(ports.SERVO_3_PWM_PORT);
+		this.servo1 = servo1;
+		this.servo2 = servo2;
+	}
+
+	public void ServoFrontLeft() {
+		servo1.set(1.0);
+		/*
+		 * if (clock.get() > 0.5) { ServoOff(); }
+		 */
+	}
+
+	public void ServoFrontRight() {
+		servo1.set(0.0);
+	}
+
+	public void ServoOff() {
+		servo1.setDisabled(); // 0.5 has it turning slightly
+		servo2.setDisabled();
+	}
+
+	public void ServoRight() {
+		servo2.set(0.0);
 	}
 
 	public void ServoLeft() {
-		servo1.set(1.0);
 		servo2.set(1.0);
-		servo3.set(1.0);
 	}
-	
-	public void ServoOff() {
-		servo1.set(0.4); //0.5 has it turning slightly
-		servo2.set(0.4);
-		servo3.set(0.4);
-	}
+
 	// ball intake
 	public void IntakeOn() {
-		sparkBall.set(1);
+		sparkBall.set(0.8);
 	}
 
 	public void IntakeOff() {
@@ -73,25 +88,25 @@ public class ButtonPress { //x, a, back, rightBumper being used
 	}
 
 	public void IntakeReverse() {
-		sparkBall.set(-1);
+		sparkBall.set(-0.8);
 	}
 
 	// shooter
 	public void Shoot() {
 		// double voltage = digitBoard.getPot();
 		// double motorValue = voltage; // voltage / 5
-		//talon.set(4.85); // motorValue works
-		sparkShoot.set(1);
+		// talon.set(4.85); // motorValue works
+		sparkShoot.set(0.86);
 	}
 
 	public void StopShoot() {
 		sparkShoot.set(0);
 	}
-	
+
 	public void intakeConveyorOn() {
 		intakeConveyor.set(-1);
 	}
-	
+
 	public void intakeConveyorOff() {
 		intakeConveyor.set(0);
 	}
@@ -122,8 +137,29 @@ public class ButtonPress { //x, a, back, rightBumper being used
 		ds.set(Value.kForward);
 	}
 
+	public boolean ADown() {
+		if (thisStick.getButton(Button.A) && !aDown) {
+			aDown = true;
+			return true;
+		}
+		aDown = thisStick.getButton(Button.A);
+		return false;
+	}
+
 	// Listener Method
 	public void Listener() {
+
+		if (ADown()) {
+			clock.start();
+			isServoRunning = true;
+		}
+		if (clock.get() > 0.1)
+			isServoRunning = false;
+		if (isServoRunning) {
+			ServoLeft();
+		} else {
+			ServoOff();
+		}
 
 		// Shooter
 		if (thisStick.getButton(Button.RightBumper) && wasShootPressed == false) {
@@ -144,21 +180,17 @@ public class ButtonPress { //x, a, back, rightBumper being used
 			intakeConveyorOff();
 			ServoOff();
 		} // End of Shooter
-		
-		/*if (thisStick.getButton(Button.Y) && wasConveyorPressed == false) {
-			isConveyorRunning = !isConveyorRunning;
-			wasConveyorPressed = true;
-		}
-		
-		if (wasConveyorPressed == true && thisStick.getButton(Button.Y) == false) {
-			wasConveyorPressed = false;
-		}
-		
-		if (isConveyorRunning) {
-			intakeConveyorOn();
-		} else {
-			intakeConveyorOff();
-		}*/
+
+		/*
+		 * if (thisStick.getButton(Button.Y) && wasConveyorPressed == false) {
+		 * isConveyorRunning = !isConveyorRunning; wasConveyorPressed = true; }
+		 * 
+		 * if (wasConveyorPressed == true && thisStick.getButton(Button.Y) ==
+		 * false) { wasConveyorPressed = false; }
+		 * 
+		 * if (isConveyorRunning) { intakeConveyorOn(); } else {
+		 * intakeConveyorOff(); }
+		 */
 		// Gear Flap
 		if (thisStick.getButton(Button.B) && wasFlapPressed == false) {
 			isFlapRunning = !isFlapRunning;
@@ -195,15 +227,15 @@ public class ButtonPress { //x, a, back, rightBumper being used
 			isIntakeRunning = !isIntakeRunning;
 			wasIntakePressed = true;
 		}
-		if(thisStick.getButton(Button.LeftBumper) && wasIntakeReversed == false) {
+		if (thisStick.getButton(Button.LeftBumper) && wasIntakeReversed == false) {
 			isIntakeReversed = !isIntakeReversed;
 			wasIntakeReversed = true;
 		}
-		
+
 		if (wasIntakePressed == true && thisStick.getButton(Button.X) == false) {
 			wasIntakePressed = false;
 		}
-		
+
 		if (wasIntakeReversed == true && thisStick.getButton(Button.LeftBumper) == false) {
 			wasIntakeReversed = false;
 		}
@@ -215,8 +247,8 @@ public class ButtonPress { //x, a, back, rightBumper being used
 		} else {
 			IntakeOff();
 		} // End of Intake
-		
-		//TurboMode
+
+		// TurboMode
 		if (thisStick.getButton(Button.Y) && wasTurboPressed == false) {
 			isTurboRunning = !isTurboRunning;
 			wasTurboPressed = true;
@@ -224,8 +256,8 @@ public class ButtonPress { //x, a, back, rightBumper being used
 		if (wasTurboPressed == true && thisStick.getButton(Button.Y) == false) {
 			wasTurboPressed = false;
 		}
-		//end of TurboMode
-		
+		// end of TurboMode
+
 		Drive2017.turbo = isTurboRunning;
 	}
 

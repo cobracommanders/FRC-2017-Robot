@@ -114,7 +114,7 @@ public class AutonmousController {
 			break;
 		case 1:
 			drive.manualDrive(-0.8, -AngleComp());// -0.6
-			if (clock.get() > 1.2) { //1.7
+			if (clock.get() > 1.2) { // 1.7
 				gyro.reset();
 				clock.start();
 				phase++;
@@ -134,7 +134,7 @@ public class AutonmousController {
 			break;
 		case 3:
 			drive.manualDrive(-0.8, -AngleComp());// -0.6
-			if (clock.get() > 2.0) {//2.5
+			if (clock.get() > 2.0) {// 2.5
 				clock.start();
 				gyro.reset();
 				phase++;
@@ -194,11 +194,11 @@ public class AutonmousController {
 			}
 			break;
 		case 10:
-				shooter.StopShoot();
-				phase++;
-				break;
-			}
-			
+			shooter.StopShoot();
+			phase++;
+			break;
+		}
+
 	}
 
 	public void autoMidPeg(boolean blue, double ultraInches) {
@@ -269,42 +269,52 @@ public class AutonmousController {
 		switch (phase) {
 		case 0:
 			clock.start();
-			gyro.reset();
+			buttonPress.IntakeOn();
+			buttonPress.Shoot();
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(-0.6, -AngleComp());
-			if (clock.get() > 2.0) {
-				gyro.reset();
-				clock.start();
+			buttonPress.ServoLeft();
+			if (clock.get() > 0.1) {
+				buttonPress.ServoOff();
 				phase++;
 			}
 			break;
 		case 2:
-			if (gyro.getAngle() >= -57) {
-				drive.manualDrive(0, 0.5);
-			} else {
-				drive.manualDrive(0, 0.1);
-			}
-			if (Math.abs(gyro.getAngle() + 57) < 0.1) {
-				gyro.reset();
-				clock.start();
+			buttonPress.IntakeOn();
+			buttonPress.Shoot();
+			if (clock.get() > 2.1) {
 				phase++;
 			}
 			break;
 		case 3:
-			drive.manualDrive(-0.6, -AngleComp());
-			if (clock.get() > 2.5) {
-				clock.start();
-				gyro.reset();
+			if (clock.get() > 2.225) {
 				phase++;
 			}
 			break;
 		case 4:
-			gyro.reset();
-			drive.manualDrive(0, 0);
-			clock.stop();
-			clock.reset();
+			//buttonPress.ServoRight();
+			buttonPress.ServoFrontLeft();
+			if (clock.get() > 2.325) {
+				phase++;
+				buttonPress.ServoOff();
+			}
+			break; 
+		case 5:
+			buttonPress.IntakeOn();
+			buttonPress.Shoot();
+			if (clock.get() > 14.9) {
+				phase++;
+				buttonPress.IntakeOff();
+				buttonPress.StopShoot();
+			}
+			break;
+		case 6:
+			//buttonPress.ServoFrontRight();
+			if (clock.get() > 15) {
+				phase++;
+				buttonPress.ServoOff();
+			}
 			break;
 		}
 	}

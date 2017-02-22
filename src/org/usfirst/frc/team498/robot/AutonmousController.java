@@ -113,8 +113,8 @@ public class AutonmousController {
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(-0.6, -AngleComp());
-			if (clock.get() > 1.7) {
+			drive.manualDrive(-0.8, -AngleComp());// -0.6
+			if (clock.get() > 1.2) { //1.7
 				gyro.reset();
 				clock.start();
 				phase++;
@@ -133,8 +133,8 @@ public class AutonmousController {
 			}
 			break;
 		case 3:
-			drive.manualDrive(-0.6, -AngleComp());
-			if (clock.get() > 2.5) {
+			drive.manualDrive(-0.8, -AngleComp());// -0.6
+			if (clock.get() > 2.0) {//2.5
 				clock.start();
 				gyro.reset();
 				phase++;
@@ -150,8 +150,8 @@ public class AutonmousController {
 			}
 			break;
 		case 5:
-			drive.manualDrive(0.6, -AngleComp());
-			if (clock.get() > 1) {
+			drive.manualDrive(0.8, -AngleComp());// 0.6
+			if (clock.get() > 0.5) {// 1.0
 				clock.start();
 				gyro.reset();
 				phase++;
@@ -171,8 +171,8 @@ public class AutonmousController {
 			}
 			break;
 		case 7:
-			drive.manualDrive(0.6, -AngleComp());
-			if (clock.get() > 2.5) { // changed time by .5
+			drive.manualDrive(0.8, -AngleComp());// 0.6
+			if (clock.get() > 2.0) { // changed time by .5 //2.5
 				clock.start();
 				gyro.reset();
 				phase++;

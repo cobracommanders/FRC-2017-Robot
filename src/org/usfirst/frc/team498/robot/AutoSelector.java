@@ -1,6 +1,7 @@
 package org.usfirst.frc.team498.robot;
 
 
+//depreciated forms of previous auto selectors
 public enum AutoSelector {
 	DRIVEFORWARD, MIDPEG, TOPPEG, BOTPEG //In relation to the BOILER, where the BOILER is the bottom. From RED ALLIANCE
 	}

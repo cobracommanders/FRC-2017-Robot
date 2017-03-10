@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.vision.VisionPipeline;
 *
 * @author GRIP
 */
+//GRIP code for vision
 public class GearPipeline implements VisionPipeline{
 
 	//Outputs

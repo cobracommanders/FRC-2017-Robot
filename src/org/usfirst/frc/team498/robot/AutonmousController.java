@@ -10,12 +10,11 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 
 public class AutonmousController {
-	public DriverStation driveStation = DriverStation.getInstance();
 	private Timer clock;
 	private Drive2017 drive;
 	public AnalogUltrasonicSensor2017 ultra;
 
-	PewPew2017 shooter;
+	//PewPew2017 shooter;
 
 	ButtonPress buttonPress;
 
@@ -24,6 +23,7 @@ public class AutonmousController {
 	double rightContour = 0.0;
 	double rangeInches = 2.5;
 
+	public double lastAngle = 0;
 	ADXRS450_Gyro gyro;
 
 	double driveAngle;
@@ -44,6 +44,7 @@ public class AutonmousController {
 
 	REVImprovedDigitBoard digitBoard;
 
+	//Init
 	AutonmousController(Drive2017 drive, ButtonPress buttonPress, REVImprovedDigitBoard digitBoard,
 			FancyJoystick thisStick, Ports ports, AnalogUltrasonicSensor2017 ultra, ADXRS450_Gyro gyro, Timer clock,
 			NetworkTable netTable) {
@@ -55,8 +56,12 @@ public class AutonmousController {
 		this.gyro = gyro;
 		this.netTable = netTable;
 		digitBoard.UpdateDisplay(' ', 'R', ' ', 'L', false);
+		
+		TeleOpMode teleMode = TeleOpMode.OPERATORCONTROL;
 	}
 
+	
+	//Depreciated
 	public void run(AutoSelector key) { // In theory, this should be able to
 										// choose between different types of
 										// autonomous modes
@@ -79,9 +84,13 @@ public class AutonmousController {
 		clock.start();
 	}
 
+	//Executes an auto mode dependent on the value of auto mode
 	public void Auto() {
 		double ultraInches = ultra.GetRangeInches(false);
+		//The true-false value in the function parameters is supposed to reverse all the turns
+		//Ultrainches isn't used, but it is there if we need it
 		switch (AutoMode.currentValue) {
+		//Switches between auto modes
 		case AutoMode.RED_LEFT:
 			autoLeftPeg(false);
 			break;
@@ -103,24 +112,28 @@ public class AutonmousController {
 		}
 	}
 
-	public void autoLeftPeg(boolean blue) { // auto for the top peg (Top as in
-											// farthest from
+	//Executes the left peg auto
+	public void autoLeftPeg(boolean blue) { 
+		
 		int blueToggle = blue ? -1 : 1;
 		switch (phase) {
 		case 0:
+			//Init
 			clock.start();
 			gyro.reset();
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(-0.8, -AngleComp());// -0.6
-			if (clock.get() > 1.2) { // 1.7
+			//Drive forward
+			drive.manualDrive(-0.6, -AngleComp());// -0.8
+			if (clock.get() > 1.7) { // 1.2
 				gyro.reset();
 				clock.start();
 				phase++;
 			}
 			break;
 		case 2:
+			//Turns
 			if (gyro.getAngle() <= 56) {
 				drive.manualDrive(0, -0.5);
 			} else {
@@ -133,14 +146,16 @@ public class AutonmousController {
 			}
 			break;
 		case 3:
-			drive.manualDrive(-0.8, -AngleComp());// -0.6
-			if (clock.get() > 2.0) {// 2.5
+			//Drives
+			drive.manualDrive(-0.6, -AngleComp());// -0.8
+			if (clock.get() > 2.5) {// 2.0
 				clock.start();
 				gyro.reset();
 				phase++;
 			}
 			break;
 		case 4:
+			//Stays still for a bit
 			gyro.reset();
 			drive.manualDrive(0, 0);
 			if (clock.get() > 2.0) {
@@ -149,9 +164,10 @@ public class AutonmousController {
 				phase++;
 			}
 			break;
-		case 5:
-			drive.manualDrive(0.8, -AngleComp());// 0.6
-			if (clock.get() > 0.5) {// 1.0
+			//START OF SHOOTER, MOVES BACK
+		/*case 5:
+			drive.manualDrive(0.6, -AngleComp());// 0.6
+			if (clock.get() > 1.0) {// 1.0
 				clock.start();
 				gyro.reset();
 				phase++;
@@ -170,9 +186,9 @@ public class AutonmousController {
 				phase++;
 			}
 			break;
-		case 7:
-			drive.manualDrive(0.8, -AngleComp());// 0.6
-			if (clock.get() > 2.0) { // changed time by .5 //2.5
+		case 7:	
+			drive.manualDrive(0.6, -AngleComp());// 0.8
+			if (clock.get() > 2.5) { // changed time by .5 //2.0
 				clock.start();
 				gyro.reset();
 				phase++;
@@ -183,10 +199,10 @@ public class AutonmousController {
 			clock.start();
 			gyro.reset();
 			phase++;
-			break;
+			break;*/
 		// New Code
-		case 9:
-			shooter.Shoot();
+		/*case 9:
+			buttonPress.Shoot();
 			if (clock.get() > 5) {
 				clock.stop();
 				clock.reset();
@@ -194,46 +210,53 @@ public class AutonmousController {
 			}
 			break;
 		case 10:
-			shooter.StopShoot();
-			phase++;
-			break;
+			drive.manualDrive(0, 0);
+			phase = -1;
+			break;*/
 		}
 
 	}
 
+	//Executes the middle auto
 	public void autoMidPeg(boolean blue, double ultraInches) {
 
 		// TODO: TEST
 		int blueToggle = blue ? -1 : 1;
 		switch (phase) {
 		case 0:
+			//Init
 			clock.start();
 			gyro.reset();
 			phase++;
 			break;
 		case 1:
-			drive.manualDrive(-0.5, -VisionAngleComp());
-			if (netTable.getDouble("distanceFromTarget") < 165) {
+			//Drives forward
+			drive.manualDrive(-0.5, -AngleComp());
+			if (true) {
 				clock.start();
 				phase++;
 				drive.manualDrive(0, 0);
 			}
 			break;
 		case 2:
+			//Drives forward
 			drive.manualDrive(-0.5, -AngleComp());
-			if (clock.get() >= 1) {
+			if (clock.get() >= 3) {
 				clock.stop();
 				clock.reset();
 				phase++;
 				drive.manualDrive(0, 0);
 			}
+			break;
 		}
+	}
+		
 		/*
 		 * switch (phase) { case 0: clock.start(); phase++; break; case 1:
 		 * drive.manualDrive(0, 0.8); if (clock.get() > 2) { phase++; } break;
 		 * case 2: drive.manualDrive(0, 0); break; }
-		 */
-		/*
+		 *
+		 *
 		 * case 0: clock.start(); phase++; break;
 		 * 
 		 * case 1: drive.manualDrive(-0.5, 0); if (clock.get() > 1 + (9/99)) {
@@ -252,8 +275,8 @@ public class AutonmousController {
 		 * clock.reset(); clock.start(); phase++; } break;
 		 * 
 		 * case 6: drive.manualDrive(0, 0); break; }
-		 */
-		/*
+		 *
+		 *
 		 * switch (phase) {
 		 * 
 		 * case 0: gyro.reset(); gyro.calibrate(); clock.start(); phase++;
@@ -261,60 +284,114 @@ public class AutonmousController {
 		 * ConvertGyroStuff(gyro.getAngle() * 0.03)); if (clock.get() > 2) {
 		 * phase++; } break; case 2: drive.manualDrive(0, 0); break; }
 		 */
-	}
 
+	//Executes the right auto
 	public void autoRightPeg(boolean blue) { // inverse of autoleftPeg
-		// TODO: TEST
+		
 		int blueToggle = blue ? -1 : 1;
 		switch (phase) {
 		case 0:
+			
+			//Init
 			clock.start();
-			buttonPress.IntakeOn();
-			buttonPress.Shoot();
+			gyro.reset();
 			phase++;
 			break;
 		case 1:
-			buttonPress.ServoLeft();
-			if (clock.get() > 0.1) {
-				buttonPress.ServoOff();
+			
+			//Drives forward
+			drive.manualDrive(-0.8, -AngleComp());// -0.6
+			if (clock.get() > 1.2) { // 1.7
+				gyro.reset();
+				clock.start();
 				phase++;
 			}
 			break;
 		case 2:
-			buttonPress.IntakeOn();
-			buttonPress.Shoot();
-			if (clock.get() > 2.1) {
+			
+			//Turns
+			if (gyro.getAngle() >= -56) {
+				drive.manualDrive(0, -0.5);
+			} else {
+				drive.manualDrive(0, 0.1);
+			}
+			if (Math.abs(gyro.getAngle() + 56) < 0.1) {
+				gyro.reset();
+				clock.start();
 				phase++;
 			}
 			break;
 		case 3:
-			if (clock.get() > 2.225) {
+			//Drives forward
+			drive.manualDrive(-0.8, -AngleComp());// -0.6
+			if (clock.get() > 2.0) {// 2.5
+				clock.start();
+				gyro.reset();
 				phase++;
 			}
 			break;
-		case 4:
-			//buttonPress.ServoRight();
-			buttonPress.ServoFrontLeft();
-			if (clock.get() > 2.325) {
+		case 4: 
+			//stops
+			gyro.reset();
+			drive.manualDrive(0, 0);
+			if (clock.get() > 2.0) {
+				clock.start();
+				gyro.reset();
 				phase++;
-				buttonPress.ServoOff();
 			}
-			break; 
+			break;
 		case 5:
-			buttonPress.IntakeOn();
-			buttonPress.Shoot();
-			if (clock.get() > 14.9) {
+			//start of shooter, moves back
+			drive.manualDrive(0.8, -AngleComp());// 0.6
+			if (clock.get() > 0.5) {// 1.0
+				clock.start();
+				gyro.reset();
 				phase++;
-				buttonPress.IntakeOff();
-				buttonPress.StopShoot();
 			}
 			break;
 		case 6:
-			//buttonPress.ServoFrontRight();
-			if (clock.get() > 15) {
-				phase++;
-				buttonPress.ServoOff();
+			//turns -17 degrees towards the boiler
+			if (gyro.getAngle() >= -17) { // changed degree, originally -15
+				drive.manualDrive(0, 0.5);
+			} else {
+				drive.manualDrive(0, -0.1);
 			}
+			if (Math.abs(gyro.getAngle() + 17) < 0.1) { // changed degree,
+														// originally 15
+				gyro.reset();
+				clock.start();
+				phase++;
+			}
+			break;
+		case 7:
+			//drives back to boiler
+			drive.manualDrive(0.8, -AngleComp());// 0.6
+			if (clock.get() > 2.0) { // changed time by .5 //2.5
+				clock.start();
+				gyro.reset();
+				phase++;
+			}
+			break;
+		case 8:
+			//stops
+			drive.manualDrive(0, 0);
+			clock.start();
+			gyro.reset();
+			phase++;
+			break;
+		// New Code
+		case 9:
+			//shoots 10 fuel
+			buttonPress.Shoot();
+			if (clock.get() > 5) {
+				clock.stop();
+				clock.reset();
+				phase++;
+			}
+			break;
+		case 10:
+			//Bad Code
+			phase = -1;
 			break;
 		}
 	}
@@ -340,14 +417,23 @@ public class AutonmousController {
 	 * }
 	 */
 
+	//Takes the last angle and the current angle and subtracts the last angle from the current angle. MAkes it so the robot turns 3 times then goes forward
 	public double AngleComp() {
-		return gyro.getAngle() * -0.25;
+		//return gyro.getAngle() * -0.3;
+		if (Math.abs(lastAngle - gyro.getAngle()) < 4) {
+			lastAngle = gyro.getAngle();
+			return -gyro.getAngle() * 0.15;
+		} else {
+			return lastAngle;
+		}
 	}
 
+	//Uses angle from target and returns it
 	public double VisionAngleComp() {
 		return netTable.getDouble("angleFromGoal") * -0.3;
 	}
 
+	//Depreciated
 	public TeleOpMode AlignGearPeg() {
 		// Checks if we are in the gear Deadzone
 		double turnDirection = 0.5;
@@ -456,6 +542,7 @@ public class AutonmousController {
 		return TeleOpMode.GEARALIGNMENT;
 	}
 
+	//Tests auto, currently depreciated
 	public void testDrive() {
 
 		// drive.manualDrive(-.65, ConvertGyroStuff(gyro.getAngle() * 0.03));
@@ -467,6 +554,7 @@ public class AutonmousController {
 		 */
 	}
 
+	//uses digit board to select auto
 	public void autonomousSelector() {
 
 		// LCD display needs a pause between changes

@@ -43,6 +43,7 @@ public class CameraVision2017 {
 		//startThread();
 	}
 	
+	//makes a new thread using the pipeline from GRIP
 	public void startThread() {
 		new Thread(() -> {
 			GearPipeline gearPipe = new GearPipeline();
@@ -52,6 +53,7 @@ public class CameraVision2017 {
 			
 			Mat frame = new Mat();
 			
+			//always runs; gets the image, processes it, and creates boxes of the countours
 			while(true) {
 				cvSink.grabFrame(frame);
 				gearPipe.process(frame);

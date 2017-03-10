@@ -8,6 +8,7 @@ public class AnalogUltrasonicSensor2017 {
 	Solenoid sol;
 	FancyJoystick thisStick;
 
+	//Init
 	public AnalogUltrasonicSensor2017(FancyJoystick thisStick, Ports ports, Solenoid sol) {
 		this.thisStick = thisStick;
 		AI = new AnalogInput(ports.ULTRASONIC_SENSOR_ANALOG_PORT);
@@ -18,6 +19,7 @@ public class AnalogUltrasonicSensor2017 {
 	 * Min. 2 inches Max 1 ft;
 	 */
 
+	//Gets the number of millimeters you are from something
 	public double GetRangeMM() {
 		// double output = 0;
 		// output = AI.getVoltage();
@@ -26,6 +28,8 @@ public class AnalogUltrasonicSensor2017 {
 		return GetRangeInches(false) / 25.4;
 	}
 
+	//Gets the number of inches you are from something
+	//The use voltage uses voltage to calulate the ditance instead of the value. Generally not used.
 	public double GetRangeInches(Boolean useVoltage) {
 		if(useVoltage)
 			return (GetVoltage() * 2) + 2;
@@ -34,10 +38,12 @@ public class AnalogUltrasonicSensor2017 {
 		
 	}
 
+	//Returns the voltage
 	public double GetVoltage() {
 		return AI.getVoltage();
 	}
 
+	//Returns the value. Ranges from 0 to 4000
 	public double getValue() {
 		// getValue seems more reliable than getRangeInches, it actually moves,
 		// but can't go past 4000. I don't know how it's measured.

@@ -24,10 +24,10 @@ public class RampManager {
 	RampManager (double percentIncreasePerSecond) {
 		rampSpeed = percentIncreasePerSecond;
 		currentValue = 0;
-		clock.start(); 
+		clock.start();
 		lastTime = 0;
 	}
-	
+	//Accelerates robot to desired speed
 	public void rampTo(double desiredValue) {
 		if (clock.get() <= 0){	//Start the clock if it hasn't started.
 			clock.start();
@@ -36,6 +36,7 @@ public class RampManager {
 			clock.reset();
 		}
 		//if(Math.abs(currentValue) > Math.abs(desiredValue)) {
+			//Checks if desired speed has been reached
 			if(currentValue < desiredValue) {
 			currentValue = clock.get() * rampSpeed + currentValue;
 			if(currentValue > 1) {
@@ -48,6 +49,7 @@ public class RampManager {
 				currentValue = -1;
 			}
 			clock.reset();	//comment this flat
+			//fail save
 		} else {
 			clock.reset();
 		}
@@ -79,7 +81,6 @@ public class RampManager {
 			//clock.reset();	//comment this kyle
 		}
 	}
-	
 	public double getCurrentValue() {
 		return currentValue;
 	}

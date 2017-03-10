@@ -1,5 +1,6 @@
 package org.usfirst.frc.team498.robot;
 
+//old code that was replaced by the Button Press class
 import com.ctre.CANTalon;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -38,6 +39,7 @@ public class IntakeClimb2017 {
 
 	}
 
+	//checks if the a button is pressed
 	public boolean ADown() {
 		boolean localTemp = false;
 		if (!aOldState && thisStick.getButton(Button.A))
@@ -46,7 +48,7 @@ public class IntakeClimb2017 {
 		return localTemp;
 	}
 	
-	//ball
+	// methods for the fuel intake (depreciated)
 	public void IntakeOn() {
 		sparkBall.set(1);
 	}
@@ -67,23 +69,28 @@ public class IntakeClimb2017 {
 		talonConveyor.set(0);
 	}*/
 	
-	//climb
+	//climber methods
+	
+	//turns it on
 	public void ClimbOn() {
 		//For some reason, the motors are calibrated in reverse?
 		climb0.set(-1.0);
 		climb1.set(-1.0);
 	}
 	
+	//turns climber off
 	public void ClimbOff() {
 		climb0.set(0);
 		climb1.set(0);
 	}
 	
+	//reverses climber
 	public void ClimbReverse() {
 		climb0.set(1.0);
 		climb1.set(1.0);
 	}
 	
+	//the method where each button does something
 	public void Listener() {
 		
 		/*if (thisStick.getButton(Button.B) && wasConveyorPressed == false) {
@@ -103,6 +110,7 @@ public class IntakeClimb2017 {
 			ConveyorOff();
 		}*/
 		
+		//climber controller with the back button (depreciated)
 		if (thisStick.getButton(Button.BACK) && wasClimbPressed == false) {
 			isClimbRunning = !isClimbRunning;
 			wasClimbPressed = true;
@@ -145,6 +153,7 @@ public class IntakeClimb2017 {
 			ClimbOff();
 		}*/
 
+		//controller for intake with the x button, and the left bumper reverses it. (toggle) (depreciated)
 		if (thisStick.getButton(Button.X) && wasIntakePressed == false) {
 			isIntakeRunning = !isIntakeRunning;
 			wasIntakePressed = true;
@@ -167,6 +176,7 @@ public class IntakeClimb2017 {
 			IntakeOff();
 		}
 
+		// flaps for gear intake controller (using a button) (depreciated)
 		if (ADown()) {
 			if (ds.get() == Value.kOff || ds.get() == Value.kForward)
 				OpenFlap();

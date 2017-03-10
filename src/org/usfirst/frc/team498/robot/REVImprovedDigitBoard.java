@@ -25,6 +25,7 @@ public class REVImprovedDigitBoard {
 		charreg = new byte[38][2]; // charreg is short for character registry
 		charmap = new HashMap<Character, Integer>();
 
+		//creates a character registry and map for the alphabet, numbers 0-9, and some special cases as well
 		charreg[0][0] = (byte) 0b00111111;
 		charreg[9][1] = (byte) 0b00000000; // 0
 		charmap.put('0', 0);
@@ -141,8 +142,10 @@ public class REVImprovedDigitBoard {
 		charreg[37][1] = (byte) 0b00000000; // -
 		charmap.put('-', 37);
 
+		//the port where the digitboard goes to
 		i2c = new I2C(Port.kMXP, 0x70); // 0x70 0xA8
 
+		//ports where each controller goes to
 		buttonA = new DigitalInput(19); // Original 19
 		buttonB = new DigitalInput(20); // Original 20
 		pot = new AnalogInput(7); // Original 3
@@ -174,6 +177,7 @@ public class REVImprovedDigitBoard {
 		byte1[4] = charreg[charz[2]][0];
 		byte1[5] = charreg[charz[2]][1];
 		byte1[6] = charreg[charz[1]][0];
+		//makes a decimal point only when the radixpoint bool is true (used for battery voltage)
 		if (radixPoint)
 			byte1[7] = (byte)(charreg[charz[1]][1] | (byte) 0b11000000);
 		else
@@ -299,6 +303,7 @@ public class REVImprovedDigitBoard {
 
 	}
 
+	//toggles buttons
 	public boolean getButtonA() {
 		return !buttonA.get();
 	}
@@ -307,6 +312,7 @@ public class REVImprovedDigitBoard {
 		return !buttonB.get();
 	}
 
+	//gets the voltage when using pot
 	double getPot() {
 		return pot.getVoltage();
 	}

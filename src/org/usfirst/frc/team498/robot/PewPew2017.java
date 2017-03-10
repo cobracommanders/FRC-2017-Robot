@@ -1,5 +1,6 @@
 package org.usfirst.frc.team498.robot;
 
+//shooter class that was replaced by the button press class
 import edu.wpi.first.wpilibj.Talon;
 
 public class PewPew2017 {
@@ -18,16 +19,19 @@ public class PewPew2017 {
 		digitBoard = board;
 	}
 
+	//sets the motor controller (talon) to a set speed (depreciated)
 	public void Shoot() {
 		//double voltage = digitBoard.getPot();
 		//double motorValue = voltage; // voltage / 5
 		talon.set(4.85); // motorValue works
 	}
 
+	//stops the motor controller (depreciated)
 	public void StopShoot() {
 		talon.set(0);
 	}
 
+	//checks to see if you pressed the shoot button, which was right bumper (depreciated)
 	public void shootListener() {
 		if (thisStick.getButton(Button.RightBumper) && wasShootPressed == false) {
 			isShootRunning = !isShootRunning;

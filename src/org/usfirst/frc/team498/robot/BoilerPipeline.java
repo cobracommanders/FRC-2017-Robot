@@ -23,6 +23,7 @@ import org.opencv.objdetect.*;
 *
 * @author GRIP
 */
+//GRIP code for vision
 public class BoilerPipeline {
 
 	//Outputs

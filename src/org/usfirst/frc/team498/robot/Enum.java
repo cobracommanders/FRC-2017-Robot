@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 
+//enumerator that has no use
 public enum Enum {
 	/*public ADXRS450_Gyro gyro;
 	public BuiltInAccelerometer acc;

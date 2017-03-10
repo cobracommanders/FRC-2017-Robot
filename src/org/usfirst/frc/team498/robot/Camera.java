@@ -28,7 +28,7 @@ public class Camera {
 	public double centerYAvg = 0.0;
 	private double rectangleArea=0.0;
 	
-	
+	//this enables the vision thread
 	public Camera() {
 		enableVisionThread(); //outputs a processed feed to the dashboard (overlays the found boiler tape)
 	}
@@ -158,12 +158,14 @@ public class Camera {
 		}
 	}*/
 	
+	//gets the center y value from the contours.
 	public double getCenterY() {
 		synchronized(imgLock) {
 			return centerYAvg;
 		}
 	}
-
+	
+	//gets the center x value from the coutours.
 	public double getCenterX() {
 		synchronized(imgLock) {
 			return centerXAvg;

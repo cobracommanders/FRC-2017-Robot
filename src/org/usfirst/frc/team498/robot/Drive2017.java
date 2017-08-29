@@ -17,6 +17,8 @@ public class Drive2017 {
 	boolean trigDown = false;
 	boolean turning = false;
 	static boolean turbo;
+	
+	double lastAngle = 0;
 
 	RampManager turningDriveRamp;
 	public double moveValue;
@@ -43,6 +45,7 @@ public class Drive2017 {
 		else
 			return 0;
 
+		
 	}
 
 	//returns the movecap, unless you're in turbo mode
@@ -52,7 +55,29 @@ public class Drive2017 {
 		else
 			return moveCap;
 	}
-
+	/*public void straightDriveTest() {
+		manualDrive(-0.6, -removeThisAngleComp());
+	}*/
+	
+	
+	/*public double removeThisAngleComp() {
+		//return gyro.getAngle() * -0.3;
+		if (Math.abs(lastAngle - gyro.getAngle()) < 4) {
+			lastAngle = gyro.getAngle();
+			return -gyro.getAngle() * 0.35;
+		} else {
+			return lastAngle;
+		}
+	}*/
+	/*public void testListener() {
+		if (thisStick.getButton(Button.RightBumper)){
+		straightDriveTest();
+		}
+		if(thisStick.getButton(Button.LeftBumper)){
+			gyro.reset();
+			lastAngle = 0;
+		}
+	}*/
 	// The robot's speed slowly increases over time.
 	public void rampedDriveListener() {
 		// Axis 3 is RT Axis 2 is LT
@@ -118,7 +143,7 @@ public class Drive2017 {
 		moveValue_f = moveValue;
 		turnValue_f = turnValue;
 
-		drive.arcadeDrive(-moveValue_f, turnValue_f);
+		drive.arcadeDrive(moveValue_f, turnValue_f);
 
 	}
 

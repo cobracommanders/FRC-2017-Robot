@@ -235,7 +235,7 @@ public class ButtonPress { // x, a, back, rightBumper being used
 	// Listener Method
 	//listens fro all the buttons pressed
 	public void Listener() {
-
+		
 		if (ADown()) {
 			clock.start();
 			isServoRunning = true;
@@ -249,24 +249,24 @@ public class ButtonPress { // x, a, back, rightBumper being used
 		}
 
 		// Toggles Shooter
-		if (thisStick.getButton(Button.RightBumper) && wasShootPressed == false) {
+		/*if (thisStick.getButton(Button.RightBumper) && wasShootPressed == false) {
 			isShootRunning = !isShootRunning;
 			//isConveyorRunning = !isConveyorRunning;
 			wasShootPressed = true;
-		}
-		if (wasShootPressed == true && thisStick.getButton(Button.RightBumper) == false) {
-			wasShootPressed = false;
-		}
-
-		if (isShootRunning) {
-			Shoot();
-			//intakeConveyorOn();
-			//ServoLeft();
-		} else {
-			//StopShoot();
-			//intakeConveyorOff();
-			//ServoOff();
-		} // End of Shooter
+		}*/
+//		if (wasShootPressed == true && thisStick.getButton(Button.RightBumper) == false) {
+//			wasShootPressed = false;
+//		}
+//
+//		if (isShootRunning) {
+//			Shoot();
+//			//intakeConveyorOn();
+//			//ServoLeft();
+//		} else {
+//			//StopShoot();
+//			//intakeConveyorOff();
+//			//ServoOff();
+//		} // End of Shooter
 
 		/*
 		 * if (thisStick.getButton(Button.Y) && wasConveyorPressed == false) {

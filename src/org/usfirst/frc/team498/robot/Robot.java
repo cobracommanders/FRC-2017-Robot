@@ -102,6 +102,8 @@ public class Robot extends SampleRobot {
 		
 		//initializes the network table
 		table = NetworkTable.getTable("LiftTracker");
+		
+	
 
 	}
 
@@ -214,7 +216,8 @@ public class Robot extends SampleRobot {
 			case OPERATORCONTROL:
 				// Drive the robot via controller
 				drive2017.rampedDriveListener(); // drive
-				buttonPress.Listener(); // shoots, intake, climb, does
+				buttonPress.Listener();// shoots, intake, climb, does
+				//drive2017.testListener();
 										// EVERYTHING!
 				// gearIntake.Listener();
 				// shooter.shootListener();

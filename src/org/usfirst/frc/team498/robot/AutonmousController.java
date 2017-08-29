@@ -3,11 +3,8 @@
 package org.usfirst.frc.team498.robot;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
-
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class AutonmousController {
 	private Timer clock;
@@ -119,6 +116,7 @@ public class AutonmousController {
 		switch (phase) {
 		case 0:
 			//Init
+			buttonPress.OpenFlap();
 			clock.start();
 			gyro.reset();
 			phase++;
@@ -126,7 +124,7 @@ public class AutonmousController {
 		case 1:
 			//Drive forward
 			drive.manualDrive(-0.6, -AngleComp());// -0.8
-			if (clock.get() > 1.7) { // 1.2
+			if (clock.get() > 0.81) { // 1.2
 				gyro.reset();
 				clock.start();
 				phase++;
@@ -134,18 +132,25 @@ public class AutonmousController {
 			break;
 		case 2:
 			//Turns
-			if (gyro.getAngle() <= 56) {
-				drive.manualDrive(0, -0.5);
+			if (gyro.getAngle() <= 33) {
+				drive.manualDrive(0, -0.4);
 			} else {
-				drive.manualDrive(0, 0.1);
+				gyro.reset();
+				clock.start();
+				phase++;
 			}
-			if (Math.abs(gyro.getAngle() - 56) < 0.1) {
+			
+			break;
+		case 3:
+			//chills
+			drive.manualDrive(0, 0);
+			if(clock.get() > 1.5){
 				gyro.reset();
 				clock.start();
 				phase++;
 			}
 			break;
-		case 3:
+		case 4:
 			//Drives
 			drive.manualDrive(-0.6, -AngleComp());// -0.8
 			if (clock.get() > 2.5) {// 2.0
@@ -154,7 +159,7 @@ public class AutonmousController {
 				phase++;
 			}
 			break;
-		case 4:
+		case 5:
 			//Stays still for a bit
 			gyro.reset();
 			drive.manualDrive(0, 0);
@@ -163,6 +168,12 @@ public class AutonmousController {
 				gyro.reset();
 				phase++;
 			}
+			break;
+		case 6:
+			//stops
+			drive.manualDrive(0, 0);
+			clock.start();
+			gyro.reset();
 			break;
 			//START OF SHOOTER, MOVES BACK
 		/*case 5:
@@ -227,11 +238,12 @@ public class AutonmousController {
 			//Init
 			clock.start();
 			gyro.reset();
+			buttonPress.OpenFlap();
 			phase++;
 			break;
 		case 1:
 			//Drives forward
-			drive.manualDrive(-0.5, -AngleComp());
+			drive.manualDrive(-0.6, -AngleComp());
 			if (true) {
 				clock.start();
 				phase++;
@@ -241,7 +253,7 @@ public class AutonmousController {
 		case 2:
 			//Drives forward
 			drive.manualDrive(-0.5, -AngleComp());
-			if (clock.get() >= 3) {
+			if (clock.get() >= 4) {
 				clock.stop();
 				clock.reset();
 				phase++;
@@ -291,6 +303,69 @@ public class AutonmousController {
 		int blueToggle = blue ? -1 : 1;
 		switch (phase) {
 		case 0:
+			//Init
+			buttonPress.OpenFlap();
+			clock.start();
+			gyro.reset();
+			phase++;
+			break;
+		case 1:
+			//Drive forward
+			drive.manualDrive(-0.6, -AngleComp());// -0.8
+			if (clock.get() > 0.81) { // 1.2
+				gyro.reset();
+				clock.start();
+				phase++;
+			}
+			break;
+		case 2:
+			//Turns
+			if (gyro.getAngle() >= -33) {
+				drive.manualDrive(0, 0.4);
+			} else {
+				gyro.reset();
+				clock.start();
+				phase++;
+			}
+			
+			break;
+		case 3:
+			//chills
+			drive.manualDrive(0, 0);
+			if(clock.get() > 1.5){
+				gyro.reset();
+				clock.start();
+				phase++;
+			}
+			break;
+		case 4:
+			//Drives
+			drive.manualDrive(-0.6, -AngleComp());// -0.8
+			if (clock.get() > 2.5) {// 2.0
+				clock.start();
+				gyro.reset();
+				phase++;
+			}
+			break;
+		case 5:
+			//Stays still for a bit
+			gyro.reset();
+			drive.manualDrive(0, 0);
+			if (clock.get() > 2.0) {
+				clock.start();
+				gyro.reset();
+				phase++;
+			}
+			break;
+		case 6:
+			//stops
+			drive.manualDrive(0, 0);
+			clock.start();
+			gyro.reset();
+			break;
+		}
+	/*	switch (phase) {
+		case 0:
 			
 			//Init
 			clock.start();
@@ -322,6 +397,15 @@ public class AutonmousController {
 			}
 			break;
 		case 3:
+			//chills
+			drive.manualDrive(0, 0);
+			if(clock.get() > 2){
+				gyro.reset();
+				clock.start();
+				phase++;
+			}
+			break;
+		case 4:
 			//Drives forward
 			drive.manualDrive(-0.8, -AngleComp());// -0.6
 			if (clock.get() > 2.0) {// 2.5
@@ -330,7 +414,7 @@ public class AutonmousController {
 				phase++;
 			}
 			break;
-		case 4: 
+		case 5: 
 			//stops
 			gyro.reset();
 			drive.manualDrive(0, 0);
@@ -339,8 +423,8 @@ public class AutonmousController {
 				gyro.reset();
 				phase++;
 			}
-			break;
-		case 5:
+			break;*/
+		/*case 5:
 			//start of shooter, moves back
 			drive.manualDrive(0.8, -AngleComp());// 0.6
 			if (clock.get() > 0.5) {// 1.0
@@ -370,17 +454,15 @@ public class AutonmousController {
 				clock.start();
 				gyro.reset();
 				phase++;
-			}
-			break;
-		case 8:
+			}*/
+		/*case 6:
 			//stops
 			drive.manualDrive(0, 0);
 			clock.start();
 			gyro.reset();
-			phase++;
-			break;
+			break;*/
 		// New Code
-		case 9:
+	/*	case 9:
 			//shoots 10 fuel
 			buttonPress.Shoot();
 			if (clock.get() > 5) {
@@ -388,13 +470,9 @@ public class AutonmousController {
 				clock.reset();
 				phase++;
 			}
-			break;
-		case 10:
-			//Bad Code
-			phase = -1;
-			break;
+			break;*/
 		}
-	}
+	//}
 
 	/*
 	 * public TeleOpMode AlignHighGoal() { // Checks if we are within horizontal
@@ -420,12 +498,12 @@ public class AutonmousController {
 	//Takes the last angle and the current angle and subtracts the last angle from the current angle. MAkes it so the robot turns 3 times then goes forward
 	public double AngleComp() {
 		//return gyro.getAngle() * -0.3;
-		if (Math.abs(lastAngle - gyro.getAngle()) < 4) {
-			lastAngle = gyro.getAngle();
-			return -gyro.getAngle() * 0.15;
-		} else {
-			return lastAngle;
-		}
+				if (Math.abs(lastAngle - gyro.getAngle()) < 4) {
+					lastAngle = gyro.getAngle();
+					return -gyro.getAngle() * 0.35;
+				} else {
+					return lastAngle;
+				}
 	}
 
 	//Uses angle from target and returns it

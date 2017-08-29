@@ -31,12 +31,11 @@ public class Ports {
 	final int GEAR_INTAKE_REVERSE_CHANNEL = 3;
 
 	// 1 is 9, 2 is 8, 3 is 7, 4 is 6
-
 	// analog ultrasonic sensors (PCM for power)
 	final int ULTRASONIC_SENSOR_ANALOG_PORT = 1; // 1
 	final int ULTRASONIC_SENSOR_PCM_PORT = 0; // 0
 	
 	// RAMP CODE
 	final double forwardRampIncreaseValue = 2.0; // used
-	final double turningRampIncreaseValue = 2.0; // used
+	final double turningRampIncreaseValue = 3.0; // used
 }
